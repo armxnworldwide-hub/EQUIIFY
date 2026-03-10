@@ -1,0 +1,21 @@
+{
+  "name": "widemusic",
+  "version": "1.0.0",
+  "description": "- **Download Button**: Each song card now has a download button (⬇) that appears on hover\r - **Offline Storage**: Downloaded songs are stored locally using IndexedDB for offline access\r - **Visual Feedback**: Downloaded songs show a green download icon\r - **Remove Downloads**: Click the download button again to remove downloaded songs",
+  "main": "java.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armxnworldwide-hub/WideMusic2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/armxnworldwide-hub/WideMusic2/issues"
+  },
+  "homepage": "https://github.com/armxnworldwide-hub/WideMusic2#readme"
+}
