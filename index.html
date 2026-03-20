@@ -90,6 +90,7 @@
             border-radius: 15px;
             transition: 0.3s;
             position: relative;
+            overflow: hidden;
         }
         
         * {
@@ -403,12 +404,18 @@
                 font-size: 24px;
             }
         }
+        
+        .logo {
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
     </style>
 </head>
 
 <body>
     <video autoplay muted loop id="bgVideo">
-    <source src="videos/background.mp4" type="video/mp4">
+    <source src="videos/background0.mp4" type="video/mp4">
 </video>
     <div class="logo">
         🎵 <span>EQU</span>IFY
@@ -932,6 +939,10 @@
                     title: "Deewane",
                     file: "Navaan Sandhu/Deewane.mp3",
                     poster: "images/Navior.jpeg"
+                }, {
+                    title: "Raah",
+                    file: "Navaan Sandhu/Raah.mp3",
+                    poster: "images/Raah.jpeg"
                 }, {
                     title: "2 Asle",
                     file: "Navaan Sandhu/2 Asle.mp3",
