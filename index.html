@@ -901,7 +901,7 @@
                 grid-template-columns: 1fr;
                 grid-template-rows: 56px 1fr var(--player-h);
                 overflow: hidden;
-                --player-h: 220px;
+                --player-h: 180px;
             }
             .sidebar {
                 grid-column: 1;
@@ -1064,16 +1064,19 @@
                 gap: 10px;
             }
             .ctrl-btn.hide-mobile {
-                display: none;
+                display: flex;
             }
             .player-right {
-                display: none;
+                display: flex;
             }
             .play-btn {
                 width: 36px;
                 height: 36px;
                 font-size: 0.95rem;
                 flex-shrink: 0;
+            }
+            .player-controls {
+                gap: 14px;
             }
             .time-label {
                 font-size: 0.65rem;
