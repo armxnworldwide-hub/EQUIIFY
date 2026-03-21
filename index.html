@@ -1018,11 +1018,23 @@
             .player {
                 grid-column: 1;
                 grid-row: 3;
-                grid-template-columns: auto 1fr;
-                grid-template-rows: 1fr;
-                padding: 0 14px;
-                gap: 10px;
-                --player-h: 80px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 8px 12px;
+                gap: 6px;
+                height: auto;
+            }
+            .player-song {
+                width: 100%;
+            }
+            .player-center {
+                width: 100%;
+                gap: 4px;
+            }
+            .player-progress {
+                width: 100%;
+                margin-top: -2px;
             }
             .player-song {
                 flex-shrink: 0;
