@@ -70,7 +70,7 @@
             opacity: .9;
             transition: background .8s ease, opacity .6s ease;
         }
-
+        
         body::after {
             content: "";
             position: fixed;
@@ -84,7 +84,7 @@
             animation: bodyPulseDrift 9.8s ease-in-out infinite;
             transition: opacity .26s ease;
         }
-
+        
         @keyframes bodyPulseDrift {
             0%,
             100% {
@@ -2332,12 +2332,12 @@
             border-color: rgba(200, 245, 66, .3);
             box-shadow: 0 24px 34px rgba(0, 0, 0, .38), 0 0 18px rgba(200, 245, 66, .1);
         }
-
+        
         .playlist-card.dragging {
             opacity: .45;
             transform: scale(.98);
         }
-
+        
         .playlist-card.drag-target {
             border-color: rgba(200, 245, 66, .44);
             box-shadow: 0 0 0 2px rgba(200, 245, 66, .16), 0 24px 34px rgba(0, 0, 0, .32);
@@ -2411,12 +2411,12 @@
             opacity: 1;
             transform: translateY(0)
         }
-
+        
         .playlist-card.pinned {
             border-color: rgba(200, 245, 66, .3);
             box-shadow: 0 18px 30px rgba(0, 0, 0, .28), 0 0 22px rgba(200, 245, 66, .1);
         }
-
+        
         .playlist-pin-btn {
             position: absolute;
             top: 12px;
@@ -2435,18 +2435,18 @@
             opacity: 0;
             transition: all .2s;
         }
-
+        
         .playlist-pin-btn.active {
             opacity: 1;
             color: #d8ff72;
             background: rgba(200, 245, 66, .16);
             box-shadow: 0 0 12px rgba(200, 245, 66, .18);
         }
-
+        
         .playlist-card:hover .playlist-pin-btn {
             opacity: 1;
         }
-
+        
         .playlist-card-del {
             position: absolute;
             top: 12px;
@@ -3247,14 +3247,14 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
+        
         .home-stats {
             margin: 10px 24px 2px;
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 10px;
         }
-
+        
         .home-stat {
             border: 1px solid rgba(255, 255, 255, .1);
             background: linear-gradient(150deg, rgba(20, 25, 34, .8), rgba(15, 17, 25, .76));
@@ -3265,19 +3265,19 @@
             gap: 4px;
             box-shadow: 0 16px 28px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .06);
         }
-
+        
         .home-stat-label {
             font-size: .62rem;
             text-transform: uppercase;
             letter-spacing: .11em;
             color: var(--text2);
         }
-
+        
         .home-stat strong {
             font-size: 1rem;
             letter-spacing: .02em;
         }
-
+        
         .favorite-artists-row {
             padding: 10px 24px 16px;
             display: flex;
@@ -3286,16 +3286,16 @@
             scrollbar-width: thin;
             scrollbar-color: rgba(255, 255, 255, .16) transparent;
         }
-
+        
         .favorite-artists-row::-webkit-scrollbar {
             height: 4px;
         }
-
+        
         .favorite-artists-row::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, .2);
             border-radius: 999px;
         }
-
+        
         .favorite-artist-pill {
             border: 1px solid rgba(255, 255, 255, .12);
             background: linear-gradient(160deg, rgba(26, 32, 42, .84), rgba(16, 18, 26, .82));
@@ -3309,13 +3309,13 @@
             min-width: max-content;
             transition: border-color .22s ease, transform .22s ease, box-shadow .22s ease;
         }
-
+        
         .favorite-artist-pill:hover {
             transform: translateY(-2px);
             border-color: rgba(200, 245, 66, .34);
             box-shadow: 0 14px 24px rgba(0, 0, 0, .26), 0 0 20px rgba(200, 245, 66, .14);
         }
-
+        
         .favorite-artist-pill img {
             width: 30px;
             height: 30px;
@@ -3324,27 +3324,27 @@
             background: var(--surface3);
             border: 1px solid rgba(255, 255, 255, .18);
         }
-
+        
         .favorite-artist-pill span {
             font-size: .75rem;
             font-weight: 700;
             white-space: nowrap;
         }
-
+        
         .favorite-artist-pill small {
             font-size: .62rem;
             color: var(--text2);
             letter-spacing: .03em;
             white-space: nowrap;
         }
-
+        
         .most-played-grid {
             padding: 8px 24px 14px;
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 10px;
         }
-
+        
         .most-played-card {
             border: 1px solid rgba(255, 255, 255, .1);
             border-radius: 14px;
@@ -3357,13 +3357,13 @@
             cursor: pointer;
             transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
         }
-
+        
         .most-played-card:hover {
             transform: translateY(-2px);
             border-color: rgba(200, 245, 66, .34);
             box-shadow: 0 18px 28px rgba(0, 0, 0, .28), 0 0 18px rgba(200, 245, 66, .1);
         }
-
+        
         .most-played-rank {
             min-width: 20px;
             font-size: .9rem;
@@ -3371,7 +3371,7 @@
             color: rgba(255, 255, 255, .7);
             text-align: center;
         }
-
+        
         .most-played-card img {
             width: 44px;
             height: 44px;
@@ -3380,11 +3380,11 @@
             background: var(--surface3);
             box-shadow: 0 10px 16px rgba(0, 0, 0, .3);
         }
-
+        
         .most-played-text {
             min-width: 0;
         }
-
+        
         .most-played-title {
             font-size: .78rem;
             font-weight: 700;
@@ -3392,7 +3392,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
+        
         .most-played-meta {
             font-size: .65rem;
             color: var(--text2);
@@ -5027,18 +5027,18 @@
             color: #08120a;
             box-shadow: 0 12px 22px rgba(var(--ambient-rgb), .3), 0 14px 32px rgba(0, 0, 0, .42);
         }
-
+        
         .player-fs-btn {
             border-color: rgba(var(--ambient-rgb), .35);
             background: rgba(255, 255, 255, .05);
             box-shadow: 0 10px 16px rgba(0, 0, 0, .22);
         }
-
+        
         .player-fs-btn:hover {
             border-color: rgba(var(--ambient-rgb), .55);
             box-shadow: 0 14px 22px rgba(0, 0, 0, .32), 0 0 18px rgba(var(--ambient-rgb), .14);
         }
-
+        
         @keyframes progressGlowPulse {
             0%,
             100% {
@@ -5050,7 +5050,7 @@
                 box-shadow: 0 0 20px rgba(var(--ambient-rgb), .44), 0 0 34px rgba(var(--ambient-rgb-2), .22);
             }
         }
-
+        
         .progress-preview {
             position: fixed;
             left: 0;
@@ -5071,7 +5071,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }
-
+        
         .progress-preview.show {
             opacity: 1;
             transform: translate(-50%, calc(-100% - 14px));
@@ -8741,6 +8741,42 @@
                     title: "Together",
                     file: "Shubh/Together.mp3",
                     poster: "images/Together.jpeg"
+                }]
+            },cheema: {
+                name: "Cheema Y",
+                image: "images/cheema.jpeg",
+                songs: [{
+                    title: "Cartel",
+                    file: "Cheema Y/Cartel.mp3",
+                    poster: "images/bermuda.jpeg"
+                }, {
+                    title: "CEO",
+                    file: "Cheema Y/CEO.mp3",
+                    poster: "images/bermuda.jpeg"
+                }, {
+                    title: "Jackpot",
+                    file: "Cheema Y/Jackpot.mp3",
+                    poster: "images/bermuda.jpeg"
+                }, {
+                    title: "Komagata Maru",
+                    file: "Cheema Y/Komagata Maru.mp3",
+                    poster: "images/bermuda.jpeg"
+                }, {
+                    title: "Love Salary",
+                    file: "Cheema Y/Love Salary.mp3",
+                    poster: "images/bermuda.jpeg"
+                }, {
+                    title: "Money 2X",
+                    file: "Cheema Y/Money 2X.mp3",
+                    poster: "images/bermuda.jpeg"
+                }, {
+                    title: "Rebel",
+                    file: "Cheema Y/Rebel.mp3",
+                    poster: "images/bermuda.jpeg"
+                }, {
+                    title: "Shady",
+                    file: "Cheema Y/Shady.mp3",
+                    poster: "images/bermuda.jpeg"
                 }]
             },
             sukha: {
@@ -13504,6 +13540,11 @@
             <small>Library</small>
         </button>
     </nav>
+</body>
+
+</html>
+</button>
+</nav>
 </body>
 
 </html>
