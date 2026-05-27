@@ -1571,6 +1571,85 @@
             width: 100%;
             max-width: 520px;
         }
+        /* Mobile compact timeline that replaces fullscreen button */
+        
+        .mobile-mini-timeline {
+            display: none;
+            /* shown on small screens via media query */
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 520px;
+            padding: 0 12px;
+            box-sizing: border-box;
+            margin: 0 auto;
+            justify-content: center;
+        }
+        
+        .mobile-mini-timeline .mini-time {
+            font-size: .62rem;
+            color: var(--text2);
+            width: 44px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .mobile-mini-timeline .mini-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 999px;
+            position: relative;
+            overflow: hidden;
+            transition: transform .12s ease, height .12s ease;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0 6px;
+        }
+        
+        .mobile-mini-timeline .mini-track.dragging {
+            transform: translateY(-2px);
+        }
+        
+        .mobile-mini-timeline .mini-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(var(--ambient-rgb), 0.98), rgba(200, 245, 66, 0.65));
+            box-shadow: 0 8px 22px rgba(var(--ambient-rgb), .20), 0 0 12px rgba(200, 245, 66, .12) inset;
+            transition: width .12s linear, box-shadow .12s ease;
+        }
+        
+        .mobile-mini-timeline .mini-track:active .mini-fill,
+        .mobile-mini-timeline .mini-track.dragging .mini-fill {
+            box-shadow: 0 12px 36px rgba(var(--ambient-rgb), .32), 0 0 20px rgba(200, 245, 66, .18) inset;
+        }
+        /* Show mobile mini timeline only on narrow viewports and keep desktop intact */
+        
+        @media (max-width: 860px) {
+            .mobile-mini-timeline {
+                display: flex;
+            }
+            /* Hide larger center progress on very small screens to avoid duplication */
+            .player-center .player-progress {
+                display: none;
+            }
+            /* Slightly reduce icon sizes to keep spacing */
+            .player-center .ctrl-btn {
+                width: 34px;
+                height: 34px;
+            }
+            .play-btn {
+                width: 40px;
+                height: 40px;
+            }
+            /* Center controls as well */
+            .player-center .player-controls {
+                justify-content: center;
+            }
+        }
         
         .time-label {
             font-family: 'Circular Std', 'Circular', 'Spotify Mix', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -7872,15 +7951,21 @@
                 <button class="player-dl-btn" id="playerDlBtn" onclick="downloadCurrentSong()" title="Download"><i data-lucide="download" aria-hidden="true"></i></button>
             </div>
         </div>
-        <div class="player-center">
+        <div class="player-controls">
             <div class="player-controls">
                 <button class="ctrl-btn" id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle"><i data-lucide="shuffle" aria-hidden="true"></i></button>
                 <button class="ctrl-btn" onclick="previous()" title="Previous"><i data-lucide="skip-back" aria-hidden="true"></i></button>
                 <button class="play-btn" id="playBtn" onclick="togglePlay()"><i data-lucide="play" aria-hidden="true"></i></button>
                 <button class="ctrl-btn" onclick="next()" title="Next"><i data-lucide="skip-forward" aria-hidden="true"></i></button>
                 <button class="ctrl-btn" id="repeatBtn" onclick="toggleRepeat()" title="Repeat"><i data-lucide="repeat" aria-hidden="true"></i></button>
-                <button class="queue-btn-player" id="queueToggleBtn" onclick="toggleQueuePanel()"><i data-lucide="list-music" aria-hidden="true"></i><span class="queue-count-badge hidden" id="queueCountBadge">0</span></button>
-                <button class="ctrl-btn player-fs-btn" id="playerFsBtn" onclick="openFullPlayer()" title="Open fullscreen"><i data-lucide="maximize-2" aria-hidden="true"></i></button>
+            </div>
+            <!-- Mobile: compact interactive timeline replaces fullscreen button (hidden on desktop). Placed between controls and desktop progress for perfect centering on mobile -->
+            <div class="mobile-mini-timeline" id="mobileMiniTimeline" aria-hidden="false">
+                <span class="mini-time" id="miniCurrentTime">0:00</span>
+                <div class="mini-track" id="miniProgressTrack" onmousedown="startDragMobile(event)" ontouchstart="startDragMobile(event)">
+                    <div class="mini-fill" id="miniProgressBar"></div>
+                </div>
+                <span class="mini-time" id="miniDuration">0:00</span>
             </div>
             <div class="player-progress">
                 <span class="time-label" id="currentTime">0:00</span>
@@ -11420,6 +11505,18 @@
             if (e.cancelable) e.preventDefault();
         }
 
+        function startDragMobile(e) {
+            const track = document.getElementById('miniProgressTrack');
+            if (!track) return;
+            isDragging = true;
+            activeDragTrack = track;
+            track.classList.add('dragging');
+            const clientX = getClientX(e);
+            seekFromClientX(track, clientX);
+            updateProgressPreview(track, clientX);
+            if (e.cancelable) e.preventDefault();
+        }
+
         function updateProgressFromEvent(e) {
             if (!isDragging || !activeDragTrack) return;
             const clientX = getClientX(e);
@@ -11432,6 +11529,7 @@
             isDragging = false;
             document.getElementById('progressTrack')?.classList.remove('dragging');
             document.getElementById('fsProgressTrack')?.classList.remove('dragging');
+            document.getElementById('miniProgressTrack')?.classList.remove('dragging');
             activeDragTrack = null;
             hideProgressPreview();
         }
@@ -13255,10 +13353,16 @@
                 document.getElementById('duration').textContent = fmt(duration);
                 const fsDuration = document.getElementById('fsDuration');
                 if(fsDuration) fsDuration.textContent = fmt(duration);
+                const miniBar = document.getElementById('miniProgressBar');
+                if (miniBar) miniBar.style.width = percent + '%';
+                const miniDur = document.getElementById('miniDuration');
+                if (miniDur) miniDur.textContent = fmt(duration);
             }
             document.getElementById('currentTime').textContent = fmt(current); 
             const fsCurrentTime = document.getElementById('fsCurrentTime');
             if(fsCurrentTime) fsCurrentTime.textContent = fmt(current);
+            const miniCur = document.getElementById('miniCurrentTime');
+            if (miniCur) miniCur.textContent = fmt(current);
             updateFullPlayerLyrics(current);
             setFullPlayerEnergy();
             const now = performance.now();
