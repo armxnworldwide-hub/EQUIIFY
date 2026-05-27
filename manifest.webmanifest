@@ -1,0 +1,52 @@
+﻿{
+  "name": "FalconX Premium Music",
+  "short_name": "FalconX",
+  "description": "FalconX premium mobile-first music streaming experience.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#08090c",
+  "theme_color": "#0a0a0a",
+  "categories": ["music", "entertainment"],
+  "icons": [
+    {
+      "src": "images/falcon.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "images/falcon.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "images/falcon.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "url": "./index.html#search",
+      "icons": [{ "src": "images/falcon.jpeg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Favorites",
+      "short_name": "Favorites",
+      "url": "./index.html#favorites",
+      "icons": [{ "src": "images/falcon.jpeg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Playlists",
+      "short_name": "Playlists",
+      "url": "./index.html#playlists",
+      "icons": [{ "src": "images/falcon.jpeg", "sizes": "192x192" }]
+    }
+  ]
+}
