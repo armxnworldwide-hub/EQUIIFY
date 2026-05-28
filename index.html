@@ -2664,6 +2664,298 @@
             border-color: rgba(255, 255, 255, .2);
         }
         
+        .sort-control-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px 0;
+            flex-wrap: wrap;
+        }
+        
+        .sort-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 100%;
+            min-height: 38px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .035));
+            border: 1px solid rgba(255, 255, 255, .14);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-family: 'Circular Std', 'Circular', 'Spotify Mix', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: .76rem;
+            font-weight: 800;
+            letter-spacing: .15px;
+            cursor: pointer;
+            transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 10px 22px rgba(0, 0, 0, .2);
+        }
+        
+        .sort-trigger:hover,
+        .sort-trigger[aria-expanded="true"] {
+            border-color: rgba(200, 245, 66, .34);
+            background: linear-gradient(135deg, rgba(200, 245, 66, .14), rgba(255, 255, 255, .055));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 12px 26px rgba(0, 0, 0, .28), 0 0 18px rgba(200, 245, 66, .1);
+        }
+        
+        .sort-trigger:active {
+            transform: scale(.98);
+        }
+        
+        .sort-trigger-text {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .sort-pill-icon,
+        .sort-chevron,
+        .sort-option-icon,
+        .sort-option-check {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .sort-pill-icon {
+            opacity: .92;
+            color: var(--accent);
+        }
+        
+        .sort-chevron {
+            opacity: .76;
+            transform: translateY(1px);
+            transition: transform .18s ease;
+        }
+        
+        .sort-trigger[aria-expanded="true"] .sort-chevron {
+            transform: translateY(1px) rotate(180deg);
+        }
+        
+        .sort-sheet {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .54);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .2s ease, visibility .2s ease;
+            z-index: 140;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0 10px;
+        }
+        
+        .sort-sheet.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+        
+        .sort-sheet-card {
+            width: min(620px, 100%);
+            max-height: min(78vh, 680px);
+            overflow-y: auto;
+            background: linear-gradient(180deg, rgba(34, 34, 34, .98), rgba(14, 14, 14, .98));
+            border: 1px solid rgba(255, 255, 255, .13);
+            border-radius: 20px 20px 0 0;
+            padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+            transform: translateY(22px) scale(.985);
+            transition: transform .24s cubic-bezier(.22, 1, .36, 1);
+            box-shadow: 0 -22px 50px rgba(0, 0, 0, .5);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, .16) transparent;
+        }
+        
+        .sort-sheet.open .sort-sheet-card {
+            transform: translateY(0) scale(1);
+        }
+        
+        .sort-sheet-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: .75rem;
+            font-weight: 900;
+            letter-spacing: 1.35px;
+            text-transform: uppercase;
+            color: var(--text2);
+            margin: 0 8px 11px;
+        }
+        
+        .sort-option {
+            width: 100%;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text);
+            border-radius: 14px;
+            padding: 11px 12px;
+            text-align: left;
+            font-family: 'Circular Std', 'Circular', 'Spotify Mix', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: .86rem;
+            font-weight: 750;
+            letter-spacing: .1px;
+            cursor: pointer;
+            transition: transform .16s ease, background .16s ease, border-color .16s ease, color .16s ease, box-shadow .18s ease;
+            display: grid;
+            grid-template-columns: 26px minmax(0, 1fr) 24px;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sort-option:hover {
+            background: rgba(255, 255, 255, .07);
+            border-color: rgba(255, 255, 255, .15);
+        }
+        
+        .sort-option:active {
+            transform: scale(.99);
+        }
+        
+        .sort-option.active {
+            color: var(--accent);
+            background: linear-gradient(135deg, rgba(200, 245, 66, .13), rgba(200, 245, 66, .055));
+            border-color: rgba(200, 245, 66, .32);
+            box-shadow: inset 0 0 0 1px rgba(200, 245, 66, .14), 0 10px 24px rgba(0, 0, 0, .2);
+        }
+        
+        .sort-option.advanced .sort-option-icon {
+            color: rgba(157, 220, 255, .96);
+        }
+        
+        .sort-option-check {
+            opacity: 0;
+            transform: scale(.7);
+            color: var(--accent);
+            transition: opacity .16s ease, transform .16s ease;
+        }
+        
+        .sort-option.active .sort-option-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .sort-close {
+            margin-top: 9px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .045);
+            color: var(--text);
+            border-radius: 14px;
+            padding: 11px 12px;
+            font-family: 'Circular Std', 'Circular', 'Spotify Mix', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: .82rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: background .16s ease, border-color .16s ease, transform .16s ease;
+        }
+        
+        .sort-close:hover {
+            background: rgba(255, 255, 255, .08);
+            border-color: rgba(255, 255, 255, .2);
+        }
+        
+        .sort-close:active {
+            transform: scale(.99);
+        }
+        
+        .sort-song-list {
+            transition: opacity .2s ease, transform .22s cubic-bezier(.22, 1, .36, 1);
+        }
+        
+        .sort-song-list.is-sorting {
+            opacity: .32;
+            transform: translateY(6px);
+            pointer-events: none;
+        }
+        
+        .sort-row-enter {
+            animation: sortRowIn .28s cubic-bezier(.22, 1, .36, 1) both;
+        }
+        
+        @keyframes sortRowIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px) scale(.992);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .playlist-song-row[draggable="true"] {
+            cursor: grab;
+        }
+        
+        .playlist-song-row.dragging {
+            opacity: .58;
+            transform: scale(.99);
+            border-color: rgba(200, 245, 66, .26);
+        }
+        
+        .ps-drag-handle {
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, .62);
+            border-radius: 9px;
+            cursor: grab;
+            transition: color .16s ease, background .16s ease;
+        }
+        
+        .ps-drag-handle:hover {
+            color: var(--accent);
+            background: rgba(200, 245, 66, .1);
+        }
+        
+        @media (min-width: 900px) {
+            .sort-sheet {
+                align-items: center;
+            }
+            .sort-sheet-card {
+                border-radius: 20px;
+                max-height: min(72vh, 640px);
+                transform: translateY(12px) scale(.98);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sort-control-row {
+                justify-content: flex-start;
+                padding: 10px 10px 0;
+            }
+            .sort-trigger {
+                width: 100%;
+                justify-content: space-between;
+                min-height: 42px;
+            }
+            .sort-trigger-text {
+                flex: 1;
+                text-align: left;
+            }
+            .sort-sheet {
+                padding: 0 5px;
+            }
+            .sort-sheet-card {
+                max-height: min(82vh, 680px);
+                padding: 14px 12px calc(14px + var(--safe-bottom));
+            }
+            .sort-option {
+                min-height: 46px;
+                padding: 11px 10px;
+            }
+        }
+        
         .playlist-play-btn {
             width: 56px;
             height: 56px;
@@ -7308,6 +7600,12 @@
             .playlist-song-row,
             .playlist-sort-sheet,
             .playlist-sort-sheet-card,
+            .sort-trigger,
+            .sort-sheet,
+            .sort-sheet-card,
+            .sort-option,
+            .sort-song-list,
+            .sort-row-enter,
             .fav-song-row,
             .fav-sort-sheet,
             .fav-sort-sheet-card,
@@ -9553,15 +9851,42 @@
 
         const CACHE_NAME = 'falcon-offline-v2';
         let downloadedFiles = new Set();
+        let downloadedSongMeta = {};
+        let songDurationMeta = {};
 
         function loadDownloaded() {
             try {
                 downloadedFiles = new Set(JSON.parse(localStorage.getItem('falcon_downloaded') || '[]'));
             } catch (e) {}
+            try {
+                const meta = JSON.parse(localStorage.getItem('eq_downloaded_meta') || '{}');
+                downloadedSongMeta = meta && typeof meta === 'object' && !Array.isArray(meta) ? Object.fromEntries(Object.entries(meta).filter(([k, v]) => typeof k === 'string' && Number.isFinite(v) && v > 0).map(([k, v]) => [k, Math.floor(v)])) : {};
+            } catch (e) {
+                downloadedSongMeta = {};
+            }
+            let seedTs = Date.now();
+            downloadedFiles.forEach((fileId) => {
+                if (!Number.isFinite(downloadedSongMeta[fileId]) || downloadedSongMeta[fileId] <= 0) {
+                    downloadedSongMeta[fileId] = seedTs--;
+                }
+            });
+            Object.keys(downloadedSongMeta).forEach((fileId) => {
+                if (!downloadedFiles.has(fileId)) delete downloadedSongMeta[fileId];
+            });
+            try {
+                const durations = JSON.parse(localStorage.getItem('eq_song_duration_meta') || '{}');
+                songDurationMeta = durations && typeof durations === 'object' && !Array.isArray(durations) ? Object.fromEntries(Object.entries(durations).filter(([k, v]) => typeof k === 'string' && Number.isFinite(v) && v > 0).map(([k, v]) => [k, Math.floor(v)])) : {};
+            } catch (e) {
+                songDurationMeta = {};
+            }
         }
 
         function saveDownloaded() {
+            Object.keys(downloadedSongMeta).forEach((fileId) => {
+                if (!downloadedFiles.has(fileId)) delete downloadedSongMeta[fileId];
+            });
             localStorage.setItem('falcon_downloaded', JSON.stringify([...downloadedFiles]));
+            localStorage.setItem('eq_downloaded_meta', JSON.stringify(downloadedSongMeta));
             if (typeof notifyCloudStateChange === 'function') notifyCloudStateChange('downloads');
         }
 
@@ -9569,6 +9894,357 @@
             return downloadedFiles.has(f);
         }
         loadDownloaded();
+
+        function saveSongDurationMeta() {
+            try {
+                localStorage.setItem('eq_song_duration_meta', JSON.stringify(songDurationMeta));
+            } catch (e) {}
+        }
+
+        const SORT_STORAGE_KEYS = {
+            liked: 'likedSongsSort',
+            playlist: 'playlistSort',
+            artist: 'artistSort',
+            download: 'downloadSort',
+            queue: 'queueSort'
+        };
+
+        const SORT_LEGACY_STORAGE_KEYS = {
+            liked: ['eq_fav_sort'],
+            playlist: ['eq_playlist_sort'],
+            artist: ['eq_artist_sort'],
+            download: ['eq_download_sort'],
+            queue: ['eq_queue_sort']
+        };
+
+        const SORT_DEFAULTS = {
+            liked: 'az',
+            playlist: 'recentlyAdded',
+            artist: 'az',
+            download: 'downloadedFirst',
+            queue: 'custom'
+        };
+
+        const SORT_TYPE_ALIASES = {
+            title: 'az',
+            recent: 'recentlyAdded',
+            plays: 'mostPlayed',
+            artist: 'artistName',
+            liked: 'likedFirst',
+            liked_title: 'likedFirst',
+            downloaded: 'downloadedFirst',
+            album: 'albumName',
+            duration_desc: 'duration',
+            smart: 'smartQueue',
+            ai: 'aiSmartOrder'
+        };
+
+        const SORT_TYPE_CONFIG = {
+            custom: { label: 'Custom Order', icon: 'grip-vertical' },
+            az: { label: 'A-Z', icon: 'arrow-up-a-z' },
+            za: { label: 'Z-A', icon: 'arrow-down-z-a' },
+            recentlyAdded: { label: 'Recently Added', icon: 'calendar-plus' },
+            recentlyPlayed: { label: 'Recently Played', icon: 'history' },
+            mostPlayed: { label: 'Most Played', icon: 'bar-chart-3' },
+            artistName: { label: 'Artist Name', icon: 'user' },
+            albumName: { label: 'Album Name', icon: 'disc-3' },
+            duration: { label: 'Duration', icon: 'clock-3' },
+            downloadedFirst: { label: 'Downloaded First', icon: 'download' },
+            likedFirst: { label: 'Liked First', icon: 'heart' },
+            smartQueue: { label: 'Smart Queue', icon: 'list-music', advanced: true },
+            smartShuffle: { label: 'Smart Shuffle', icon: 'shuffle', advanced: true },
+            mood: { label: 'Mood', icon: 'sparkles', advanced: true },
+            genre: { label: 'Genre', icon: 'radio', advanced: true },
+            bpm: { label: 'BPM', icon: 'gauge', advanced: true },
+            aiSmartOrder: { label: 'AI Smart Order', icon: 'brain', advanced: true }
+        };
+
+        const SORT_SECTION_OPTIONS = {
+            liked: ['az', 'za', 'recentlyAdded', 'recentlyPlayed', 'mostPlayed', 'artistName', 'albumName', 'duration', 'downloadedFirst', 'likedFirst', 'smartShuffle', 'mood', 'genre', 'bpm', 'aiSmartOrder'],
+            playlist: ['custom', 'recentlyAdded', 'az', 'za', 'recentlyPlayed', 'mostPlayed', 'artistName', 'albumName', 'duration', 'downloadedFirst', 'likedFirst', 'smartShuffle', 'mood', 'genre', 'bpm', 'aiSmartOrder'],
+            artist: ['az', 'za', 'recentlyAdded', 'recentlyPlayed', 'mostPlayed', 'artistName', 'albumName', 'duration', 'downloadedFirst', 'likedFirst', 'smartShuffle', 'mood', 'genre', 'bpm', 'aiSmartOrder'],
+            download: ['downloadedFirst', 'az', 'za', 'recentlyAdded', 'recentlyPlayed', 'mostPlayed', 'artistName', 'albumName', 'duration', 'likedFirst', 'smartShuffle', 'mood', 'genre', 'bpm', 'aiSmartOrder'],
+            queue: ['custom', 'smartQueue', 'az', 'za', 'recentlyPlayed', 'mostPlayed', 'artistName', 'albumName', 'duration', 'downloadedFirst', 'likedFirst', 'smartShuffle', 'mood', 'genre', 'bpm', 'aiSmartOrder']
+        };
+
+        const sortTextCollator = new Intl.Collator(undefined, {
+            numeric: true,
+            sensitivity: 'base'
+        });
+
+        function normalizeSortType(type, fallback = 'az') {
+            const raw = String(type || '').trim();
+            const mapped = SORT_TYPE_ALIASES[raw] || raw;
+            return SORT_TYPE_CONFIG[mapped] ? mapped : fallback;
+        }
+
+        function getSortConfig(type) {
+            return SORT_TYPE_CONFIG[normalizeSortType(type, 'az')] || SORT_TYPE_CONFIG.az;
+        }
+
+        function getSortLabel(type) {
+            return getSortConfig(type).label;
+        }
+
+        function getSortIcon(type) {
+            return getSortConfig(type).icon;
+        }
+
+        function saveSortPreference(scope, sortType) {
+            const key = SORT_STORAGE_KEYS[scope];
+            if (!key) return;
+            const normalized = normalizeSortType(sortType, SORT_DEFAULTS[scope] || 'az');
+            try {
+                localStorage.setItem(key, normalized);
+            } catch (e) {}
+        }
+
+        function loadSortPreference(scope, fallback = 'az') {
+            const nextFallback = normalizeSortType(fallback, 'az');
+            const key = SORT_STORAGE_KEYS[scope];
+            try {
+                const saved = key ? localStorage.getItem(key) : '';
+                if (saved) return normalizeSortType(saved, nextFallback);
+                const legacyKeys = SORT_LEGACY_STORAGE_KEYS[scope] || [];
+                for (const legacyKey of legacyKeys) {
+                    const legacy = localStorage.getItem(legacyKey);
+                    if (legacy) return normalizeSortType(legacy, nextFallback);
+                }
+            } catch (e) {}
+            return nextFallback;
+        }
+
+        function getSongFileKey(song) {
+            return String(song?.file || '').replace(/\\/g, '/').trim().toLowerCase();
+        }
+
+        function getLibrarySongByFile(fileId) {
+            const target = getSongFileKey({ file: fileId });
+            if (!target || typeof artists !== 'object') return null;
+            for (const key in artists) {
+                const artist = artists[key];
+                const song = artist.songs.find((entry) => getSongFileKey(entry) === target);
+                if (song) return { artistKey: key, artistName: artist.name, song };
+            }
+            return null;
+        }
+
+        function deriveSongAlbum(song, artistName = '') {
+            if (song?.album) return String(song.album);
+            if (song?.albumName) return String(song.albumName);
+            const poster = String(song?.poster || '').split('/').pop() || '';
+            const cleanPoster = poster.replace(/\.[a-z0-9]+$/i, '').replace(/[-_]+/g, ' ').trim();
+            return cleanPoster || artistName || 'Singles';
+        }
+
+        function getRecentSongMeta(fileId) {
+            const target = getSongFileKey({ file: fileId });
+            if (!target || !Array.isArray(continueListening)) return null;
+            const index = continueListening.findIndex((song) => getSongFileKey(song) === target);
+            if (index < 0) return null;
+            const song = continueListening[index];
+            return {
+                ...song,
+                lastPlayed: Number.isFinite(song.lastPlayed) ? song.lastPlayed : Date.now() - index
+            };
+        }
+
+        function normalizeSongForSorting(song, index = 0, context = {}) {
+            const file = song?.file || '';
+            const libraryHit = song?.artistName || song?.artist ? null : getLibrarySongByFile(file);
+            const artistName = String(song?.artist || song?.artistName || context.artistName || libraryHit?.artistName || '').trim();
+            const recent = getRecentSongMeta(file);
+            const fileKey = getSongFileKey(song);
+            const likedAt = Number.isFinite(likedSongMeta?.[file]) ? likedSongMeta[file] : 0;
+            const downloadedAt = Number.isFinite(downloadedSongMeta?.[file]) ? downloadedSongMeta[file] : 0;
+            const directAddedAt = Number(song?.addedAt);
+            const scopeAddedAt = context.scope === 'liked' ? likedAt : context.scope === 'download' ? downloadedAt : 0;
+            const addedAt = Number.isFinite(directAddedAt) && directAddedAt > 0 ? directAddedAt : scopeAddedAt;
+            const directDuration = Number(song?.duration);
+            const storedDuration = Number(songDurationMeta?.[file]);
+            const directLastPlayed = Number(song?.lastPlayed);
+            return {
+                ...song,
+                title: String(song?.title || '').trim(),
+                artist: artistName,
+                artistName,
+                album: deriveSongAlbum(song, artistName),
+                duration: Number.isFinite(directDuration) && directDuration > 0 ? directDuration : Number.isFinite(storedDuration) ? storedDuration : 0,
+                playCount: Number.isFinite(Number(song?.playCount)) ? Number(song.playCount) : (songPlayCounts?.[file] || songPlayCounts?.[fileKey] || 0),
+                liked: typeof song?.liked === 'boolean' ? song.liked : !!likedSongs?.has(file),
+                downloaded: typeof song?.downloaded === 'boolean' ? song.downloaded : isDownloaded(file),
+                addedAt,
+                lastPlayed: Number.isFinite(directLastPlayed) && directLastPlayed > 0 ? directLastPlayed : (recent?.lastPlayed || 0),
+                likedAt,
+                downloadedAt,
+                genre: String(song?.genre || '').trim(),
+                mood: String(song?.mood || '').trim(),
+                bpm: Number.isFinite(Number(song?.bpm)) ? Number(song.bpm) : 0,
+                __baseIndex: Number.isFinite(song?.__baseIndex) ? song.__baseIndex : index
+            };
+        }
+
+        function compareText(a, b) {
+            return sortTextCollator.compare(String(a || ''), String(b || ''));
+        }
+
+        function stableSongTieBreak(a, b) {
+            return compareText(a.title, b.title) || compareText(a.artist, b.artist) || ((a.__baseIndex || 0) - (b.__baseIndex || 0));
+        }
+
+        function sortHash(song) {
+            const input = `${song.file || ''}|${song.title || ''}|${song.artist || ''}`;
+            let hash = 0;
+            for (let i = 0; i < input.length; i++) {
+                hash = ((hash << 5) - hash + input.charCodeAt(i)) | 0;
+            }
+            return Math.abs(hash);
+        }
+
+        function sortSongs(songs, sortType = 'az') {
+            const normalizedType = normalizeSortType(sortType, 'az');
+            const prepared = Array.isArray(songs) ? songs.map((song, index) => normalizeSongForSorting(song, index)) : [];
+            const sorted = [...prepared];
+            const byRecentAdded = (a, b) => (b.addedAt || 0) - (a.addedAt || 0) || (b.__baseIndex || 0) - (a.__baseIndex || 0);
+            const byRecentPlayed = (a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0) || (b.playCount || 0) - (a.playCount || 0) || stableSongTieBreak(a, b);
+            const byMostPlayed = (a, b) => (b.playCount || 0) - (a.playCount || 0) || byRecentPlayed(a, b);
+            const comparators = {
+                custom: (a, b) => (a.__baseIndex || 0) - (b.__baseIndex || 0),
+                az: (a, b) => compareText(a.title, b.title) || stableSongTieBreak(a, b),
+                za: (a, b) => compareText(b.title, a.title) || stableSongTieBreak(a, b),
+                recentlyAdded: byRecentAdded,
+                recentlyPlayed: byRecentPlayed,
+                mostPlayed: byMostPlayed,
+                artistName: (a, b) => compareText(a.artist, b.artist) || compareText(a.title, b.title) || stableSongTieBreak(a, b),
+                albumName: (a, b) => compareText(a.album, b.album) || compareText(a.title, b.title) || stableSongTieBreak(a, b),
+                duration: (a, b) => (b.duration || 0) - (a.duration || 0) || stableSongTieBreak(a, b),
+                downloadedFirst: (a, b) => Number(b.downloaded) - Number(a.downloaded) || (b.downloadedAt || 0) - (a.downloadedAt || 0) || stableSongTieBreak(a, b),
+                likedFirst: (a, b) => Number(b.liked) - Number(a.liked) || (b.likedAt || 0) - (a.likedAt || 0) || stableSongTieBreak(a, b),
+                smartQueue: (a, b) => Number(b.liked) - Number(a.liked) || Number(b.downloaded) - Number(a.downloaded) || (b.playCount || 0) - (a.playCount || 0) || (a.lastPlayed || 0) - (b.lastPlayed || 0) || stableSongTieBreak(a, b),
+                smartShuffle: (a, b) => Number(b.liked) - Number(a.liked) || (a.lastPlayed || 0) - (b.lastPlayed || 0) || (sortHash(a) % 97) - (sortHash(b) % 97) || stableSongTieBreak(a, b),
+                mood: (a, b) => compareText(a.mood || a.genre || a.artist, b.mood || b.genre || b.artist) || stableSongTieBreak(a, b),
+                genre: (a, b) => compareText(a.genre || a.artist, b.genre || b.artist) || stableSongTieBreak(a, b),
+                bpm: (a, b) => (b.bpm || 0) - (a.bpm || 0) || stableSongTieBreak(a, b),
+                aiSmartOrder: (a, b) => Number(b.liked) - Number(a.liked) || (b.playCount || 0) - (a.playCount || 0) || (b.lastPlayed || 0) - (a.lastPlayed || 0) || Number(b.downloaded) - Number(a.downloaded) || stableSongTieBreak(a, b)
+            };
+            sorted.sort(comparators[normalizedType] || comparators.az);
+            return sorted.map((song) => {
+                const out = { ...song };
+                delete out.__baseIndex;
+                delete out.likedAt;
+                delete out.downloadedAt;
+                return out;
+            });
+        }
+
+        function applySorting(scope, songs, sortType = loadSortPreference(scope, SORT_DEFAULTS[scope] || 'az'), context = {}) {
+            const normalizedType = normalizeSortType(sortType, SORT_DEFAULTS[scope] || 'az');
+            const prepared = Array.isArray(songs) ? songs.map((song, index) => normalizeSongForSorting(song, index, { ...context, scope })) : [];
+            return sortSongs(prepared, normalizedType);
+        }
+
+        function sortControlHTML(scope, activeType, options = SORT_SECTION_OPTIONS[scope] || SORT_SECTION_OPTIONS.artist, title = 'Sort') {
+            const normalizedType = normalizeSortType(activeType, SORT_DEFAULTS[scope] || 'az');
+            const sheetId = `${scope}SortSheet`;
+            const optionHTML = options.map((type) => {
+                const normalizedOption = normalizeSortType(type, SORT_DEFAULTS[scope] || 'az');
+                const cfg = getSortConfig(normalizedOption);
+                return `<button class="sort-option${cfg.advanced ? ' advanced' : ''}${normalizedOption === normalizedType ? ' active' : ''}" type="button" data-sort-option data-sort-scope="${escA(scope)}" data-sort-type="${escA(normalizedOption)}"><span class="sort-option-icon">${uiIcon(cfg.icon)}</span><span>${escH(cfg.label)}</span><span class="sort-option-check">${uiIcon('check')}</span></button>`;
+            }).join('');
+            return `<div class="sort-control-row"><button class="sort-trigger" type="button" data-sort-trigger="${escA(scope)}" aria-haspopup="dialog" aria-expanded="false"><span class="sort-pill-icon" data-sort-current-icon="${escA(scope)}">${uiIcon(getSortIcon(normalizedType))}</span><span class="sort-trigger-text">Sort: <span data-sort-label="${escA(scope)}">${escH(getSortLabel(normalizedType))}</span></span><span class="sort-chevron">${uiIcon('chevron-down')}</span></button></div><div class="sort-sheet" id="${escA(sheetId)}" data-sort-sheet="${escA(scope)}"><div class="sort-sheet-card"><div class="sort-sheet-title">${uiIcon('arrow-up-down')}<span>${escH(title)}</span></div>${optionHTML}<button class="sort-close" type="button" data-sort-close="${escA(scope)}">Close</button></div></div>`;
+        }
+
+        function updateSortUI(scope, activeType) {
+            const normalizedType = normalizeSortType(activeType, SORT_DEFAULTS[scope] || 'az');
+            document.querySelectorAll(`[data-sort-label="${scope}"]`).forEach((el) => {
+                el.textContent = getSortLabel(normalizedType);
+            });
+            document.querySelectorAll(`[data-sort-current-icon="${scope}"]`).forEach((el) => {
+                el.innerHTML = uiIcon(getSortIcon(normalizedType));
+                renderLucideIcons(el);
+            });
+            document.querySelectorAll(`[data-sort-option][data-sort-scope="${scope}"]`).forEach((btn) => {
+                btn.classList.toggle('active', btn.dataset.sortType === normalizedType);
+            });
+        }
+
+        function closeSortSheet(scope) {
+            const sheets = scope ? document.querySelectorAll(`[data-sort-sheet="${scope}"]`) : document.querySelectorAll('[data-sort-sheet]');
+            sheets.forEach((sheet) => sheet.classList.remove('open'));
+            const triggers = scope ? document.querySelectorAll(`[data-sort-trigger="${scope}"]`) : document.querySelectorAll('[data-sort-trigger]');
+            triggers.forEach((trigger) => trigger.setAttribute('aria-expanded', 'false'));
+        }
+
+        function toggleSortSheet(scope) {
+            const sheet = document.querySelector(`[data-sort-sheet="${scope}"]`);
+            const trigger = document.querySelector(`[data-sort-trigger="${scope}"]`);
+            if (!sheet) return;
+            const willOpen = !sheet.classList.contains('open');
+            closeSortSheet();
+            sheet.classList.toggle('open', willOpen);
+            if (trigger) trigger.setAttribute('aria-expanded', String(willOpen));
+        }
+
+        function animateSortedRows(container, rowSelector) {
+            if (!container || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const rows = Array.from(container.querySelectorAll(rowSelector)).slice(0, 36);
+            rows.forEach((row, index) => {
+                row.classList.remove('sort-row-enter');
+                row.style.animationDelay = `${Math.min(index * 14, 180)}ms`;
+                requestAnimationFrame(() => row.classList.add('sort-row-enter'));
+            });
+        }
+
+        function renderSortedList(container, html, rowSelector, afterRender) {
+            if (!container) return;
+            container.classList.add('sort-song-list');
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                container.innerHTML = html;
+                if (typeof afterRender === 'function') afterRender();
+                return;
+            }
+            container.classList.add('is-sorting');
+            window.setTimeout(() => {
+                container.innerHTML = html;
+                container.classList.remove('is-sorting');
+                if (typeof afterRender === 'function') afterRender();
+                animateSortedRows(container, rowSelector);
+            }, 90);
+        }
+
+        document.addEventListener('click', (event) => {
+            const target = event.target instanceof Element ? event.target : null;
+            if (!target) return;
+            const trigger = target.closest('[data-sort-trigger]');
+            if (trigger) {
+                event.preventDefault();
+                toggleSortSheet(trigger.dataset.sortTrigger || '');
+                return;
+            }
+            const option = target.closest('[data-sort-option]');
+            if (option) {
+                event.preventDefault();
+                setSortForScope(option.dataset.sortScope || '', option.dataset.sortType || '');
+                return;
+            }
+            const close = target.closest('[data-sort-close]');
+            if (close) {
+                event.preventDefault();
+                closeSortSheet(close.dataset.sortClose || '');
+                return;
+            }
+            const sheet = target.closest('[data-sort-sheet]');
+            if (sheet && target === sheet) closeSortSheet(sheet.dataset.sortSheet || '');
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeSortSheet();
+        });
+
+        window.sortSongs = sortSongs;
+        window.saveSortPreference = saveSortPreference;
+        window.loadSortPreference = loadSortPreference;
+        window.applySorting = applySorting;
 
         let dlQueue = [],
             dlPaused = false,
@@ -9840,6 +10516,7 @@
                     if (ir.ok) await cache.put(next.song.poster, ir);
                 } catch (e) {}
                 downloadedFiles.add(next.song.file);
+                downloadedSongMeta[next.song.file] = Date.now();
                 saveDownloaded();
                 next.status = 'done';
                 next.progress = 100;
@@ -9850,6 +10527,7 @@
                 updateDownloadStorageStats();
                 updatePlayerDlBtn();
                 refreshVisibleSongLists();
+                if (document.getElementById('downloadsSongsList')) showDownloads();
                 showToast('"' + next.song.title + '" saved offline');
                 setTimeout(() => {
                     const el = document.getElementById('dpi_' + next.id);
@@ -9911,9 +10589,17 @@
         let queuePanelOpen = false,
             modalCallback = null,
             currentPlaylistId = null;
-        let currentPlaylistSortType = localStorage.getItem('eq_playlist_sort') || 'default',
+        let currentPlaylistSortType = loadSortPreference('playlist', SORT_DEFAULTS.playlist),
             currentPlaylistViewSongs = [];
-        let currentFavSortType = localStorage.getItem('eq_fav_sort') || 'default';
+        let currentFavSortType = loadSortPreference('liked', SORT_DEFAULTS.liked);
+        let currentArtistSortType = loadSortPreference('artist', SORT_DEFAULTS.artist),
+            currentDownloadSortType = loadSortPreference('download', SORT_DEFAULTS.download),
+            currentQueueSortType = loadSortPreference('queue', SORT_DEFAULTS.queue);
+        if (!SORT_SECTION_OPTIONS.liked.includes(currentFavSortType)) currentFavSortType = SORT_DEFAULTS.liked;
+        if (!SORT_SECTION_OPTIONS.playlist.includes(currentPlaylistSortType)) currentPlaylistSortType = SORT_DEFAULTS.playlist;
+        if (!SORT_SECTION_OPTIONS.artist.includes(currentArtistSortType)) currentArtistSortType = SORT_DEFAULTS.artist;
+        if (!SORT_SECTION_OPTIONS.download.includes(currentDownloadSortType)) currentDownloadSortType = SORT_DEFAULTS.download;
+        if (!SORT_SECTION_OPTIONS.queue.includes(currentQueueSortType)) currentQueueSortType = SORT_DEFAULTS.queue;
         let songPlayCounts = {};
         const APP_DATA_STORAGE_KEY = 'eq_app_data_v1';
 
@@ -10075,6 +10761,56 @@
         window.saveAppData = saveAppData;
         window.loadAppData = loadAppData;
 
+        function setSortForScope(scope, sortType) {
+            const normalizedType = normalizeSortType(sortType, SORT_DEFAULTS[scope] || 'az');
+            if (!SORT_SECTION_OPTIONS[scope]?.includes(normalizedType)) return;
+            saveSortPreference(scope, normalizedType);
+            if (normalizedType === 'aiSmartOrder') showToast('AI Smart Order is ready as a smart local placeholder');
+
+            if (scope === 'liked') {
+                currentFavSortType = normalizedType;
+                if (document.getElementById('favSongsList')) {
+                    renderMobileLikedSongList(true);
+                    syncFavoritesPlaybackSource();
+                }
+            } else if (scope === 'playlist') {
+                currentPlaylistSortType = normalizedType;
+                const activeFile = currentSong ? currentSong.file : null;
+                if (currentPlaylistId && document.getElementById('playlistSongsList')) {
+                    renderPlaylistSongs(currentPlaylistId, true);
+                    if (activeFile && playlistContainsSong(currentPlaylistId, activeFile)) {
+                        const nextSource = currentPlaylistViewSongs.map((song) => ({ ...song }));
+                        const nextIndex = nextSource.findIndex((song) => song.file === activeFile);
+                        currentSongs = nextSource;
+                        currentArtistKey = null;
+                        if (nextIndex >= 0) {
+                            currentIndex = nextIndex;
+                            currentSong = nextSource[nextIndex];
+                        }
+                    }
+                }
+            } else if (scope === 'artist') {
+                currentArtistSortType = normalizedType;
+                if (currentArtistKey && document.getElementById('songsList')) {
+                    renderArtistSongs(currentArtistKey, true);
+                }
+            } else if (scope === 'download') {
+                currentDownloadSortType = normalizedType;
+                if (document.getElementById('downloadsSongsList')) showDownloads();
+            } else if (scope === 'queue') {
+                currentQueueSortType = normalizedType;
+                if (queue.length) {
+                    queue = applySorting('queue', queue, currentQueueSortType);
+                    saveQueue();
+                }
+                renderQueuePanel();
+            }
+            updateSortUI(scope, normalizedType);
+            closeSortSheet(scope);
+        }
+
+        window.setSortForScope = setSortForScope;
+
         window.__getCloudStatePayload = () => ({
             likedSongs: [...likedSongs],
             playlists: sanitizeCloudPlaylists(playlists),
@@ -10161,6 +10897,14 @@
                 file: currentSong.file,
                 title: currentSong.title,
                 poster: currentSong.poster,
+                artist: currentSong.artist || currentSong.artistName || playerArtist.textContent || '',
+                album: currentSong.album || deriveSongAlbum(currentSong, playerArtist.textContent || ''),
+                duration: currentSong.duration || songDurationMeta[currentSong.file] || 0,
+                playCount: songPlayCounts[currentSong.file] || 0,
+                liked: likedSongs.has(currentSong.file),
+                downloaded: isDownloaded(currentSong.file),
+                addedAt: currentSong.addedAt || 0,
+                lastPlayed: Date.now(),
                 artistKey: currentArtistKey,
                 artistName: playerArtist.textContent,
                 currentTime: audio.currentTime,
@@ -10184,7 +10928,16 @@
                 currentSong = {
                     file: last.file,
                     title: last.title,
-                    poster: last.poster
+                    poster: last.poster,
+                    artist: last.artist || last.artistName || '',
+                    artistName: last.artistName || last.artist || '',
+                    album: last.album || '',
+                    duration: last.duration || 0,
+                    playCount: last.playCount || 0,
+                    liked: !!last.liked,
+                    downloaded: !!last.downloaded,
+                    addedAt: last.addedAt || 0,
+                    lastPlayed: last.lastPlayed || 0
                 };
                 currentArtistKey = last.artistKey;
                 if (last.artistKey && artists[last.artistKey]) {
@@ -10235,8 +10988,10 @@
                 await cache.delete('songs/' + fileId);
             } catch (e) {}
             downloadedFiles.delete(fileId);
+            delete downloadedSongMeta[fileId];
             saveDownloaded();
             refreshVisibleSongLists();
+            if (document.getElementById('downloadsSongsList')) showDownloads();
             updatePlayerDlBtn();
             showToast('Removed from offline');
         }
@@ -10274,28 +11029,59 @@
             }
         }
 
+        function getDownloadedSongsBase() {
+            const dlSongs = [];
+            for (let key in artists) artists[key].songs.forEach(s => {
+                if (isDownloaded(s.file)) dlSongs.push({
+                    ...s,
+                    artistName: artists[key].name,
+                    artist: artists[key].name,
+                    artistKey: key,
+                    addedAt: downloadedSongMeta[s.file] || 0,
+                    downloaded: true,
+                    liked: likedSongs.has(s.file),
+                    playCount: songPlayCounts[s.file] || 0
+                });
+            });
+            return dlSongs;
+        }
+
+        function downloadSongRowHTML(song, i) {
+            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playDlSong(${i})"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName)}</p></div></div><div class="song-actions" style="opacity:1"><span style="font-size:.6rem;color:var(--accent);background:var(--accent3);border:1px solid rgba(200,245,66,.18);padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px">${uiIcon('check')}<span>Saved</span></span><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button><button class="queue-btn" onclick="event.stopPropagation();removeCachedSong('${escA(song.file)}')" title="Remove">${uiIcon('x')}</button></div></div>`;
+        }
+
+        function renderDownloadsList(autoScrollActive = false) {
+            const list = document.getElementById('downloadsSongsList');
+            if (!list) return;
+            window.__dlSongs = applySorting('download', getDownloadedSongsBase(), currentDownloadSortType);
+            renderSortedList(list, window.__dlSongs.map((song, i) => downloadSongRowHTML(song, i)).join(''), '.song-row', () => {
+                renderLucideIcons(list);
+                updateSortUI('download', currentDownloadSortType);
+                if (autoScrollActive && currentSong) {
+                    const row = Array.from(list.querySelectorAll('[data-file]')).find((item) => item.getAttribute('data-file') === currentSong.file);
+                    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                }
+            });
+        }
+
         async function showDownloads() {
             setNavActive('navDownloads');
             setMobileBack(true);
+            closeSortSheet('download');
             const count = await getDownloadedCount();
-            const dlSongs = [];
-            for (let key in artists) artists[key].songs.forEach(s => {
-                if (isDownloaded(s.file)) dlSongs.push({...s,
-                    artistName: artists[key].name,
-                    artistKey: key
-                });
-            });
-            document.getElementById('mainArea').innerHTML = `
-            <div class="main-topbar"><div class="nav-arrows"><button class="nav-arrow-btn" onclick="history.back()">${uiIcon('chevron-left')}</button></div><div style="flex:1"><div style="font-size:1.2rem;font-weight:800">Downloads</div><div style="font-size:.72rem;color:var(--text2)">${count} cached offline</div></div><div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div>${count>0?`<button class="btn btn-outline" onclick="clearAllDownloads()" style="font-size:.75rem;display:inline-flex;align-items:center;gap:6px">${uiIcon('trash-2')}<span>Clear All</span></button>`:''}</div>
+            const dlSongs = getDownloadedSongsBase();
+            const mainArea = document.getElementById('mainArea');
+            mainArea.innerHTML = `
+            <div class="main-topbar"><div class="nav-arrows"><button class="nav-arrow-btn" onclick="history.back()">${uiIcon('chevron-left')}</button></div><div style="flex:1"><div style="font-size:1.2rem;font-weight:800">Downloads</div><div style="font-size:.72rem;color:var(--text2)">${count} cached offline</div></div><div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div>${dlSongs.length>0?`<button class="btn btn-outline" onclick="clearAllDownloads()" style="font-size:.75rem;display:inline-flex;align-items:center;gap:6px">${uiIcon('trash-2')}<span>Clear All</span></button>`:''}</div>
             <div class="songs-section" style="padding-top:20px">
-            ${dlSongs.length===0?`<div class="empty-state"><div class="emoji">${uiIcon('download')}</div><p>No songs downloaded yet.</p><p style="font-size:.8rem;margin-top:6px;color:var(--muted)">Tap download on any song to save offline.</p></div>`:dlSongs.map((s,i)=>`<div class="song-row" data-file="${escH(s.file)}" onclick="playDlSong(${i})"><div class="song-num">${i+1}</div><div class="song-row-info"><img src="${escH(s.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(s.title)}</h4><p>${escH(s.artistName)}</p></div></div><div class="song-actions" style="opacity:1"><span style="font-size:.6rem;color:var(--accent);background:var(--accent3);border:1px solid rgba(200,245,66,.18);padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px">${uiIcon('check')}<span>Saved</span></span><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(s.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();removeCachedSong('${escA(s.file)}')" title="Remove">${uiIcon('x')}</button></div></div>`).join('')}
+            ${dlSongs.length===0?`<div class="empty-state"><div class="emoji">${uiIcon('download')}</div><p>No songs downloaded yet.</p><p style="font-size:.8rem;margin-top:6px;color:var(--muted)">Tap download on any song to save offline.</p></div>`:`${sortControlHTML('download', currentDownloadSortType, SORT_SECTION_OPTIONS.download, 'Sort Downloads')}<div class="songs-table-header"><span class="th">#</span><span class="th">Title</span><span class="th"></span></div><div id="downloadsSongsList" class="sort-song-list"></div>`}
             </div>`;
-            window.__dlSongs = dlSongs;
-            renderLucideIcons(document.getElementById('mainArea'));
+            renderLucideIcons(mainArea);
+            if (dlSongs.length) renderDownloadsList(true);
         }
 
         window.playDlSong = (i) => { if (!window.__dlSongs) return; currentSongs = window.__dlSongs; currentArtistKey = null; currentIndex = i; playSong(i,true); };
-        window.clearAllDownloads = async () => { if (!confirm('Remove all downloads?')) return; try { await caches.delete(CACHE_NAME); downloadedFiles.clear(); saveDownloaded(); refreshVisibleSongLists(); updatePlayerDlBtn(); showToast('All downloads cleared'); showDownloads(); } catch(e) { showToast('Error clearing cache'); } };
+        window.clearAllDownloads = async () => { if (!confirm('Remove all downloads?')) return; try { await caches.delete(CACHE_NAME); downloadedFiles.clear(); downloadedSongMeta = {}; saveDownloaded(); refreshVisibleSongLists(); updatePlayerDlBtn(); showToast('All downloads cleared'); showDownloads(); } catch(e) { showToast('Error clearing cache'); } };
 
         // -- PLAYLISTS --
         function saveSongPlayCounts() {
@@ -10311,11 +11097,7 @@
         }
 
         function getPlaylistSortLabel(type) {
-            if (type === 'recent') return 'Recently Added';
-            if (type === 'title') return 'A-Z';
-            if (type === 'artist') return 'Artist Name';
-            if (type === 'plays') return 'Most Played';
-            return 'Default';
+            return getSortLabel(type);
         }
 
         function getSortedPlaylistSongs(plId, type = currentPlaylistSortType) {
@@ -10323,33 +11105,13 @@
             if (!pl || !Array.isArray(pl.songs)) return [];
             const base = pl.songs.map((song, index) => ({
                 ...song,
+                artist: song.artist || song.artistName || '',
+                liked: likedSongs.has(song.file),
+                downloaded: isDownloaded(song.file),
+                playCount: songPlayCounts[song.file] || 0,
                 __baseIndex: index
             }));
-            const sorted = [...base];
-            if (type === 'recent') {
-                sorted.sort((a, b) => {
-                    const ad = Number.isFinite(a.addedAt) ? a.addedAt : 0;
-                    const bd = Number.isFinite(b.addedAt) ? b.addedAt : 0;
-                    if (bd !== ad) return bd - ad;
-                    return b.__baseIndex - a.__baseIndex;
-                });
-            } else if (type === 'title') {
-                sorted.sort((a, b) => a.title.localeCompare(b.title) || a.__baseIndex - b.__baseIndex);
-            } else if (type === 'artist') {
-                sorted.sort((a, b) => (a.artistName || '').localeCompare(b.artistName || '') || a.title.localeCompare(b.title) || a.__baseIndex - b.__baseIndex);
-            } else if (type === 'plays') {
-                sorted.sort((a, b) => {
-                    const ap = songPlayCounts[a.file] || 0;
-                    const bp = songPlayCounts[b.file] || 0;
-                    if (bp !== ap) return bp - ap;
-                    return a.title.localeCompare(b.title) || a.__baseIndex - b.__baseIndex;
-                });
-            }
-            return sorted.map((song) => {
-                const out = {...song};
-                delete out.__baseIndex;
-                return out;
-            });
+            return applySorting('playlist', base, type);
         }
 
         function playlistContainsSong(plId, fileId) {
@@ -10367,13 +11129,12 @@
         }
 
         function closePlaylistSortSheet() {
-            const sheet = document.getElementById('playlistSortSheet');
-            if (sheet) sheet.classList.remove('open');
+            closeSortSheet('playlist');
         }
 
         window.closePlaylistSortSheet = closePlaylistSortSheet;
         window.closePlaylistSortSheetOnOverlay = (e) => {
-            if (e.target && e.target.id === 'playlistSortSheet') closePlaylistSortSheet();
+            if (e.target && e.target.dataset?.sortSheet === 'playlist') closePlaylistSortSheet();
         };
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -10383,11 +11144,13 @@
         });
 
         function updatePlaylistSortUI() {
-            const label = document.getElementById('playlistSortLabel');
-            if (label) label.textContent = getPlaylistSortLabel(currentPlaylistSortType);
-            document.querySelectorAll('.playlist-sort-option').forEach((btn) => {
-                btn.classList.toggle('active', btn.dataset.sort === currentPlaylistSortType);
-            });
+            updateSortUI('playlist', currentPlaylistSortType);
+        }
+
+        function playlistIndexContent(i, playing) {
+            if (playing) return '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>';
+            if (currentPlaylistSortType === 'custom') return `<span class="ps-drag-handle" title="Drag to reorder">${uiIcon('grip-vertical')}</span>`;
+            return String(i + 1);
         }
 
         function updatePlaylistPlayingState(autoScrollActive = false) {
@@ -10403,10 +11166,11 @@
                 const num = row.querySelector('.ps-num');
                 if (num) {
                     if (isPlaying) {
-                        num.innerHTML = '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>';
+                        num.innerHTML = playlistIndexContent(i, true);
                         activeRow = row;
                     } else {
-                        num.textContent = String(i + 1);
+                        num.innerHTML = playlistIndexContent(i, false);
+                        renderLucideIcons(num);
                     }
                 }
             });
@@ -10419,39 +11183,78 @@
             }
         }
 
+        function movePlaylistSong(plId, fromFile, toFile) {
+            const pl = playlists[plId];
+            if (!pl || !Array.isArray(pl.songs) || !fromFile || !toFile || fromFile === toFile) return;
+            const fromIndex = pl.songs.findIndex((song) => song.file === fromFile);
+            const toIndex = pl.songs.findIndex((song) => song.file === toFile);
+            if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return;
+            const [picked] = pl.songs.splice(fromIndex, 1);
+            pl.songs.splice(toIndex, 0, picked);
+            currentPlaylistSortType = 'custom';
+            saveSortPreference('playlist', currentPlaylistSortType);
+            savePlaylists();
+            renderPlaylistSongs(plId, true);
+        }
+
+        function setupPlaylistDragAndDrop() {
+            const list = document.getElementById('playlistSongsList');
+            if (!list || list.dataset.dragBound === '1') return;
+            list.dataset.dragBound = '1';
+            let dragFile = '';
+
+            list.addEventListener('dragstart', (e) => {
+                const row = e.target instanceof Element ? e.target.closest('.playlist-song-row[data-file]') : null;
+                if (!row || currentPlaylistSortType !== 'custom') {
+                    e.preventDefault();
+                    return;
+                }
+                dragFile = row.getAttribute('data-file') || '';
+                row.classList.add('dragging');
+                if (e.dataTransfer) {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', dragFile);
+                }
+            });
+
+            list.addEventListener('dragend', () => {
+                dragFile = '';
+                list.querySelectorAll('.playlist-song-row.dragging').forEach((row) => row.classList.remove('dragging'));
+            });
+
+            list.addEventListener('dragover', (e) => {
+                const row = e.target instanceof Element ? e.target.closest('.playlist-song-row[data-file]') : null;
+                if (!row || currentPlaylistSortType !== 'custom') return;
+                e.preventDefault();
+            });
+
+            list.addEventListener('drop', (e) => {
+                const row = e.target instanceof Element ? e.target.closest('.playlist-song-row[data-file]') : null;
+                if (!row || currentPlaylistSortType !== 'custom') return;
+                e.preventDefault();
+                const toFile = row.getAttribute('data-file') || '';
+                movePlaylistSong(currentPlaylistId, dragFile, toFile);
+            });
+        }
+
         function renderPlaylistSongs(plId, autoScrollActive = false) {
             const list = document.getElementById('playlistSongsList');
             if (!list) return;
             currentPlaylistViewSongs = getSortedPlaylistSongs(plId, currentPlaylistSortType);
-            list.innerHTML = currentPlaylistViewSongs.map((song, i) => playlistSongRowHTML(plId, song, i)).join('');
-            renderLucideIcons(list);
-            updatePlaylistSortUI();
-            updatePlaylistPlayingState(autoScrollActive);
+            renderSortedList(list, currentPlaylistViewSongs.map((song, i) => playlistSongRowHTML(plId, song, i)).join(''), '.playlist-song-row', () => {
+                renderLucideIcons(list);
+                updatePlaylistSortUI();
+                setupPlaylistDragAndDrop();
+                updatePlaylistPlayingState(autoScrollActive);
+            });
         }
 
         window.togglePlaylistSortSheet = () => {
-            const sheet = document.getElementById('playlistSortSheet');
-            if (!sheet) return;
-            sheet.classList.toggle('open');
+            toggleSortSheet('playlist');
         };
 
         window.setPlaylistSort = (type) => {
-            if (!currentPlaylistId) return;
-            currentPlaylistSortType = type || 'default';
-            localStorage.setItem('eq_playlist_sort', currentPlaylistSortType);
-            const activeFile = currentSong ? currentSong.file : null;
-            renderPlaylistSongs(currentPlaylistId, true);
-            if (activeFile && playlistContainsSong(currentPlaylistId, activeFile)) {
-                const nextSource = currentPlaylistViewSongs.map((song) => ({ ...song }));
-                const nextIndex = nextSource.findIndex((song) => song.file === activeFile);
-                currentSongs = nextSource;
-                currentArtistKey = null;
-                if (nextIndex >= 0) {
-                    currentIndex = nextIndex;
-                    currentSong = nextSource[nextIndex];
-                }
-            }
-            closePlaylistSortSheet();
+            setSortForScope('playlist', type);
         };
 
         function showPlaylists() {
@@ -10498,9 +11301,8 @@
                     </div>
                 </div>
             </div>
-            ${hasSongs?`<div class="playlist-sort-row"><button class="playlist-sort-trigger" id="playlistSortTrigger" onclick="togglePlaylistSortSheet()"><span class="sort-pill-icon">${uiIcon('arrow-up-down')}</span><span>Sort: <span id="playlistSortLabel">${getPlaylistSortLabel(currentPlaylistSortType)}</span></span><span class="sort-chevron">${uiIcon('chevron-down')}</span></button></div>`:''}
-            <div class="playlist-song-list">${hasSongs?`<div class="playlist-song-header"><span>#</span><span>Title</span><span></span></div><div id="playlistSongsList"></div>`:`<div class="empty-state" style="padding:44px 0"><div class="emoji">${uiIcon('music-2')}</div><p>No songs yet.</p></div>`}</div>
-            ${hasSongs?`<div class="playlist-sort-sheet" id="playlistSortSheet" onclick="closePlaylistSortSheetOnOverlay(event)"><div class="playlist-sort-sheet-card"><div class="playlist-sort-sheet-title">Sort Playlist</div><button class="playlist-sort-option" data-sort="default" onclick="setPlaylistSort('default')">Default</button><button class="playlist-sort-option" data-sort="recent" onclick="setPlaylistSort('recent')">Recently Added</button><button class="playlist-sort-option" data-sort="title" onclick="setPlaylistSort('title')">A-Z</button><button class="playlist-sort-option" data-sort="artist" onclick="setPlaylistSort('artist')">Artist Name</button><button class="playlist-sort-option" data-sort="plays" onclick="setPlaylistSort('plays')">Most Played</button><button class="playlist-sort-close" onclick="closePlaylistSortSheet()">Close</button></div></div>`:''}
+            ${hasSongs ? sortControlHTML('playlist', currentPlaylistSortType, SORT_SECTION_OPTIONS.playlist, 'Sort Playlist') : ''}
+            <div class="playlist-song-list">${hasSongs?`<div class="playlist-song-header"><span>#</span><span>Title</span><span></span></div><div id="playlistSongsList" class="sort-song-list"></div>`:`<div class="empty-state" style="padding:44px 0"><div class="emoji">${uiIcon('music-2')}</div><p>No songs yet.</p></div>`}</div>
             `;
             renderLucideIcons(mainArea);
             if (hasSongs) {
@@ -10514,7 +11316,8 @@
             const playing = currentSong && currentSong.file === song.file && !audio.paused;
             const liked = likedSongs.has(song.file);
             const dl = isDownloaded(song.file);
-            return `<div class="playlist-song-row${playing?' playing':''}" data-file="${escH(song.file)}" onclick="playFromPlaylist('${escA(plId)}',${i})"><div class="ps-num">${playing?'<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>':i+1}</div><div class="ps-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="ps-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName||'')}</p></div></div><div class="ps-actions"><button class="ps-icon-btn${liked?' liked':''}" title="${liked?'Unlike':'Like'}" onclick="event.stopPropagation();togglePlaylistLike('${escA(plId)}','${escA(song.file)}')">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="ps-icon-btn${dl?' downloaded':''}" title="${dl?'Remove download':'Download'}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')">${dl?uiIcon('check'):uiIcon('download')}</button><button class="ps-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="ps-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button><button class="ps-remove" onclick="event.stopPropagation();removeSongFromPlaylist('${escA(plId)}','${escA(song.file)}')">${uiIcon('x')}<span>Remove</span></button></div></div>`;
+            const canDrag = currentPlaylistSortType === 'custom';
+            return `<div class="playlist-song-row${playing?' playing':''}" data-file="${escH(song.file)}" draggable="${canDrag ? 'true' : 'false'}" onclick="playFromPlaylist('${escA(plId)}',${i})"><div class="ps-num">${playlistIndexContent(i, playing)}</div><div class="ps-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="ps-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName||song.artist||'')}</p></div></div><div class="ps-actions"><button class="ps-icon-btn${liked?' liked':''}" title="${liked?'Unlike':'Like'}" onclick="event.stopPropagation();togglePlaylistLike('${escA(plId)}','${escA(song.file)}')">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="ps-icon-btn${dl?' downloaded':''}" title="${dl?'Remove download':'Download'}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')">${dl?uiIcon('check'):uiIcon('download')}</button><button class="ps-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="ps-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button><button class="ps-remove" onclick="event.stopPropagation();removeSongFromPlaylist('${escA(plId)}','${escA(song.file)}')">${uiIcon('x')}<span>Remove</span></button></div></div>`;
         }
 
         window.playFromPlaylist = (plId,i) => { const source=getPlaylistPlaybackSource(plId); if(!source[i])return; currentSongs=source.map(s=>({...s})); currentArtistKey=null; currentIndex=i; playSong(i,true); };
@@ -10539,7 +11342,7 @@
         window.confirmModal = () => { if(modalCallback)modalCallback(); closeModal(); };
         document.getElementById('modalInput').addEventListener('keydown',e=>{ if(e.key==='Enter')confirmModal(); if(e.key==='Escape')closeModal(); });
 
-        function addSongToPlaylistById(song,artistName,plId) { if(!playlists[plId])return; if(playlists[plId].songs.some(s=>s.file===song.file)){showToast('Already in playlist');return;} playlists[plId].songs.push({...song,artistName,addedAt:Date.now()}); savePlaylists(); showToast(`Added to "${playlists[plId].name}"`); }
+        function addSongToPlaylistById(song,artistName,plId) { if(!playlists[plId])return; if(playlists[plId].songs.some(s=>s.file===song.file)){showToast('Already in playlist');return;} const payload=normalizeSongForSorting({...song,artistName,artist:artistName,addedAt:Date.now()},0,{scope:'playlist',artistName}); delete payload.__baseIndex; delete payload.likedAt; delete payload.downloadedAt; playlists[plId].songs.push(payload); savePlaylists(); showToast(`Added to "${playlists[plId].name}"`); }
         window.addSongToPlaylistById = addSongToPlaylistById;
 
         let openDropdownEl = null;
@@ -10555,12 +11358,17 @@
             Object.keys(artists).forEach((key) => {
                 const artist = artists[key];
                 artist.songs.forEach((song, idx) => {
-                    pool.push({
+                    const normalized = normalizeSongForSorting({
                         ...song,
                         artistKey: key,
                         artistName: artist.name,
+                        artist: artist.name,
+                        __baseIndex: idx
+                    }, idx, { scope: 'library', artistName: artist.name, artistKey: key });
+                    pool.push({
+                        ...normalized,
                         index: idx,
-                        plays: songPlayCounts[song.file] || 0
+                        plays: normalized.playCount || 0
                     });
                 });
             });
@@ -10630,8 +11438,24 @@
         window.clearSearch = () => { const inp=document.getElementById('searchBar'); if(inp){inp.value='';document.getElementById('searchClear')?.classList.remove('visible');loadArtists();} };
 
         
+        function getSortedArtistSongs(key, type = currentArtistSortType) {
+            const artist = artists[key];
+            if (!artist) return [];
+            const base = artist.songs.map((song, index) => ({
+                ...song,
+                artistName: artist.name,
+                artist: artist.name,
+                artistKey: key,
+                liked: likedSongs.has(song.file),
+                downloaded: isDownloaded(song.file),
+                playCount: songPlayCounts[song.file] || 0,
+                __baseIndex: index
+            }));
+            return applySorting('artist', base, type, { artistName: artist.name, artistKey: key });
+        }
+
         function openArtist(key) {
-            currentArtistKey = key; const a = artists[key]; currentSongs = a.songs;
+            currentArtistKey = key; const a = artists[key]; currentSongs = getSortedArtistSongs(key);
             setSidebarActive(key); setMobileBack(true);
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
@@ -10642,28 +11466,54 @@
             </div>
             <div class="artist-hero"><div class="artist-hero-bg" style="background-image:url('${a.image}')"></div><div class="artist-hero-overlay"></div><div class="artist-hero-content"><img class="artist-hero-img" src="${a.image}" onerror="this.style.background='#282828'"><div><div class="artist-hero-tag">Artist</div><div class="artist-hero-name">${a.name}</div><div style="font-size:.8rem;color:var(--text2);margin-bottom:16px">${a.songs.length} songs</div><div class="artist-hero-actions"><button class="btn btn-white" onclick="playArtist('${key}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="shuffleArtist('${key}')">${uiIcon('shuffle')}<span>Shuffle</span></button></div></div></div></div>
             <div class="songs-section" style="padding-top:20px">
-                <div style="display:flex;justify-content:flex-end;margin-bottom:10px;gap:8px;align-items:center">
-                    <label style="font-size:.78rem;color:var(--text2)">Sort:</label>
-                    <select id="sortSelect" onchange="sortSongs()" style="background:var(--surface3);color:var(--text);border:1px solid rgba(255,255,255,.1);padding:6px 10px;border-radius:8px;font-family:'Circular Std','Circular','Spotify Mix','Nunito Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.78rem;outline:none;cursor:pointer">
-                        <option value="default">Default</option>
-                        <option value="title">Title A-Z</option>
-                        <option value="liked">Liked first</option>
-                        <option value="liked_title">Liked, then A-Z</option>
-                    </select>
-                </div>
+                ${sortControlHTML('artist', currentArtistSortType, SORT_SECTION_OPTIONS.artist, 'Sort Artist Songs')}
                 <div class="songs-table-header"><span class="th">#</span><span class="th">Title</span><span class="th"></span></div>
-                <div id="songsList">${a.songs.map((s,i)=>songRowHTML(s,i,a.name)).join('')}</div>
+                <div id="songsList" class="sort-song-list"></div>
             </div>`;
             initSearchClear();
             renderLucideIcons(mainArea);
+            renderArtistSongs(key, true);
         }
 
-        function songRowHTML(song,i,artistName) { const playing=currentSong&&currentSong.file===song.file&&!audio.paused; const liked=likedSongs.has(song.file); const dl=isDownloaded(song.file); return`<div class="song-row${playing?' playing':''}" id="row_${i}" data-file="${escH(song.file)}" onclick="playSong(${i},true)"><div class="song-num">${playing?'<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>':i+1}</div><div class="song-row-info"><img src="${song.poster}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(song.title)}</h4><p>${escH(artistName)}</p></div></div><div class="song-actions"><button class="like-btn${liked?' liked':''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}',${i})">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="dl-btn${dl?' downloaded':''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')" title="${dl?'Remove':'Download'}">${dl?uiIcon('check'):uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();showAddToPlaylistMenu(event,'${escA(song.file)}',${i})" title="Add to playlist">${uiIcon('folder-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addToQueue(${i})" title="Add to end">${uiIcon('plus')}</button></div></div>`; }
+        function songRowHTML(song,i,artistName) { const playing=currentSong&&currentSong.file===song.file&&!audio.paused; const liked=likedSongs.has(song.file); const dl=isDownloaded(song.file); const rowArtist=song.artistName||song.artist||artistName||''; return`<div class="song-row${playing?' playing':''}" id="row_${i}" data-file="${escH(song.file)}" onclick="playSong(${i},true)"><div class="song-num">${playing?'<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>':i+1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(song.title)}</h4><p>${escH(rowArtist)}</p></div></div><div class="song-actions"><button class="like-btn${liked?' liked':''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}',${i})">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="dl-btn${dl?' downloaded':''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')" title="${dl?'Remove':'Download'}">${dl?uiIcon('check'):uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();showAddToPlaylistMenu(event,'${escA(song.file)}',${i})" title="Add to playlist">${uiIcon('folder-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addToQueue(${i})" title="Add to end">${uiIcon('plus')}</button></div></div>`; }
 
         window.handleDlBtn = async(btn,fileId) => { if(isDownloaded(fileId)){if(confirm('Remove from offline?')){await removeCachedSong(fileId);btn.classList.remove('downloaded');setElementIcon(btn,'download');}}else{let song=null;for(let k in artists){song=artists[k].songs.find(s=>s.file===fileId);if(song){song={...song,artistName:artists[k].name};break;}}if(song)addToDlQueue(song);} };
 
-        let currentSortType = 'default';
-        function refreshSongRows() { if(!currentArtistKey)return; const list=document.getElementById('songsList'); if(!list)return; list.innerHTML=currentSongs.map((s,i)=>songRowHTML(s,i,artists[currentArtistKey].name)).join(''); renderLucideIcons(list); }
+        function updateArtistPlayingState(autoScrollActive = false) {
+            if (!currentArtistKey) return;
+            const list = document.getElementById('songsList');
+            if (!list) return;
+            let activeRow = null;
+            list.querySelectorAll('.song-row').forEach((row, i) => {
+                const song = currentSongs[i];
+                const isPlaying = !!(song && currentSong && currentSong.file === song.file && !audio.paused);
+                row.classList.toggle('playing', isPlaying);
+                const num = row.querySelector('.song-num');
+                if (!num) return;
+                if (isPlaying) {
+                    num.innerHTML = '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>';
+                    activeRow = row;
+                } else {
+                    num.textContent = String(i + 1);
+                }
+            });
+            if (autoScrollActive && activeRow) activeRow.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
+
+        function renderArtistSongs(key = currentArtistKey, autoScrollActive = false) {
+            if (!key) return;
+            const list = document.getElementById('songsList');
+            if (!list) return;
+            currentSongs = getSortedArtistSongs(key, currentArtistSortType);
+            currentArtistKey = key;
+            renderSortedList(list, currentSongs.map((song, i) => songRowHTML(song, i, artists[key].name)).join(''), '.song-row', () => {
+                renderLucideIcons(list);
+                updateSortUI('artist', currentArtistSortType);
+                updateArtistPlayingState(autoScrollActive);
+            });
+        }
+
+        function refreshSongRows() { if(!currentArtistKey)return; const list=document.getElementById('songsList'); if(!list)return; renderArtistSongs(currentArtistKey,false); }
         function refreshVisibleSongLists() {
             refreshSongRows();
             if (currentPlaylistId && document.getElementById('playlistSongsList')) {
@@ -10672,9 +11522,10 @@
             if (document.getElementById('favSongsList')) {
                 refreshLikedDisplay();
             }
+            if (document.getElementById('downloadsSongsList')) {
+                renderDownloadsList(false);
+            }
         }
-
-        window.sortSongs = () => { if(!currentSongs||!currentArtistKey)return; currentSortType=document.getElementById('sortSelect').value; const original=artists[currentArtistKey].songs; if(currentSortType==='default')currentSongs=original.slice(); else if(currentSortType==='title')currentSongs=[...original].sort((a,b)=>a.title.localeCompare(b.title)); else if(currentSortType==='liked')currentSongs=[...original].sort((a,b)=>(likedSongs.has(b.file)?1:0)-(likedSongs.has(a.file)?1:0)); else if(currentSortType==='liked_title')currentSongs=[...original].sort((a,b)=>{const aLiked=likedSongs.has(a.file)?0:1,bLiked=likedSongs.has(b.file)?0:1;return aLiked!==bLiked?aLiked-bLiked:a.title.localeCompare(b.title);}); const list=document.getElementById('songsList'); if(!list)return; list.innerHTML=currentSongs.map((s,i)=>songRowHTML(s,i,artists[currentArtistKey].name)).join(''); renderLucideIcons(list); };
 
         window.showAddToPlaylistMenu = (e,fileId,rowIdx) => { e.stopPropagation(); closeDropdown(); const song=currentSongs[rowIdx]; if(!song)return; const artistName=currentArtistKey?artists[currentArtistKey].name:''; window.__ctxSong=song; window.__ctxArtist=artistName; const ids=Object.keys(playlists); const dd=document.createElement('div'); dd.className='add-to-playlist-dropdown'; dd.style.position='fixed'; const rect=e.target.getBoundingClientRect(); dd.style.top=(rect.bottom+4)+'px'; dd.style.left=Math.max(10,rect.left-140)+'px'; if(!ids.length){dd.innerHTML=`<div class="no-playlists">No playlists yet.</div><button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>Create playlist</span></button>`;}else{dd.innerHTML=`<button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>New playlist</span></button>`+ids.map(id=>`<button onclick="addSongToPlaylistById(window.__ctxSong,window.__ctxArtist,'${escA(id)}');closeDropdown()">${escH(playlists[id].name)}</button>`).join('');}document.body.appendChild(dd);renderLucideIcons(dd);openDropdownEl=dd; };
 
@@ -10690,6 +11541,10 @@
             }
             currentSong = song;
             trackSongPlay(song.file);
+            song.playCount = songPlayCounts[song.file] || 0;
+            song.liked = likedSongs.has(song.file);
+            song.downloaded = isDownloaded(song.file);
+            song.lastPlayed = Date.now();
             if (crossfadeTimer) {
                 clearInterval(crossfadeTimer);
                 crossfadeTimer = null;
@@ -10754,7 +11609,14 @@
                 title: song.title,
                 poster: song.poster,
                 artistKey: currentArtistKey,
-                artistName
+                artistName,
+                album: song.album || deriveSongAlbum(song, artistName),
+                duration: song.duration || songDurationMeta[song.file] || 0,
+                playCount: songPlayCounts[song.file] || 0,
+                liked: likedSongs.has(song.file),
+                downloaded: isDownloaded(song.file),
+                addedAt: Date.now(),
+                lastPlayed: Date.now()
             };
             const ei = continueListening.findIndex((s) => s.file === song.file);
             if (ei >= 0) continueListening.splice(ei, 1);
@@ -10799,8 +11661,8 @@
 
         function previous() { if(!currentSongs.length)return; if(audio.currentTime>3){audio.currentTime=0;return;} currentIndex=(currentIndex-1+currentSongs.length)%currentSongs.length; playSong(currentIndex,true); }
 
-        function playArtist(key) { currentSongs=artists[key].songs.slice(); currentArtistKey=key; currentIndex=0; playSong(0,true); }
-        function shuffleArtist(key) { currentSongs=artists[key].songs.slice(); currentArtistKey=key; currentIndex=Math.floor(Math.random()*currentSongs.length); playSong(currentIndex,true); }
+        function playArtist(key) { currentSongs=getSortedArtistSongs(key,currentArtistSortType); currentArtistKey=key; currentIndex=0; playSong(0,true); }
+        function shuffleArtist(key) { currentSongs=getSortedArtistSongs(key,currentArtistSortType); currentArtistKey=key; currentIndex=Math.floor(Math.random()*currentSongs.length); playSong(currentIndex,true); }
         window.playFromHistory = async(fileId,artistKey) => {
             if (artists[artistKey]) {
                 currentArtistKey = artistKey;
@@ -10926,10 +11788,14 @@
         function buildQueueSongPayload(song, fallbackArtistName = '') {
             if (!song) return null;
             const lib = findSongInLibraryByFile(song.file);
-            return {
+            const payload = normalizeSongForSorting({
                 ...song,
                 artistName: song.artistName || lib?.artistName || fallbackArtistName || ''
-            };
+            }, 0, { scope: 'queue', artistName: song.artistName || lib?.artistName || fallbackArtistName || '' });
+            delete payload.__baseIndex;
+            delete payload.likedAt;
+            delete payload.downloadedAt;
+            return payload;
         }
 
         function enqueueSong(song, options = {}) {
@@ -10947,6 +11813,7 @@
             }
             if (opts.playNext) queue.unshift(payload);
             else queue.push(payload);
+            if (currentQueueSortType !== 'custom') queue = applySorting('queue', queue, currentQueueSortType);
             saveQueue();
             renderQueuePanel();
             if (opts.toast) showToast(opts.playNext ? 'Will play next' : 'Added to queue');
@@ -11013,6 +11880,7 @@
                 html += `<div class="qp-section">Now Playing</div><div class="qp-item active"><img src="${escH(currentSong.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${escH(currentSong.title)}</div><div class="qp-item-artist">${escH(playerArtist.textContent)}</div></div></div>`;
             }
             if (queue.length > 0) {
+                html += sortControlHTML('queue', currentQueueSortType, SORT_SECTION_OPTIONS.queue, 'Sort Queue');
                 html += `<div class="qp-section" style="margin-top:7px">Up Next (${queue.length})</div>`;
                 queue.forEach((song, i) => {
                     html += `<div class="qp-item" draggable="true" data-queue-index="${i}" data-file="${escH(song.file || '')}" onclick="playFromQueue(${i})"><span class="qp-item-drag" title="Drag to reorder" onclick="event.stopPropagation()">${uiIcon('grip-vertical')}</span><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${escH(song.title)}</div><div class="qp-item-artist">${escH(song.artistName || '')}</div></div><button class="qp-item-rm" onclick="event.stopPropagation();removeFromQueue(${i})" title="Remove">${uiIcon('x')}</button></div>`;
@@ -11032,6 +11900,7 @@
             }
             body.innerHTML = html;
             renderLucideIcons(body);
+            updateSortUI('queue', currentQueueSortType);
             updateQueueIndicators();
         }
 
@@ -11041,6 +11910,8 @@
             if (fromIndex < 0 || toIndex < 0 || fromIndex >= queue.length || toIndex >= queue.length) return;
             const [picked] = queue.splice(fromIndex, 1);
             queue.splice(toIndex, 0, picked);
+            currentQueueSortType = 'custom';
+            saveSortPreference('queue', currentQueueSortType);
             saveQueue();
             renderQueuePanel();
         }
@@ -11157,6 +12028,10 @@
                 const previousCurrent = currentSong ? currentSong.file : '';
                 currentSong = song;
                 trackSongPlay(song.file);
+                song.playCount = songPlayCounts[song.file] || 0;
+                song.liked = likedSongs.has(song.file);
+                song.downloaded = isDownloaded(song.file);
+                song.lastPlayed = Date.now();
                 posterEl.src = song.poster;
                 playerTitle.textContent = song.title;
                 playerArtist.textContent = artistName;
@@ -11318,11 +12193,7 @@
         function showLikedSongs() { setNavActive('navFav'); setMobileBack(true); refreshLikedDisplay(); }
 
         function getFavSortLabel(type) {
-            if (type === 'recent') return 'Recently Liked';
-            if (type === 'title') return 'A-Z';
-            if (type === 'artist') return 'Artist Name';
-            if (type === 'plays') return 'Most Played';
-            return 'Default';
+            return getSortLabel(type);
         }
 
         function getLikedSongsBase() {
@@ -11335,8 +12206,13 @@
                         liked.push({
                             ...song,
                             artistName: artist.name,
+                            artist: artist.name,
                             artistKey: key,
+                            addedAt: Number.isFinite(likedSongMeta[song.file]) ? likedSongMeta[song.file] : 0,
                             likedAt: Number.isFinite(likedSongMeta[song.file]) ? likedSongMeta[song.file] : 0,
+                            liked: true,
+                            downloaded: isDownloaded(song.file),
+                            playCount: songPlayCounts[song.file] || 0,
                             __baseIndex: baseIndex
                         });
                     }
@@ -11347,56 +12223,32 @@
         }
 
         function getSortedLikedSongs(type = currentFavSortType) {
-            const base = getLikedSongsBase();
-            const sorted = [...base];
-            if (type === 'recent') {
-                sorted.sort((a, b) => (b.likedAt || 0) - (a.likedAt || 0) || b.__baseIndex - a.__baseIndex);
-            } else if (type === 'title') {
-                sorted.sort((a, b) => a.title.localeCompare(b.title) || a.__baseIndex - b.__baseIndex);
-            } else if (type === 'artist') {
-                sorted.sort((a, b) => a.artistName.localeCompare(b.artistName) || a.title.localeCompare(b.title) || a.__baseIndex - b.__baseIndex);
-            } else if (type === 'plays') {
-                sorted.sort((a, b) => {
-                    const ap = songPlayCounts[a.file] || 0;
-                    const bp = songPlayCounts[b.file] || 0;
-                    if (bp !== ap) return bp - ap;
-                    return a.title.localeCompare(b.title) || a.__baseIndex - b.__baseIndex;
-                });
-            } else {
-                sorted.sort((a, b) => a.__baseIndex - b.__baseIndex);
-            }
-            return sorted.map((song) => {
-                const out = { ...song };
-                delete out.__baseIndex;
-                delete out.likedAt;
-                return out;
-            });
+            return applySorting('liked', getLikedSongsBase(), type);
         }
 
         function updateFavSortUI() {
-            const label = document.getElementById('favSortLabel');
-            if (label) label.textContent = getFavSortLabel(currentFavSortType);
-            document.querySelectorAll('.fav-sort-option').forEach((btn) => {
-                btn.classList.toggle('active', btn.dataset.sort === currentFavSortType);
-            });
+            updateSortUI('liked', currentFavSortType);
         }
 
-        function favSongRowHTML(song, i) {
+        function favSongRowHTML(song, i, compact = true) {
             const playing = currentSong && currentSong.file === song.file && !audio.paused;
             const dl = isDownloaded(song.file);
-            return `<div class="fav-song-row${playing ? ' playing' : ''}" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="fav-song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="fav-song-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="fav-song-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName)}</p></div></div><div class="fav-song-actions"><button class="fav-icon-btn liked" title="Remove from favorites" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="fav-icon-btn${dl ? ' downloaded' : ''}" title="${dl ? 'Remove download' : 'Download'}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="fav-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="fav-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button></div></div>`;
+            if (!compact) {
+                return `<div class="song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="song-actions"><button class="like-btn liked" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="dl-btn${dl ? ' downloaded' : ''}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button></div></div>`;
+            }
+            return `<div class="fav-song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="fav-song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="fav-song-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="fav-song-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="fav-song-actions"><button class="fav-icon-btn liked" title="Remove from favorites" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="fav-icon-btn${dl ? ' downloaded' : ''}" title="${dl ? 'Remove download' : 'Download'}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="fav-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="fav-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button></div></div>`;
         }
 
         function updateFavoritesPlayingState(autoScrollActive = false) {
             const list = document.getElementById('favSongsList');
             if (!list || !Array.isArray(window.__likedList)) return;
-            const rows = list.querySelectorAll('.fav-song-row');
+            const rows = list.querySelectorAll('[data-liked-row]');
             let activeRow = null;
             rows.forEach((row, i) => {
                 const song = window.__likedList[i];
                 const isPlaying = !!(song && currentSong && currentSong.file === song.file && !audio.paused);
                 row.classList.toggle('playing', isPlaying);
-                const num = row.querySelector('.fav-song-num');
+                const num = row.querySelector('.fav-song-num, .song-num');
                 if (!num) return;
                 if (isPlaying) {
                     num.innerHTML = '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>';
@@ -11425,37 +12277,32 @@
         }
 
         function closeFavSortSheet() {
-            const sheet = document.getElementById('favSortSheet');
-            if (sheet) sheet.classList.remove('open');
+            closeSortSheet('liked');
         }
 
         window.closeFavSortSheet = closeFavSortSheet;
         window.closeFavSortSheetOnOverlay = (e) => {
-            if (e.target && e.target.id === 'favSortSheet') closeFavSortSheet();
+            if (e.target && e.target.dataset?.sortSheet === 'liked') closeFavSortSheet();
         };
 
         window.toggleFavSortSheet = () => {
-            const sheet = document.getElementById('favSortSheet');
-            if (!sheet) return;
-            sheet.classList.toggle('open');
+            toggleSortSheet('liked');
         };
 
         function renderMobileLikedSongList(autoScrollActive = false) {
             const list = document.getElementById('favSongsList');
             if (!list) return;
+            const compact = list.dataset.compact === '1';
             window.__likedList = getSortedLikedSongs(currentFavSortType);
-            list.innerHTML = window.__likedList.map((song, i) => favSongRowHTML(song, i)).join('');
-            renderLucideIcons(list);
-            updateFavSortUI();
-            updateFavoritesPlayingState(autoScrollActive);
+            renderSortedList(list, window.__likedList.map((song, i) => favSongRowHTML(song, i, compact)).join(''), compact ? '.fav-song-row' : '.song-row', () => {
+                renderLucideIcons(list);
+                updateFavSortUI();
+                updateFavoritesPlayingState(autoScrollActive);
+            });
         }
 
         window.setFavSort = (type) => {
-            currentFavSortType = type || 'default';
-            localStorage.setItem('eq_fav_sort', currentFavSortType);
-            renderMobileLikedSongList(true);
-            syncFavoritesPlaybackSource();
-            closeFavSortSheet();
+            setSortForScope('liked', type);
         };
 
         function refreshLikedDisplay() {
@@ -11475,11 +12322,10 @@
                             <div class="fav-mobile-sub">${likedCount} song${likedCount !== 1 ? 's' : ''} • Personal Mix</div>
                         </div>
                     </div>
-                    ${likedCount ? `<div class="fav-sort-row"><button class="fav-sort-trigger" onclick="toggleFavSortSheet()"><span class="fav-sort-icon">${uiIcon('arrow-up-down')}</span><span>Sort: <span id="favSortLabel">${getFavSortLabel(currentFavSortType)}</span></span><span class="fav-sort-chevron">${uiIcon('chevron-down')}</span></button></div>` : ''}
+                    ${likedCount ? sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs') : ''}
                     <div class="fav-song-list">
-                        ${likedCount ? '<div class="fav-song-header"><span>#</span><span>Title</span><span></span></div><div id="favSongsList"></div>' : `<div class="empty-state" style="padding:40px 0"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`}
+                        ${likedCount ? '<div class="fav-song-header"><span>#</span><span>Title</span><span></span></div><div id="favSongsList" class="sort-song-list" data-compact="1"></div>' : `<div class="empty-state" style="padding:40px 0"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`}
                     </div>
-                    ${likedCount ? `<div class="fav-sort-sheet" id="favSortSheet" onclick="closeFavSortSheetOnOverlay(event)"><div class="fav-sort-sheet-card"><div class="fav-sort-sheet-title">Sort Favorites</div><button class="fav-sort-option" data-sort="default" onclick="setFavSort('default')">Default</button><button class="fav-sort-option" data-sort="recent" onclick="setFavSort('recent')">Recently Liked</button><button class="fav-sort-option" data-sort="title" onclick="setFavSort('title')">A-Z</button><button class="fav-sort-option" data-sort="artist" onclick="setFavSort('artist')">Artist Name</button><button class="fav-sort-option" data-sort="plays" onclick="setFavSort('plays')">Most Played</button><button class="fav-sort-close" onclick="closeFavSortSheet()">Close</button></div></div>` : ''}
                 </div>`;
                 renderLucideIcons(mainArea);
                 if (likedCount) {
@@ -11488,37 +12334,20 @@
                 }
                 return;
             }
-            const type = document.getElementById('favSortSelect')?.value || 'artist';
-            let sorted = [...likedBase];
-            if (type === 'title') sorted.sort((a, b) => a.title.localeCompare(b.title));
-            else if (type === 'artist') sorted.sort((a, b) => a.artistName.localeCompare(b.artistName) || a.title.localeCompare(b.title));
-            else if (type === 'recent') sorted.reverse();
-            window.__likedList = sorted.map((song) => {
-                const out = { ...song };
-                delete out.__baseIndex;
-                delete out.likedAt;
-                return out;
-            });
             const html = `
             <div class="main-topbar"><div class="nav-arrows"><button class="nav-arrow-btn" onclick="loadArtists()">${uiIcon('chevron-left')}</button></div><div style="flex:1"><div style="font-size:1.2rem;font-weight:800">Favorites</div><div style="font-size:.72rem;color:var(--text2)">${likedCount} liked songs</div></div><div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div></div>
             <div class="songs-section" style="padding-top:20px">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap">
                     <div class="fav-section-label" style="display:inline-flex;align-items:center;gap:6px">${uiIcon('heart')}<span>Liked Songs</span></div>
-                    <div style="display:flex;gap:8px;align-items:center">
-                        <label style="font-size:.78rem;color:var(--text2)">Sort:</label>
-                        <select id="favSortSelect" onchange="refreshLikedDisplay()" style="background:var(--surface3);color:var(--text);border:1px solid rgba(255,255,255,.1);padding:6px 10px;border-radius:8px;font-family:'Circular Std','Circular','Spotify Mix','Nunito Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.78rem;outline:none;cursor:pointer">
-                            <option value="artist">Artist A-Z</option>
-                            <option value="title">Title A-Z</option>
-                            <option value="recent">Recently liked</option>
-                        </select>
-                    </div>
                 </div>
-                ${likedCount===0?`<div class="empty-state"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`:`<div class="songs-table-header"><span class="th">#</span><span class="th">Title</span><span class="th"></span></div><div id="favSongsList">${window.__likedList.map((s,i)=>`<div class="song-row" onclick="playLikedSong(${i})"><div class="song-num">${i+1}</div><div class="song-row-info"><img src="${s.poster}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(s.title)}</h4><p>${escH(s.artistName)}</p></div></div><div class="song-actions"><button class="like-btn liked" onclick="event.stopPropagation();toggleLikeFav('${escA(s.file)}')">${uiIcon('heart')}</button><button class="dl-btn${isDownloaded(s.file)?' downloaded':''}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(s.file)}')">${isDownloaded(s.file)?uiIcon('check'):uiIcon('download')}</button></div></div>`).join('')}</div>`}
+                ${likedCount===0?`<div class="empty-state"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`:`${sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs')}<div class="songs-table-header"><span class="th">#</span><span class="th">Title</span><span class="th"></span></div><div id="favSongsList" class="sort-song-list" data-compact="0"></div>`}
             </div>`;
             mainArea.innerHTML = html;
             renderLucideIcons(mainArea);
-            const select = document.getElementById('favSortSelect');
-            if (select) select.value = type;
+            if (likedCount) {
+                renderMobileLikedSongList(true);
+                syncFavoritesPlaybackSource();
+            }
         }
 
         window.playLikedSong = (i) => {
@@ -11557,7 +12386,7 @@
             const newInp = document.getElementById('searchBar'); if(newInp){newInp.focus();newInp.setSelectionRange(newInp.value.length,newInp.value.length);} initSearchClear();
         }
 
-        function openArtistAndPlay(key,index) { currentSongs=artists[key].songs; currentArtistKey=key; openArtist(key); playSong(index,true); }
+        function openArtistAndPlay(key,index) { const file=artists[key]?.songs?.[index]?.file || ''; currentArtistKey=key; openArtist(key); const sortedIndex=currentSongs.findIndex((song)=>song.file===file); playSong(sortedIndex>=0?sortedIndex:0,true); }
 
     
         const queueCountBadge = document.getElementById('queueCountBadge');
@@ -12460,6 +13289,13 @@
         }
 
       
+        audio.addEventListener('loadedmetadata', () => {
+            if (!currentSong?.file || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
+            songDurationMeta[currentSong.file] = Math.round(audio.duration);
+            if (currentSong) currentSong.duration = songDurationMeta[currentSong.file];
+            saveSongDurationMeta();
+        });
+
         audio.addEventListener('timeupdate',()=>{ 
             const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
             const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
