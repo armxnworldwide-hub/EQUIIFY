@@ -2867,28 +2867,7 @@
         }
         
         .sort-song-list {
-            transition: opacity .2s ease, transform .22s cubic-bezier(.22, 1, .36, 1);
-        }
-        
-        .sort-song-list.is-sorting {
-            opacity: .32;
-            transform: translateY(6px);
-            pointer-events: none;
-        }
-        
-        .sort-row-enter {
-            animation: sortRowIn .28s cubic-bezier(.22, 1, .36, 1) both;
-        }
-        
-        @keyframes sortRowIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px) scale(.992);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            transition: none;
         }
         
         .playlist-song-row[draggable="true"] {
@@ -7605,7 +7584,6 @@
             .sort-sheet-card,
             .sort-option,
             .sort-song-list,
-            .sort-row-enter,
             .fav-song-row,
             .fav-sort-sheet,
             .fav-sort-sheet-card,
@@ -10185,31 +10163,11 @@
             if (trigger) trigger.setAttribute('aria-expanded', String(willOpen));
         }
 
-        function animateSortedRows(container, rowSelector) {
-            if (!container || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-            const rows = Array.from(container.querySelectorAll(rowSelector)).slice(0, 36);
-            rows.forEach((row, index) => {
-                row.classList.remove('sort-row-enter');
-                row.style.animationDelay = `${Math.min(index * 14, 180)}ms`;
-                requestAnimationFrame(() => row.classList.add('sort-row-enter'));
-            });
-        }
-
         function renderSortedList(container, html, rowSelector, afterRender) {
             if (!container) return;
             container.classList.add('sort-song-list');
-            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                container.innerHTML = html;
-                if (typeof afterRender === 'function') afterRender();
-                return;
-            }
-            container.classList.add('is-sorting');
-            window.setTimeout(() => {
-                container.innerHTML = html;
-                container.classList.remove('is-sorting');
-                if (typeof afterRender === 'function') afterRender();
-                animateSortedRows(container, rowSelector);
-            }, 90);
+            container.innerHTML = html;
+            if (typeof afterRender === 'function') afterRender();
         }
 
         document.addEventListener('click', (event) => {
@@ -11057,10 +11015,6 @@
             renderSortedList(list, window.__dlSongs.map((song, i) => downloadSongRowHTML(song, i)).join(''), '.song-row', () => {
                 renderLucideIcons(list);
                 updateSortUI('download', currentDownloadSortType);
-                if (autoScrollActive && currentSong) {
-                    const row = Array.from(list.querySelectorAll('[data-file]')).find((item) => item.getAttribute('data-file') === currentSong.file);
-                    if (row) row.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-                }
             });
         }
 
@@ -11158,7 +11112,6 @@
             const list = document.getElementById('playlistSongsList');
             if (!list) return;
             const rows = list.querySelectorAll('.playlist-song-row');
-            let activeRow = null;
             rows.forEach((row, i) => {
                 const song = currentPlaylistViewSongs[i];
                 const isPlaying = !!(song && currentSong && currentSong.file === song.file && !audio.paused);
@@ -11167,20 +11120,12 @@
                 if (num) {
                     if (isPlaying) {
                         num.innerHTML = playlistIndexContent(i, true);
-                        activeRow = row;
                     } else {
                         num.innerHTML = playlistIndexContent(i, false);
                         renderLucideIcons(num);
                     }
                 }
             });
-            if (autoScrollActive && activeRow) {
-                activeRow.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'nearest'
-                });
-            }
         }
 
         function movePlaylistSong(plId, fromFile, toFile) {
@@ -11483,7 +11428,6 @@
             if (!currentArtistKey) return;
             const list = document.getElementById('songsList');
             if (!list) return;
-            let activeRow = null;
             list.querySelectorAll('.song-row').forEach((row, i) => {
                 const song = currentSongs[i];
                 const isPlaying = !!(song && currentSong && currentSong.file === song.file && !audio.paused);
@@ -11492,12 +11436,10 @@
                 if (!num) return;
                 if (isPlaying) {
                     num.innerHTML = '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>';
-                    activeRow = row;
                 } else {
                     num.textContent = String(i + 1);
                 }
             });
-            if (autoScrollActive && activeRow) activeRow.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         }
 
         function renderArtistSongs(key = currentArtistKey, autoScrollActive = false) {
@@ -12243,7 +12185,6 @@
             const list = document.getElementById('favSongsList');
             if (!list || !Array.isArray(window.__likedList)) return;
             const rows = list.querySelectorAll('[data-liked-row]');
-            let activeRow = null;
             rows.forEach((row, i) => {
                 const song = window.__likedList[i];
                 const isPlaying = !!(song && currentSong && currentSong.file === song.file && !audio.paused);
@@ -12252,18 +12193,10 @@
                 if (!num) return;
                 if (isPlaying) {
                     num.innerHTML = '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>';
-                    activeRow = row;
                 } else {
                     num.textContent = String(i + 1);
                 }
             });
-            if (autoScrollActive && activeRow) {
-                activeRow.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'nearest',
-                    inline: 'nearest'
-                });
-            }
         }
 
         function syncFavoritesPlaybackSource() {
@@ -13394,7 +13327,7 @@
             else if (id === 'navPlaylists' || id === 'navDownloads') syncMobileNavActive('library');
             else syncMobileNavActive('home');
         }
-        function setSidebarActive(key) { document.querySelectorAll('.artist-item').forEach(e=>e.classList.remove('active')); const e=document.getElementById('sb_'+key); if(e){e.classList.add('active');e.scrollIntoView({block:'nearest'});} }
+        function setSidebarActive(key) { document.querySelectorAll('.artist-item').forEach(e=>e.classList.remove('active')); const e=document.getElementById('sb_'+key); if(e){e.classList.add('active');} }
         function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
         function escA(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
@@ -13487,23 +13420,6 @@
         if(!('caches' in window)){ console.warn('Cache API not available.'); document.querySelectorAll('.dl-btn,.player-dl-btn,.dl-queue-btn').forEach(el=>el.style.display='none'); }
 
       
-        const playerEl = document.querySelector('.player');
-        if (playerEl && playerEl.dataset.fullscreenBound !== '1') {
-            playerEl.dataset.fullscreenBound = '1';
-            playerEl.addEventListener('click', (e) => {
-                if (e.target.closest('button')) return;
-                if (currentSong) openFullPlayer();
-            });
-        }
-
-        const nowPlayingIndicatorEl = document.getElementById('nowPlayingIndicator');
-        if (nowPlayingIndicatorEl && nowPlayingIndicatorEl.dataset.fullscreenBound !== '1') {
-            nowPlayingIndicatorEl.dataset.fullscreenBound = '1';
-            nowPlayingIndicatorEl.addEventListener('click', () => {
-                if (currentSong) openFullPlayer();
-            });
-        }
-
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape') return;
             if (fullPlayerOpen) closeFullPlayer();
