@@ -10165,9 +10165,16 @@
 
         function renderSortedList(container, html, rowSelector, afterRender) {
             if (!container) return;
+            const mainArea = document.getElementById('mainArea');
+            const mainScrollTop = mainArea ? mainArea.scrollTop : 0;
+            const containerScrollTop = container.scrollTop;
+            const template = document.createElement('template');
+            template.innerHTML = html;
             container.classList.add('sort-song-list');
-            container.innerHTML = html;
+            container.replaceChildren(template.content);
             if (typeof afterRender === 'function') afterRender();
+            if (mainArea) mainArea.scrollTop = mainScrollTop;
+            container.scrollTop = containerScrollTop;
         }
 
         document.addEventListener('click', (event) => {
@@ -10728,14 +10735,14 @@
             if (scope === 'liked') {
                 currentFavSortType = normalizedType;
                 if (document.getElementById('favSongsList')) {
-                    renderMobileLikedSongList(true);
+                    renderMobileLikedSongList(false);
                     syncFavoritesPlaybackSource();
                 }
             } else if (scope === 'playlist') {
                 currentPlaylistSortType = normalizedType;
                 const activeFile = currentSong ? currentSong.file : null;
                 if (currentPlaylistId && document.getElementById('playlistSongsList')) {
-                    renderPlaylistSongs(currentPlaylistId, true);
+                    renderPlaylistSongs(currentPlaylistId, false);
                     if (activeFile && playlistContainsSong(currentPlaylistId, activeFile)) {
                         const nextSource = currentPlaylistViewSongs.map((song) => ({ ...song }));
                         const nextIndex = nextSource.findIndex((song) => song.file === activeFile);
@@ -10750,11 +10757,11 @@
             } else if (scope === 'artist') {
                 currentArtistSortType = normalizedType;
                 if (currentArtistKey && document.getElementById('songsList')) {
-                    renderArtistSongs(currentArtistKey, true);
+                    renderArtistSongs(currentArtistKey, false);
                 }
             } else if (scope === 'download') {
                 currentDownloadSortType = normalizedType;
-                if (document.getElementById('downloadsSongsList')) showDownloads();
+                if (document.getElementById('downloadsSongsList')) renderDownloadsList(false);
             } else if (scope === 'queue') {
                 currentQueueSortType = normalizedType;
                 if (queue.length) {
@@ -10918,7 +10925,7 @@
                     artistName: last.artistName || ''
                 });
                 getAudioSrc('songs/' + last.file).then(src => {
-                    audio.src = src;
+                    setPrimaryAudioSource(src);
                     audio.addEventListener('loadedmetadata', () => {
                         if (last.currentTime > 0) audio.currentTime = Math.min(last.currentTime, audio.duration - 1);
                     }, {
@@ -10938,6 +10945,20 @@
                 }
             } catch (e) {}
             return filePath;
+        }
+
+        let activeAudioObjectUrl = '';
+        function releaseAudioObjectUrl(url, delay = 0) {
+            if (!url || !url.startsWith('blob:')) return;
+            window.setTimeout(() => URL.revokeObjectURL(url), delay);
+        }
+
+        function setPrimaryAudioSource(src, revokePrevious = true) {
+            const previousUrl = activeAudioObjectUrl;
+            activeAudioObjectUrl = src && src.startsWith('blob:') ? src : '';
+            audio.src = src;
+            if (revokePrevious && previousUrl && previousUrl !== activeAudioObjectUrl) releaseAudioObjectUrl(previousUrl);
+            return previousUrl;
         }
 
         async function removeCachedSong(fileId) {
@@ -11090,13 +11111,6 @@
         window.closePlaylistSortSheetOnOverlay = (e) => {
             if (e.target && e.target.dataset?.sortSheet === 'playlist') closePlaylistSortSheet();
         };
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closePlaylistSortSheet();
-                closeFavSortSheet();
-            }
-        });
-
         function updatePlaylistSortUI() {
             updateSortUI('playlist', currentPlaylistSortType);
         }
@@ -11493,6 +11507,7 @@
             }
             const targetVol = isMuted ? 0 : (parseFloat(volumeSlider.value) || 1);
             if (!audio.paused && audio.currentTime > 0) {
+                const fadingObjectUrl = activeAudioObjectUrl;
                 audioFade.src = audio.src;
                 audioFade.currentTime = audio.currentTime;
                 audioFade.volume = targetVol;
@@ -11504,13 +11519,14 @@
                     if (fv <= 0) {
                         audioFade.pause();
                         audioFade.src = '';
+                        releaseAudioObjectUrl(fadingObjectUrl);
                         clearInterval(crossfadeTimer);
                         crossfadeTimer = null;
                     }
                 }, 50);
             }
             const src = await getAudioSrc('songs/' + song.file);
-            audio.src = src;
+            setPrimaryAudioSource(src, audioFade.src === '');
             audio.volume = 0;
             posterEl.src = song.poster;
             playerTitle.textContent = song.title;
@@ -11540,7 +11556,7 @@
                 ...song,
                 artistName
             });
-            if (currentArtistKey) refreshSongRows();
+            if (currentArtistKey) updateArtistPlayingState(false);
             if (currentPlaylistId && document.getElementById('playlistSongsList')) updatePlaylistPlayingState(true);
             if (document.getElementById('favSongsList')) updateFavoritesPlayingState(true);
             shuffleHistory.push(song.file);
@@ -11840,7 +11856,11 @@
             if (!currentSong && !queue.length) {
                 html = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;color:var(--text2);gap:10px;font-size:.85rem"><div style="opacity:.3">${uiIcon('list-music')}</div><p>Your queue is empty</p></div>`;
             }
-            body.innerHTML = html;
+            const scrollTop = body.scrollTop;
+            const template = document.createElement('template');
+            template.innerHTML = html;
+            body.replaceChildren(template.content);
+            body.scrollTop = scrollTop;
             renderLucideIcons(body);
             updateSortUI('queue', currentQueueSortType);
             updateQueueIndicators();
@@ -11956,8 +11976,7 @@
 
         window.playFromQueue = async(i) => {
             if (!queue[i]) return;
-            const taken = queue.splice(0, i + 1);
-            const song = taken[taken.length - 1];
+            const [song] = queue.splice(i, 1);
             saveQueue();
             const previousSongFile = currentSong ? currentSong.file : null;
             if (isRepeat && previousSongFile && previousSongFile !== song.file) {
@@ -11982,7 +12001,7 @@
                 updateAmbientFromSong(song);
                 try {
                     const src = await getAudioSrc('songs/' + song.file);
-                    audio.src = src;
+                    setPrimaryAudioSource(src);
                     await audio.play();
                     setPlayButtonIcons(false);
                 } catch (e) {}
@@ -13255,7 +13274,7 @@
         audio.addEventListener('ended',()=>{ if(!isRepeat) next(); });
         audio.addEventListener('play',()=>{ 
             setPlayButtonIcons(false);
-            if(currentArtistKey) refreshSongRows();
+            if(currentArtistKey) updateArtistPlayingState(false);
             if(currentPlaylistId && document.getElementById('playlistSongsList')) updatePlaylistPlayingState(false);
             if(document.getElementById('favSongsList')) updateFavoritesPlayingState(false);
             setupVisualizer();
@@ -13266,7 +13285,7 @@
         });
         audio.addEventListener('pause',()=>{ 
             setPlayButtonIcons(true);
-            if(currentArtistKey) refreshSongRows();
+            if(currentArtistKey) updateArtistPlayingState(false);
             if(currentPlaylistId && document.getElementById('playlistSongsList')) updatePlaylistPlayingState(false);
             if(document.getElementById('favSongsList')) updateFavoritesPlayingState(false);
             setFullPlayerPlaybackState(false);
@@ -13418,6 +13437,16 @@
         registerFalconServiceWorker();
 
         if(!('caches' in window)){ console.warn('Cache API not available.'); document.querySelectorAll('.dl-btn,.player-dl-btn,.dl-queue-btn').forEach(el=>el.style.display='none'); }
+
+        const playerSongEl = document.querySelector('.player-song');
+        if (playerSongEl && playerSongEl.dataset.fullscreenBound !== '1') {
+            playerSongEl.dataset.fullscreenBound = '1';
+            playerSongEl.addEventListener('click', (e) => {
+                if (!(e.target instanceof Element)) return;
+                if (e.target.closest('button, input, .player-poster')) return;
+                if (currentSong) openFullPlayer();
+            });
+        }
 
       
         document.addEventListener('keydown', (e) => {
