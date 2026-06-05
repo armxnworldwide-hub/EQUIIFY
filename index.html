@@ -3507,6 +3507,100 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .home-preview-grid {
+            padding: 8px 24px 18px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+            gap: 14px;
+        }
+
+        .home-preview-grid.playlist-preview-grid {
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        }
+
+        .home-playlist-empty {
+            min-height: 188px;
+            border: 1px dashed rgba(255, 255, 255, .16);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--text2);
+            cursor: pointer;
+            transition: border-color .2s ease, color .2s ease, background .2s ease;
+        }
+
+        .home-playlist-empty:hover {
+            color: var(--text);
+            border-color: rgba(var(--ambient-rgb), .42);
+            background: rgba(var(--ambient-rgb), .08);
+        }
+
+        .stats-preview {
+            margin: 8px 24px 28px;
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: linear-gradient(145deg, rgba(28, 28, 28, .82), rgba(16, 16, 16, .92));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 20px 36px rgba(0, 0, 0, .28);
+        }
+
+        .stats-preview-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .stats-preview-title {
+            font-size: .96rem;
+            font-weight: 900;
+        }
+
+        .stats-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .home-stat-card {
+            min-width: 0;
+            border-radius: 14px;
+            padding: 13px;
+            border: 1px solid rgba(255, 255, 255, .08);
+            background: rgba(255, 255, 255, .045);
+        }
+
+        .home-stat-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text2);
+            font-size: .64rem;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .home-stat-value {
+            margin-top: 9px;
+            font-size: 1.24rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .home-stat-note {
+            margin-top: 7px;
+            color: var(--muted2);
+            font-size: .68rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         
         .btn {
             padding: 8px 20px;
@@ -7603,6 +7697,19 @@
                 grid-template-columns: 1fr;
                 gap: 8px;
             }
+            .home-preview-grid,
+            .home-preview-grid.playlist-preview-grid {
+                padding: 8px 10px 14px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+            .stats-preview {
+                margin: 8px 10px 20px;
+                padding: 14px;
+            }
+            .stats-preview-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
         
         @media (max-width: 480px) {
@@ -7648,7 +7755,8 @@
         .playlist-song-row,
         .fav-song-row,
         .trending-card,
-        .recommend-card {
+        .recommend-card,
+        .home-stat-card {
             content-visibility: auto;
             contain-intrinsic-size: 72px;
         }
@@ -8102,7 +8210,7 @@
 
         <div class="sidebar-nav-block">
             <button class="nav-btn active" id="navHome" onclick="loadArtists()">
-                <span class="nav-icon-wrap"><i data-lucide="disc-3" aria-hidden="true"></i></span> Artists
+                <span class="nav-icon-wrap"><i data-lucide="house" aria-hidden="true"></i></span> Home
             </button>
             <button class="nav-btn" id="navFav" onclick="showLikedSongs()">
                 <span class="nav-icon-wrap"><i data-lucide="heart" aria-hidden="true"></i></span> Favorites
@@ -11780,11 +11888,99 @@
             return pool;
         }
 
+        function formatCompactNumber(value) {
+            const n = Math.max(0, Number(value) || 0);
+            if (n >= 1000000) return `${(n / 1000000).toFixed(n >= 10000000 ? 0 : 1)}M`;
+            if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}K`;
+            return String(Math.round(n));
+        }
+
+        function formatDurationLabel(seconds) {
+            const s = Math.max(0, Number(seconds) || 0);
+            if (s >= 3600) return `${Math.round(s / 3600)} hr`;
+            if (s >= 60) return `${Math.round(s / 60)} min`;
+            return `${Math.round(s)} sec`;
+        }
+
+        function getArtistAffinityRows(keys = Object.keys(artists)) {
+            return keys.map((key, index) => {
+                const artist = artists[key];
+                const songs = Array.isArray(artist?.songs) ? artist.songs : [];
+                const likedCount = songs.reduce((sum, song) => sum + (likedSongs.has(song.file) ? 1 : 0), 0);
+                const plays = songs.reduce((sum, song) => sum + (songPlayCounts[song.file] || 0), 0);
+                return { key, artist, index, likedCount, plays, score: likedCount * 10000 + plays };
+            }).sort((a, b) => b.score - a.score || b.artist.songs.length - a.artist.songs.length || a.index - b.index);
+        }
+
+        function getLibraryStats(songPool = buildLibrarySongPool()) {
+            const artistRows = getArtistAffinityRows(Object.keys(artists));
+            const totalPlayCount = songPool.reduce((sum, song) => sum + (songPlayCounts[song.file] || song.playCount || 0), 0);
+            const totalSeconds = songPool.reduce((sum, song) => {
+                const plays = songPlayCounts[song.file] || song.playCount || 0;
+                const duration = Number(songDurationMeta[song.file] || song.duration || 0);
+                return sum + (plays * (Number.isFinite(duration) ? duration : 0));
+            }, 0);
+            return {
+                totalSongs: songPool.length,
+                totalArtists: Object.keys(artists).length,
+                totalPlayCount,
+                totalSeconds,
+                likedCount: likedSongs.size,
+                downloadedCount: downloadedFiles.size,
+                playlistCount: Object.keys(playlists).length,
+                queueCount: queue.length,
+                topArtists: artistRows.filter((row) => row.artist).slice(0, 6),
+                topArtist: artistRows.find((row) => row.score > 0)?.artist?.name || artistRows[0]?.artist?.name || 'FalconX'
+            };
+        }
+
+        function getPlaybackProgressForSong(song) {
+            const file = song?.file || '';
+            if (!file) return 0;
+            if (currentSong && currentSong.file === file && Number.isFinite(audio.duration) && audio.duration > 0) {
+                return clampNumber((audio.currentTime / audio.duration) * 100, 0, 100);
+            }
+            try {
+                const last = JSON.parse(localStorage.getItem('eq_last_song') || 'null');
+                if (last && last.file === file && Number(last.duration) > 0 && Number(last.currentTime) > 0) {
+                    return clampNumber((Number(last.currentTime) / Number(last.duration)) * 100, 0, 100);
+                }
+            } catch (e) {}
+            return 0;
+        }
+
+        function artistPreviewCardHTML(row) {
+            const artist = row.artist;
+            const meta = row.likedCount ? `${row.likedCount} liked` : row.plays ? `${formatCompactNumber(row.plays)} plays` : `${artist.songs.length} tracks`;
+            return `<div class="artist-card" onclick="openArtist('${escA(row.key)}')"><div class="artist-card-img-wrap"><img src="${escH(artist.image)}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${escA(row.key)}')">${uiIcon('play')}</button></div><div class="artist-card-name">${escH(artist.name)}</div><div class="artist-card-count">${escH(meta)}</div></div>`;
+        }
+
+        function getHomePlaylistIds() {
+            return Object.keys(playlists).sort((a, b) => {
+                const pa = playlists[a] || {};
+                const pb = playlists[b] || {};
+                return (pb.updatedAt || pb.createdAt || 0) - (pa.updatedAt || pa.createdAt || 0) || String(pa.name || '').localeCompare(String(pb.name || ''));
+            });
+        }
+
+        function playlistPreviewCardHTML(id) {
+            const pl = playlists[id];
+            const songs = Array.isArray(pl?.songs) ? pl.songs : [];
+            const covers = songs.slice(0, 4).map((song) => song.poster);
+            while (covers.length < 4) covers.push(null);
+            return `<div class="playlist-card" onclick="openPlaylist('${escA(id)}')"><div class="playlist-card-cover">${covers.map((cover) => cover ? `<img src="${escH(cover)}" onerror="this.parentElement.style.background='var(--surface3)'" loading="lazy">` : `<div class="cover-ph">${uiIcon('music-2')}</div>`).join('')}</div><div class="playlist-card-name">${escH(pl.name || 'Untitled Playlist')}</div><div class="playlist-card-count">${songs.length} song${songs.length !== 1 ? 's' : ''}</div>${songs.length ? `<button class="playlist-card-play" onclick="event.stopPropagation();playPlaylistById('${escA(id)}')">${uiIcon('play')}</button>` : ''}</div>`;
+        }
+
+        function statsPreviewCardHTML(label, value, note, icon) {
+            return `<div class="home-stat-card"><div class="home-stat-label">${uiIcon(icon)}<span>${escH(label)}</span></div><div class="home-stat-value">${escH(value)}</div><div class="home-stat-note">${escH(note)}</div></div>`;
+        }
+
         function loadArtists() {
             setNavActive('navHome');
             setMobileBack(false);
             const keys = Object.keys(artists);
             const songPool = buildLibrarySongPool();
+            const stats = getLibraryStats(songPool);
             const featuredSong = currentSong ? ({
                 ...currentSong,
                 artistName: currentArtistKey && artists[currentArtistKey] ? artists[currentArtistKey].name : (currentSong.artistName || playerArtist.textContent || '')
@@ -11793,8 +11989,14 @@
             const likedPool = songPool.filter((song) => likedSongs.has(song.file));
             const recommendationSeed = likedPool.length ? likedPool : songPool;
             const recommendSongs = [...recommendationSeed].sort((a, b) => (b.plays || 0) - (a.plays || 0) || a.artistName.localeCompare(b.artistName)).slice(0, 6);
-            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
-            const featuredHTML = featuredSong ? `<section class="featured-hero"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
+            const continueItems = (continueListening.length ? continueListening : songPool).slice(0, 18);
+            const favoriteArtistRows = getArtistAffinityRows(keys);
+            const favoriteArtistCount = favoriteArtistRows.filter((row) => row.likedCount > 0).length;
+            const playlistIds = getHomePlaylistIds();
+            const continueHTML = continueItems.length > 0 ? `<div class="continue-strip"><div class="continue-label">${uiIcon('play')}<span>${continueListening.length ? 'Continue Listening' : 'Start Listening'}</span></div><div class="continue-scroll">${continueItems.map((song) => { const progress = getPlaybackProgressForSong(song); return `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div><div class="continue-progress"><span style="--progress:${progress.toFixed(1)}%"></span></div></div></div>`; }).join('')}</div></div>` : '';
+            const featuredHTML = featuredSong ? `<section class="featured-hero"><div class="featured-bg" style="background-image:url('${escH(featuredSong.poster || '')}')"></div><div class="featured-overlay"></div><div class="featured-body"><div class="featured-kicker">Smart Hero</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Mobile-first playback with synced lyrics, queue, downloads, and dynamic ambience.</p><div class="featured-chips"><span class="featured-chip">${uiIcon('music-2')} ${stats.totalSongs} tracks</span><span class="featured-chip">${uiIcon('heart')} ${stats.likedCount} liked</span><span class="featured-chip">${uiIcon('list-music')} ${stats.playlistCount} playlists</span></div><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
+            const playlistPreviewHTML = playlistIds.length ? playlistIds.slice(0, 6).map((id) => playlistPreviewCardHTML(id)).join('') : `<div class="home-playlist-empty" onclick="openCreatePlaylistModal()"><div>${uiIcon('plus')}</div><strong>Create playlist</strong><span>Build a mix from any song</span></div>`;
+            const statsPreviewHTML = `<section class="stats-preview"><div class="stats-preview-head"><div class="stats-preview-title">Stats Preview</div><button class="section-link" onclick="showStatsDashboard()">Open Stats</button></div><div class="stats-preview-grid">${statsPreviewCardHTML('Plays', formatCompactNumber(stats.totalPlayCount), `${stats.totalArtists} artists`, 'activity')}${statsPreviewCardHTML('Listening', formatDurationLabel(stats.totalSeconds), stats.topArtist, 'clock-3')}${statsPreviewCardHTML('Favorites', String(stats.likedCount), `${stats.downloadedCount} offline`, 'heart')}${statsPreviewCardHTML('Queue', String(stats.queueCount), `${stats.playlistCount} playlists`, 'list-music')}</div></section>`;
 
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
@@ -11813,27 +12015,15 @@
             </div>
             ${featuredHTML}
             ${continueHTML}
-            <div class="premium-row">
-                <div class="premium-row-title">Trending Now</div>
-                <div class="premium-row-sub">${trendingSongs.length} Tracks</div>
-            </div>
-            <div class="trending-strip">
-                ${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="trending-text"><div class="trending-title">${songTitleHTML(song)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}
-            </div>
-            <div class="premium-row">
-                <div class="premium-row-title">Recommended For You</div>
-                <div class="premium-row-sub">${likedPool.length ? 'Based on Favorites' : 'Fresh Picks'}</div>
-            </div>
-            <div class="recommend-grid">
-                ${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}
-            </div>
-            <div class="section-header">
-                <div class="section-title">Artists</div>
-                <span style="font-family:'Circular Std','Circular','Spotify Mix','Nunito Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.62rem;color:var(--text2)">${keys.length} IN LIBRARY</span>
-            </div>
-            <div class="artists-grid">
-                ${keys.map((key) => { const artist = artists[key]; return `<div class="artist-card" onclick="openArtist('${key}')"><div class="artist-card-img-wrap"><img src="${artist.image}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${key}')">${uiIcon('play')}</button></div><div class="artist-card-name">${artist.name}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`; }).join('')}
-            </div>`;
+            <div class="premium-row"><div class="premium-row-title">Trending Now</div><div class="premium-row-sub">${trendingSongs.length} Tracks</div></div>
+            <div class="trending-strip">${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="trending-text"><div class="trending-title">${songTitleHTML(song)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}</div>
+            <div class="premium-row"><div class="premium-row-title">Favorite Artists</div><div class="premium-row-sub">${favoriteArtistCount ? `${favoriteArtistCount} Favorites` : `${keys.length} In Library`}</div></div>
+            <div class="home-preview-grid artist-preview-grid">${favoriteArtistRows.map((row) => artistPreviewCardHTML(row)).join('')}</div>
+            <div class="premium-row"><div class="premium-row-title">Playlists</div><button class="section-link" onclick="showPlaylists()">View All</button></div>
+            <div class="home-preview-grid playlist-preview-grid">${playlistPreviewHTML}</div>
+            <div class="premium-row"><div class="premium-row-title">Recommended For You</div><div class="premium-row-sub">${likedPool.length ? 'Based on Favorites' : 'Fresh Picks'}</div></div>
+            <div class="recommend-grid">${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}</div>
+            ${statsPreviewHTML}`;
             initSearchClear();
             renderLucideIcons(mainArea);
         }
@@ -11952,6 +12142,7 @@
                 crossfadeTimer = null;
             }
             const targetVol = isMuted ? 0 : (parseFloat(volumeSlider.value) || 1);
+            const fadeSteps = getAudioFadeSteps();
             if (!audio.paused && audio.currentTime > 0) {
                 const fadingObjectUrl = activeAudioObjectUrl;
                 audioFade.src = audio.src;
@@ -11960,7 +12151,7 @@
                 audioFade.play().catch(() => {});
                 let fv = targetVol;
                 crossfadeTimer = setInterval(() => {
-                    fv = Math.max(0, fv - targetVol / 15);
+                    fv = Math.max(0, fv - targetVol / fadeSteps);
                     audioFade.volume = fv;
                     if (fv <= 0) {
                         audioFade.pause();
@@ -11985,7 +12176,7 @@
             audio.play().then(() => {
                 let v = 0;
                 const fi = setInterval(() => {
-                    v = Math.min(targetVol, v + targetVol / 15);
+                    v = Math.min(targetVol, v + targetVol / fadeSteps);
                     audio.volume = v;
                     if (v >= targetVol) {
                         audio.volume = targetVol;
@@ -12602,6 +12793,125 @@
         function updatePlayerLikeBtn(f) { const btn=document.getElementById('playerLikeBtn'); setElementIcon(btn, likedSongs.has(f)?'heart':'heart-off'); btn.classList.toggle('liked',likedSongs.has(f)); }
 
         function showLikedSongs() { setNavActive('navFav'); setMobileBack(true); refreshLikedDisplay(); }
+        function chartRowsHTML(rows, maxValue, type = 'song') {
+            if (!rows.length) return '<p class="stat-note">No listening data yet.</p>';
+            return rows.map((row) => {
+                const value = Math.max(0, Number(row.value) || 0);
+                const pct = maxValue > 0 ? Math.max(4, Math.round((value / maxValue) * 100)) : 0;
+                const click = row.file ? ` onclick="playSongByFile('${escA(row.file)}')" style="cursor:pointer"` : row.artistKey ? ` onclick="openArtist('${escA(row.artistKey)}')" style="cursor:pointer"` : '';
+                return `<div class="chart-row"${click}><span class="chart-name">${escH(row.name)}</span><span>${type === 'time' ? formatDurationLabel(value) : formatCompactNumber(value)}</span><div class="chart-bar"><span style="--bar:${pct}"></span></div></div>`;
+            }).join('');
+        }
+
+        function showStatsDashboard() {
+            setNavActive('navStats');
+            setMobileBack(true);
+            const songPool = buildLibrarySongPool();
+            const stats = getLibraryStats(songPool);
+            const topSongs = [...songPool].map((song) => ({ ...song, value: songPlayCounts[song.file] || song.playCount || 0 })).sort((a, b) => b.value - a.value || a.title.localeCompare(b.title)).slice(0, 6);
+            const maxSong = Math.max(1, ...topSongs.map((song) => song.value));
+            const artistRows = stats.topArtists.map((row) => ({ name: row.artist.name, value: row.plays || row.likedCount, artistKey: row.key }));
+            const maxArtist = Math.max(1, ...artistRows.map((row) => row.value));
+            const recentRows = continueListening.slice(0, 6).map((song) => ({ name: song.title || 'Unknown', value: song.lastPlayed || 0, file: song.file, artist: song.artistName || '' }));
+            const mainArea = document.getElementById('mainArea');
+            mainArea.innerHTML = `
+            <div class="premium-dashboard">
+                <div class="premium-dashboard-hero">
+                    <div><div class="premium-dashboard-kicker">Listening Stats</div><div class="premium-dashboard-title">Your FalconX Pulse</div><div class="premium-dashboard-sub">Top tracks, favorite artists, listening time, streaks, and library health in one mobile-ready view.</div></div>
+                    <button class="btn btn-outline" onclick="loadArtists()">${uiIcon('house')}<span>Home</span></button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-label">Total Plays</div><div class="stat-value">${formatCompactNumber(stats.totalPlayCount)}</div><div class="stat-note">Across ${stats.totalSongs} tracks</div></div>
+                    <div class="stat-card"><div class="stat-label">Listening Time</div><div class="stat-value">${formatDurationLabel(stats.totalSeconds)}</div><div class="stat-note">Estimated from saved durations</div></div>
+                    <div class="stat-card"><div class="stat-label">Favorites</div><div class="stat-value">${stats.likedCount}</div><div class="stat-note">${stats.downloadedCount} saved offline</div></div>
+                    <div class="stat-card"><div class="stat-label">Streak</div><div class="stat-value">${continueListening.length ? 'Live' : '0'}</div><div class="stat-note">Recent listening memory</div></div>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-card"><div class="chart-title">Top Songs</div>${chartRowsHTML(topSongs.map((song) => ({ name: song.title, value: song.value, file: song.file })), maxSong)}</div>
+                    <div class="chart-card"><div class="chart-title">Top Artists</div>${chartRowsHTML(artistRows, maxArtist)}</div>
+                    <div class="chart-card"><div class="chart-title">Library Mix</div>${chartRowsHTML([{ name: 'Playlists', value: stats.playlistCount }, { name: 'Queue', value: stats.queueCount }, { name: 'Downloads', value: stats.downloadedCount }, { name: 'Liked Songs', value: stats.likedCount }], Math.max(1, stats.playlistCount, stats.queueCount, stats.downloadedCount, stats.likedCount))}</div>
+                    <div class="chart-card"><div class="chart-title">Recent Plays</div><div class="recent-list">${recentRows.length ? recentRows.map((song) => `<div class="recent-item" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(continueListening.find((s) => s.file === song.file)?.poster || '')}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="recommend-text"><div class="recommend-title">${escH(song.name)}</div><div class="recommend-meta">${escH(song.artist)}</div></div><span>${uiIcon('play')}</span></div>`).join('') : '<p class="stat-note">Play a song to start building history.</p>'}</div></div>
+                </div>
+            </div>`;
+            renderLucideIcons(mainArea);
+        }
+
+        const AUDIO_SETTINGS_KEY = 'eq_audio_settings_v1';
+        function getAudioSettings() {
+            const defaults = { quality: 'auto', preset: 'balanced', bass: 0, vocal: 0, crossfade: .75, lowPower: false, bands: [0, 0, 0, 0, 0, 0, 0] };
+            try {
+                const parsed = JSON.parse(localStorage.getItem(AUDIO_SETTINGS_KEY) || '{}');
+                return { ...defaults, ...(parsed && typeof parsed === 'object' ? parsed : {}), bands: Array.isArray(parsed?.bands) ? parsed.bands.slice(0, 7).map((v) => Number(v) || 0) : defaults.bands };
+            } catch (e) {
+                return defaults;
+            }
+        }
+
+        function saveAudioSettings(settings) {
+            localStorage.setItem(AUDIO_SETTINGS_KEY, JSON.stringify(settings));
+            applyAudioSettings(settings);
+        }
+
+        function applyAudioSettings(settings = getAudioSettings()) {
+            document.body.classList.toggle('fx-low-power', !!settings.lowPower);
+            document.documentElement.style.setProperty('--fx-bass', String(settings.bass || 0));
+            document.documentElement.style.setProperty('--fx-vocal', String(settings.vocal || 0));
+        }
+
+        function getAudioFadeSteps() {
+            const settings = getAudioSettings();
+            const seconds = clampNumber(Number(settings.crossfade) || .75, 0, 5);
+            return Math.max(1, Math.round((seconds * 1000) / 50));
+        }
+
+        function setAudioSetting(key, value) {
+            const settings = getAudioSettings();
+            if (key === 'lowPower') settings.lowPower = value === true || value === 'true';
+            else if (key === 'crossfade') settings.crossfade = clampNumber(Number(value) || 0, 0, 5);
+            else if (key === 'bass' || key === 'vocal') settings[key] = clampNumber(Number(value) || 0, -6, 6);
+            else settings[key] = String(value);
+            saveAudioSettings(settings);
+            if (document.getElementById('audioSettingsShell')) showAudioSettings();
+        }
+
+        function setEqBand(index, value) {
+            const settings = getAudioSettings();
+            settings.bands[index] = clampNumber(Number(value) || 0, -6, 6);
+            saveAudioSettings(settings);
+            const valueEl = document.getElementById(`eqBandValue_${index}`);
+            if (valueEl) valueEl.textContent = `${settings.bands[index] > 0 ? '+' : ''}${settings.bands[index]} dB`;
+        }
+
+        function showAudioSettings() {
+            setNavActive('navAudio');
+            setMobileBack(true);
+            const settings = getAudioSettings();
+            const qualityOptions = ['auto', 'high', 'data saver'];
+            const presetOptions = ['balanced', 'bass', 'vocal', 'night'];
+            const bands = ['60', '150', '400', '1K', '2.4K', '6K', '12K'];
+            const mainArea = document.getElementById('mainArea');
+            mainArea.innerHTML = `
+            <div class="audio-settings-shell" id="audioSettingsShell">
+                <div class="audio-settings-hero">
+                    <div><div class="audio-settings-kicker">Audio Settings</div><div class="audio-settings-title">Premium Sound Control</div><div class="audio-settings-sub">Equalizer, boosts, quality, crossfade, and low-power playback preferences.</div></div>
+                    <button class="btn btn-outline" onclick="loadArtists()">${uiIcon('house')}<span>Home</span></button>
+                </div>
+                <div class="audio-card-grid">
+                    <div class="audio-card wide"><div class="chart-title">Equalizer</div><div class="eq-slider-grid">${bands.map((label, i) => `<label class="eq-band"><input type="range" min="-6" max="6" step="1" value="${settings.bands[i] || 0}" oninput="setEqBand(${i}, this.value)"><span class="eq-band-label">${label}</span><span class="eq-band-value" id="eqBandValue_${i}">${settings.bands[i] > 0 ? '+' : ''}${settings.bands[i] || 0} dB</span></label>`).join('')}</div></div>
+                    <div class="audio-card"><div class="chart-title">Presets</div><div class="fx-pill-row">${presetOptions.map((option) => `<button class="fx-pill${settings.preset === option ? ' active' : ''}" onclick="setAudioSetting('preset','${option}')">${escH(option)}</button>`).join('')}</div></div>
+                    <div class="audio-card"><div class="chart-title">Quality</div><div class="fx-pill-row">${qualityOptions.map((option) => `<button class="fx-pill${settings.quality === option ? ' active' : ''}" onclick="setAudioSetting('quality','${option}')">${escH(option)}</button>`).join('')}</div></div>
+                    <div class="audio-card"><div class="chart-title">Boosts</div><label class="eq-band"><span class="eq-band-label">Bass</span><input type="range" min="-6" max="6" step="1" value="${settings.bass}" oninput="setAudioSetting('bass', this.value)"><span class="eq-band-value">${settings.bass > 0 ? '+' : ''}${settings.bass} dB</span></label><label class="eq-band"><span class="eq-band-label">Vocal</span><input type="range" min="-6" max="6" step="1" value="${settings.vocal}" oninput="setAudioSetting('vocal', this.value)"><span class="eq-band-value">${settings.vocal > 0 ? '+' : ''}${settings.vocal} dB</span></label></div>
+                    <div class="audio-card"><div class="chart-title">Playback</div><label class="eq-band"><span class="eq-band-label">Crossfade</span><input type="range" min="0" max="5" step="0.25" value="${settings.crossfade}" oninput="setAudioSetting('crossfade', this.value)"><span class="eq-band-value">${settings.crossfade}s</span></label><div class="fx-pill-row"><button class="fx-pill${settings.lowPower ? ' active' : ''}" onclick="setAudioSetting('lowPower', ${!settings.lowPower})">Low Power</button></div></div>
+                    <div class="audio-card wide"><div class="chart-title">Output Meter</div><div class="fx-eq-meter">${Array.from({ length: 14 }, (_, i) => `<span style="--i:${i};--gain:${18 + ((i * 11) % 72)}"></span>`).join('')}</div></div>
+                </div>
+            </div>`;
+            renderLucideIcons(mainArea);
+        }
+
+        window.showStatsDashboard = showStatsDashboard;
+        window.showAudioSettings = showAudioSettings;
+        window.setAudioSetting = setAudioSetting;
+        window.setEqBand = setEqBand;
 
         function getFavSortLabel(type) {
             return getSortLabel(type);
@@ -13794,7 +14104,8 @@
             const e=document.getElementById(id);
             if(e)e.classList.add('active');
             if (id === 'navFav') syncMobileNavActive('fav');
-            else if (id === 'navPlaylists' || id === 'navDownloads') syncMobileNavActive('library');
+            else if (id === 'navStats') syncMobileNavActive('stats');
+            else if (id === 'navPlaylists' || id === 'navDownloads' || id === 'navAudio') syncMobileNavActive('library');
             else syncMobileNavActive('home');
         }
         function setSidebarActive(key) { document.querySelectorAll('.artist-item').forEach(e=>e.classList.remove('active')); const e=document.getElementById('sb_'+key); if(e){e.classList.add('active');} }
@@ -13860,6 +14171,8 @@
                     showLikedSongs();
                 } else if (tab === 'library') {
                     showPlaylists();
+                } else if (tab === 'stats') {
+                    showStatsDashboard();
                 }
             });
         }
@@ -13871,7 +14184,7 @@
         window.playSong = playSong; window.next = next; window.previous = previous;
         window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
         window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue;
-        window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
+        window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.showStatsDashboard = showStatsDashboard; window.showAudioSettings = showAudioSettings; window.refreshLikedDisplay = refreshLikedDisplay;
         window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch;
 
         // -- INIT --
@@ -13879,6 +14192,7 @@
         buildSidebar();
         loadArtists();
         loadPlaybackMemory();
+        applyAudioSettings(getAudioSettings());
         renderQueuePanel();
         setupQueuePanelInteractions();
         setupSongRowSwipeGestures();
@@ -13923,6 +14237,10 @@
         <button class="mnav-btn" data-tab="library">
             <span><i data-lucide="list-music" aria-hidden="true"></i></span>
             <small>Library</small>
+        </button>
+        <button class="mnav-btn" data-tab="stats">
+            <span><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i></span>
+            <small>Stats</small>
         </button>
     </nav>
 </body>
