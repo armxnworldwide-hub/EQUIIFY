@@ -1401,6 +1401,65 @@
             text-overflow: ellipsis;
             max-width: 130px;
         }
+
+        .player-title-line,
+        .title-with-badge,
+        .mfp-title-line,
+        .mfp-header-song-line {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .player-title-line,
+        .mfp-title-line,
+        .mfp-header-song-line {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .player-title-line {
+            justify-content: flex-start;
+        }
+
+        .mfp-header-song-line .mfp-header-song,
+        .mfp-title-line .mfp-song-title {
+            width: auto;
+            min-width: 0;
+        }
+
+        .title-text,
+        .title-with-badge > span:first-child {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .explicit-badge {
+            flex: 0 0 auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 16px;
+            height: 14px;
+            padding: 0 4px;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, .18);
+            background: rgba(13, 13, 13, .9);
+            color: rgba(255, 255, 255, .82);
+            font-size: .56rem;
+            line-height: 1;
+            font-weight: 900;
+            letter-spacing: 0;
+        }
+
+        .explicit-badge.hidden,
+        .explicit-badge[hidden] {
+            display: none;
+        }
         
         .player-song-artist {
             font-size: .75rem;
@@ -4758,6 +4817,17 @@
             text-shadow: 0 0 26px rgba(200, 245, 66, .56), 0 0 52px rgba(120, 240, 112, .22);
             animation: mfpLyricPulse 2.35s ease-in-out infinite;
         }
+
+        #fullscreenPlayer .mfp-lyric-text {
+            background: linear-gradient(90deg, #eaff9a 0%, #eaff9a calc(var(--lyric-progress, 0) * 100%), currentColor calc(var(--lyric-progress, 0) * 100%), currentColor 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        #fullscreenPlayer .mfp-lyric-line.active .mfp-lyric-text {
+            color: transparent;
+            filter: drop-shadow(0 0 16px rgba(200, 245, 66, .34));
+        }
         
         #fullscreenPlayer .mfp-lyrics-empty {
             margin: 0;
@@ -7573,6 +7643,328 @@
                 border-radius: 9px;
             }
         }
+
+        .song-row,
+        .playlist-song-row,
+        .fav-song-row,
+        .trending-card,
+        .recommend-card {
+            content-visibility: auto;
+            contain-intrinsic-size: 72px;
+        }
+
+        .premium-dashboard,
+        .audio-settings-shell {
+            padding: 20px 24px 34px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .premium-dashboard-hero,
+        .audio-settings-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: end;
+            padding: 22px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: linear-gradient(135deg, rgba(var(--ambient-rgb), .14), rgba(255, 255, 255, .035)), rgba(18, 18, 18, .72);
+            box-shadow: 0 24px 56px rgba(0, 0, 0, .26);
+        }
+
+        .premium-dashboard-kicker,
+        .audio-settings-kicker {
+            font-size: .68rem;
+            font-weight: 900;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .62);
+            margin-bottom: 7px;
+        }
+
+        .premium-dashboard-title,
+        .audio-settings-title {
+            font-size: clamp(1.45rem, 3.6vw, 2.6rem);
+            line-height: 1.04;
+            font-weight: 900;
+            letter-spacing: 0;
+        }
+
+        .premium-dashboard-sub,
+        .audio-settings-sub {
+            margin-top: 8px;
+            color: var(--text2);
+            font-size: .92rem;
+            line-height: 1.45;
+        }
+
+        .stats-grid,
+        .audio-card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .stat-card,
+        .audio-card,
+        .chart-card {
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, .09);
+            background: rgba(22, 22, 22, .72);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 18px 44px rgba(0, 0, 0, .2);
+        }
+
+        .stat-card,
+        .chart-card,
+        .audio-card {
+            padding: 16px;
+        }
+
+        .stat-card {
+            min-height: 108px;
+        }
+
+        .stat-label {
+            color: var(--text2);
+            font-size: .68rem;
+            font-weight: 800;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            margin-top: 10px;
+            font-size: clamp(1.45rem, 2.8vw, 2.1rem);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .stat-note {
+            margin-top: 8px;
+            color: var(--muted2);
+            font-size: .74rem;
+        }
+
+        .chart-title {
+            font-size: .92rem;
+            font-weight: 900;
+            margin-bottom: 13px;
+        }
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            color: rgba(255, 255, 255, .86);
+            font-size: .78rem;
+        }
+
+        .chart-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chart-bar {
+            grid-column: 1 / -1;
+            height: 7px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .chart-bar span {
+            display: block;
+            height: 100%;
+            width: calc(var(--bar, 0) * 1%);
+            border-radius: inherit;
+            background: linear-gradient(90deg, rgba(var(--ambient-rgb), .96), rgba(var(--ambient-rgb-2), .88));
+            transform-origin: left center;
+            animation: chartGrow .72s cubic-bezier(.2, .8, .2, 1) both;
+        }
+
+        @keyframes chartGrow {
+            from { transform: scaleX(.08); }
+            to { transform: scaleX(1); }
+        }
+
+        .recent-list {
+            display: grid;
+            gap: 9px;
+        }
+
+        .recent-item {
+            display: grid;
+            grid-template-columns: 44px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .04);
+            cursor: pointer;
+        }
+
+        .recent-item img {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .audio-card {
+            display: grid;
+            gap: 14px;
+        }
+
+        .audio-card.wide {
+            grid-column: span 2;
+        }
+
+        .fx-pill-row,
+        .crossfade-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .fx-pill {
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .06);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 9px 12px;
+            font: inherit;
+            font-size: .76rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .fx-pill.active {
+            background: rgba(var(--ambient-rgb), .18);
+            border-color: rgba(var(--ambient-rgb), .48);
+            color: #fff;
+        }
+
+        .eq-slider-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(44px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+
+        .eq-band {
+            display: grid;
+            gap: 8px;
+            justify-items: center;
+            min-width: 0;
+        }
+
+        .eq-band input[type="range"] {
+            writing-mode: vertical-rl;
+            direction: rtl;
+            width: 32px;
+            height: 132px;
+            accent-color: rgb(var(--ambient-rgb));
+        }
+
+        .eq-band-label,
+        .eq-band-value {
+            font-size: .62rem;
+            color: var(--text2);
+            white-space: nowrap;
+        }
+
+        .fx-eq-meter {
+            height: 92px;
+            display: flex;
+            align-items: end;
+            gap: 7px;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, .22);
+            overflow: hidden;
+        }
+
+        .fx-eq-meter span {
+            flex: 1;
+            min-width: 5px;
+            height: calc(18% + var(--gain, 0) * 1%);
+            border-radius: 999px 999px 4px 4px;
+            background: linear-gradient(180deg, rgba(var(--ambient-rgb), .94), rgba(var(--ambient-rgb-2), .48));
+            animation: meterPulse 1.5s ease-in-out infinite alternate;
+            animation-delay: calc(var(--i, 0) * -110ms);
+        }
+
+        @keyframes meterPulse {
+            to {
+                transform: scaleY(.72);
+                opacity: .68;
+            }
+        }
+
+        body.fx-low-power::before {
+            opacity: .36;
+            filter: blur(18px) saturate(1);
+        }
+
+        body.fx-low-power .mfp-bg-image,
+        body.fx-low-power .mfp-aura,
+        body.fx-low-power .mfp-artwork,
+        body.fx-low-power .mfp-artwork-wrap,
+        body.fx-low-power .mfp-artwork-glow,
+        body.fx-low-power .fx-eq-meter span {
+            animation: none !important;
+        }
+
+        body.fx-low-power .mfp-bg-image,
+        body.fx-low-power .mfp-artwork-glow {
+            filter: blur(24px) saturate(1.05);
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid,
+            .audio-card-grid,
+            .chart-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .premium-dashboard-hero,
+            .audio-settings-hero {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .premium-dashboard,
+            .audio-settings-shell {
+                padding: 16px 14px 28px;
+            }
+            .stats-grid,
+            .audio-card-grid,
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            .audio-card.wide {
+                grid-column: auto;
+            }
+            .eq-slider-grid {
+                grid-template-columns: repeat(7, minmax(30px, 1fr));
+                gap: 4px;
+            }
+            .eq-band input[type="range"] {
+                height: 108px;
+                width: 26px;
+            }
+        }
         
         @media (prefers-reduced-motion: reduce) {
             .mnav-btn,
@@ -7610,7 +8002,9 @@
             #fullscreenPlayer .mfp-artwork,
             #fullscreenPlayer .mfp-artwork-wrap,
             #fullscreenPlayer .mfp-artwork-glow,
-            #fullscreenPlayer .mfp-lyric-line.active {
+            #fullscreenPlayer .mfp-lyric-line.active,
+            .chart-bar span,
+            .fx-eq-meter span {
                 transition: none !important;
                 animation: none !important;
             }
@@ -7719,6 +8113,12 @@
             <button class="nav-btn" id="navPlaylists" onclick="showPlaylists()">
                 <span class="nav-icon-wrap"><i data-lucide="list-music" aria-hidden="true"></i></span> Playlists
             </button>
+            <button class="nav-btn" id="navStats" onclick="showStatsDashboard()">
+                <span class="nav-icon-wrap"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i></span> Stats
+            </button>
+            <button class="nav-btn" id="navAudio" onclick="showAudioSettings()">
+                <span class="nav-icon-wrap"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span> Audio
+            </button>
         </div>
 
 
@@ -7825,7 +8225,7 @@
             <img class="player-poster" id="poster" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Crect width='56' height='56' fill='%23282828' rx='6'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='22' fill='%23535353'%3E?%3C/text%3E%3C/svg%3E"
                 onclick="openFullPlayer()">
             <div class="player-song-main">
-                <div class="player-song-title" id="playerTitle">Nothing playing</div>
+                <div class="player-title-line"><div class="player-song-title" id="playerTitle">Nothing playing</div><span class="explicit-badge hidden" id="playerExplicitBadge" title="Explicit" aria-label="Explicit content">E</span></div>
                 <div class="player-song-artist" id="playerArtist">—</div>
                 <div class="player-song-meta"><span class="offline-badge" id="offlineBadge"><i data-lucide="check" aria-hidden="true"></i><span>Offline</span></span>
                 </div>
@@ -7904,7 +8304,7 @@
             <div class="mfp-header">
                 <button onclick="closeFullPlayer()" id="closePlayer" class="mfp-back-btn" aria-label="Close now playing"><i data-lucide="chevron-down" aria-hidden="true"></i></button>
                 <div class="mfp-header-title">
-                    <p class="mfp-header-song" id="fsHeaderSong">Song Name</p>
+                    <div class="mfp-header-song-line"><p class="mfp-header-song" id="fsHeaderSong">Song Name</p><span class="explicit-badge hidden" id="fsHeaderExplicitBadge" title="Explicit" aria-label="Explicit content">E</span></div>
                     <p class="mfp-header-artist" id="fsHeaderArtist">Artist</p>
                 </div>
                 <button class="mfp-header-action" id="fsLyricsToggle" onclick="toggleFullLyricsPanel()" title="Show lyrics focus" aria-label="Show lyrics focus"><i data-lucide="list-music" aria-hidden="true"></i></button>
@@ -7919,7 +8319,7 @@
                         <img id="fsPoster" class="mfp-artwork" alt="Now playing cover">
                     </div>
                     <div class="mfp-song-info">
-                        <h2 id="fsTitle" class="mfp-song-title">Song Name</h2>
+                        <div class="mfp-title-line"><h2 id="fsTitle" class="mfp-song-title">Song Name</h2><span class="explicit-badge hidden" id="fsExplicitBadge" title="Explicit" aria-label="Explicit content">E</span></div>
                         <p id="fsArtist" class="mfp-song-artist">Artist</p>
                     </div>
                 </div>
@@ -7972,6 +8372,8 @@
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();loadArtists()"><i data-lucide="house" aria-hidden="true"></i><span>Home</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showLikedSongs()"><i data-lucide="heart" aria-hidden="true"></i><span>Favorites</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showPlaylists()"><i data-lucide="list-music" aria-hidden="true"></i><span>Playlists</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showStatsDashboard()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
         </div>
     </aside>
@@ -10015,6 +10417,43 @@
             return cleanPoster || artistName || 'Singles';
         }
 
+        function readExplicitMetadata(song) {
+            if (!song || typeof song !== 'object') return null;
+            const raw = song.explicit ?? song.isExplicit ?? song.contentExplicit ?? song.parentalAdvisory ?? song.advisory ?? song.rating ?? song.contentRating;
+            if (typeof raw === 'boolean') return raw;
+            if (typeof raw === 'number') return raw > 0;
+            if (typeof raw === 'string') {
+                const normalized = raw.trim().toLowerCase();
+                if (['true', 'yes', '1', 'explicit', 'e', 'parental advisory', 'advisory'].includes(normalized)) return true;
+                if (['false', 'no', '0', 'clean', 'none', 'not explicit'].includes(normalized)) return false;
+            }
+            return null;
+        }
+
+        function isExplicitSong(song) {
+            const direct = readExplicitMetadata(song);
+            if (direct !== null) return direct;
+            const haystack = `${song?.title || ''} ${song?.file || ''}`.toLowerCase();
+            return /\b(stfu|unfuckwithable|bitch|g shit|shit|faak|fuck|explicit|parental advisory)\b/.test(haystack);
+        }
+
+        function explicitBadgeHTML(song) {
+            return isExplicitSong(song) ? '<span class="explicit-badge" title="Explicit" aria-label="Explicit content">E</span>' : '';
+        }
+
+        function songTitleHTML(song, fallbackTitle = '') {
+            const title = String(song?.title || fallbackTitle || 'Unknown');
+            return `<span class="title-with-badge"><span class="title-text">${escH(title)}</span>${explicitBadgeHTML(song)}</span>`;
+        }
+
+        function syncExplicitBadges(song = currentSong) {
+            const show = !!(song && isExplicitSong(song));
+            ['playerExplicitBadge', 'fsExplicitBadge', 'fsHeaderExplicitBadge'].forEach((id) => {
+                const badge = document.getElementById(id);
+                if (badge) badge.classList.toggle('hidden', !show);
+            });
+        }
+
         function getRecentSongMeta(fileId) {
             const target = getSongFileKey({ file: fileId });
             if (!target || !Array.isArray(continueListening)) return null;
@@ -10058,6 +10497,7 @@
                 genre: String(song?.genre || '').trim(),
                 mood: String(song?.mood || '').trim(),
                 bpm: Number.isFinite(Number(song?.bpm)) ? Number(song.bpm) : 0,
+                explicit: isExplicitSong(song),
                 __baseIndex: Number.isFinite(song?.__baseIndex) ? song.__baseIndex : index
             };
         }
@@ -10651,6 +11091,7 @@
                     title: typeof s.title === 'string' ? s.title : '',
                     poster: typeof s.poster === 'string' ? s.poster : '',
                     artistName: typeof s.artistName === 'string' ? s.artistName : '',
+                    explicit: isExplicitSong(s),
                     addedAt: typeof s.addedAt === 'number' ? s.addedAt : 0
                 })) : [];
                 out[id] = {
@@ -10669,7 +11110,8 @@
                 file: s.file,
                 title: typeof s.title === 'string' ? s.title : '',
                 poster: typeof s.poster === 'string' ? s.poster : '',
-                artistName: typeof s.artistName === 'string' ? s.artistName : ''
+                artistName: typeof s.artistName === 'string' ? s.artistName : '',
+                explicit: isExplicitSong(s)
             }));
         }
 
@@ -10865,6 +11307,7 @@
                 artist: currentSong.artist || currentSong.artistName || playerArtist.textContent || '',
                 album: currentSong.album || deriveSongAlbum(currentSong, playerArtist.textContent || ''),
                 duration: currentSong.duration || songDurationMeta[currentSong.file] || 0,
+                explicit: isExplicitSong(currentSong),
                 playCount: songPlayCounts[currentSong.file] || 0,
                 liked: likedSongs.has(currentSong.file),
                 downloaded: isDownloaded(currentSong.file),
@@ -10898,6 +11341,7 @@
                     artistName: last.artistName || last.artist || '',
                     album: last.album || '',
                     duration: last.duration || 0,
+                    explicit: isExplicitSong(last),
                     playCount: last.playCount || 0,
                     liked: !!last.liked,
                     downloaded: !!last.downloaded,
@@ -10918,10 +11362,12 @@
                 document.getElementById('fsArtist').textContent = last.artistName || '';
                 updatePlayerLikeBtn(last.file);
                 updatePlayerDlBtn();
+                syncExplicitBadges(currentSong);
                 updateAmbientFromSong({
                     file: last.file,
                     title: last.title,
                     poster: last.poster,
+                    explicit: isExplicitSong(last),
                     artistName: last.artistName || ''
                 });
                 getAudioSrc('songs/' + last.file).then(src => {
@@ -11026,7 +11472,7 @@
         }
 
         function downloadSongRowHTML(song, i) {
-            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playDlSong(${i})"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName)}</p></div></div><div class="song-actions" style="opacity:1"><span style="font-size:.6rem;color:var(--accent);background:var(--accent3);border:1px solid rgba(200,245,66,.18);padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px">${uiIcon('check')}<span>Saved</span></span><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button><button class="queue-btn" onclick="event.stopPropagation();removeCachedSong('${escA(song.file)}')" title="Remove">${uiIcon('x')}</button></div></div>`;
+            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playDlSong(${i})"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName)}</p></div></div><div class="song-actions" style="opacity:1"><span style="font-size:.6rem;color:var(--accent);background:var(--accent3);border:1px solid rgba(200,245,66,.18);padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px">${uiIcon('check')}<span>Saved</span></span><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button><button class="queue-btn" onclick="event.stopPropagation();removeCachedSong('${escA(song.file)}')" title="Remove">${uiIcon('x')}</button></div></div>`;
         }
 
         function renderDownloadsList(autoScrollActive = false) {
@@ -11276,7 +11722,7 @@
             const liked = likedSongs.has(song.file);
             const dl = isDownloaded(song.file);
             const canDrag = currentPlaylistSortType === 'custom';
-            return `<div class="playlist-song-row${playing?' playing':''}" data-file="${escH(song.file)}" draggable="${canDrag ? 'true' : 'false'}" onclick="playFromPlaylist('${escA(plId)}',${i})"><div class="ps-num">${playlistIndexContent(i, playing)}</div><div class="ps-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="ps-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName||song.artist||'')}</p></div></div><div class="ps-actions"><button class="ps-icon-btn${liked?' liked':''}" title="${liked?'Unlike':'Like'}" onclick="event.stopPropagation();togglePlaylistLike('${escA(plId)}','${escA(song.file)}')">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="ps-icon-btn${dl?' downloaded':''}" title="${dl?'Remove download':'Download'}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')">${dl?uiIcon('check'):uiIcon('download')}</button><button class="ps-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="ps-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button><button class="ps-remove" onclick="event.stopPropagation();removeSongFromPlaylist('${escA(plId)}','${escA(song.file)}')">${uiIcon('x')}<span>Remove</span></button></div></div>`;
+            return `<div class="playlist-song-row${playing?' playing':''}" data-file="${escH(song.file)}" draggable="${canDrag ? 'true' : 'false'}" onclick="playFromPlaylist('${escA(plId)}',${i})"><div class="ps-num">${playlistIndexContent(i, playing)}</div><div class="ps-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="ps-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName||song.artist||'')}</p></div></div><div class="ps-actions"><button class="ps-icon-btn${liked?' liked':''}" title="${liked?'Unlike':'Like'}" onclick="event.stopPropagation();togglePlaylistLike('${escA(plId)}','${escA(song.file)}')">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="ps-icon-btn${dl?' downloaded':''}" title="${dl?'Remove download':'Download'}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')">${dl?uiIcon('check'):uiIcon('download')}</button><button class="ps-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="ps-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button><button class="ps-remove" onclick="event.stopPropagation();removeSongFromPlaylist('${escA(plId)}','${escA(song.file)}')">${uiIcon('x')}<span>Remove</span></button></div></div>`;
         }
 
         window.playFromPlaylist = (plId,i) => { const source=getPlaylistPlaybackSource(plId); if(!source[i])return; currentSongs=source.map(s=>({...s})); currentArtistKey=null; currentIndex=i; playSong(i,true); };
@@ -11347,8 +11793,8 @@
             const likedPool = songPool.filter((song) => likedSongs.has(song.file));
             const recommendationSeed = likedPool.length ? likedPool : songPool;
             const recommendSongs = [...recommendationSeed].sort((a, b) => (b.plays || 0) - (a.plays || 0) || a.artistName.localeCompare(b.artistName)).slice(0, 6);
-            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${escH(song.title)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
-            const featuredHTML = featuredSong ? `<section class="featured-hero"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${escH(featuredSong.title || 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
+            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
+            const featuredHTML = featuredSong ? `<section class="featured-hero"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
 
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
@@ -11372,14 +11818,14 @@
                 <div class="premium-row-sub">${trendingSongs.length} Tracks</div>
             </div>
             <div class="trending-strip">
-                ${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="trending-text"><div class="trending-title">${escH(song.title)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}
+                ${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="trending-text"><div class="trending-title">${songTitleHTML(song)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}
             </div>
             <div class="premium-row">
                 <div class="premium-row-title">Recommended For You</div>
                 <div class="premium-row-sub">${likedPool.length ? 'Based on Favorites' : 'Fresh Picks'}</div>
             </div>
             <div class="recommend-grid">
-                ${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${escH(song.title)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}
+                ${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}
             </div>
             <div class="section-header">
                 <div class="section-title">Artists</div>
@@ -11434,7 +11880,7 @@
             renderArtistSongs(key, true);
         }
 
-        function songRowHTML(song,i,artistName) { const playing=currentSong&&currentSong.file===song.file&&!audio.paused; const liked=likedSongs.has(song.file); const dl=isDownloaded(song.file); const rowArtist=song.artistName||song.artist||artistName||''; return`<div class="song-row${playing?' playing':''}" id="row_${i}" data-file="${escH(song.file)}" onclick="playSong(${i},true)"><div class="song-num">${playing?'<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>':i+1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(song.title)}</h4><p>${escH(rowArtist)}</p></div></div><div class="song-actions"><button class="like-btn${liked?' liked':''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}',${i})">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="dl-btn${dl?' downloaded':''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')" title="${dl?'Remove':'Download'}">${dl?uiIcon('check'):uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();showAddToPlaylistMenu(event,'${escA(song.file)}',${i})" title="Add to playlist">${uiIcon('folder-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addToQueue(${i})" title="Add to end">${uiIcon('plus')}</button></div></div>`; }
+        function songRowHTML(song,i,artistName) { const playing=currentSong&&currentSong.file===song.file&&!audio.paused; const liked=likedSongs.has(song.file); const dl=isDownloaded(song.file); const rowArtist=song.artistName||song.artist||artistName||''; return`<div class="song-row${playing?' playing':''}" id="row_${i}" data-file="${escH(song.file)}" onclick="playSong(${i},true)"><div class="song-num">${playing?'<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>':i+1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(rowArtist)}</p></div></div><div class="song-actions"><button class="like-btn${liked?' liked':''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}',${i})">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="dl-btn${dl?' downloaded':''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')" title="${dl?'Remove':'Download'}">${dl?uiIcon('check'):uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();showAddToPlaylistMenu(event,'${escA(song.file)}',${i})" title="Add to playlist">${uiIcon('folder-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addToQueue(${i})" title="Add to end">${uiIcon('plus')}</button></div></div>`; }
 
         window.handleDlBtn = async(btn,fileId) => { if(isDownloaded(fileId)){if(confirm('Remove from offline?')){await removeCachedSong(fileId);btn.classList.remove('downloaded');setElementIcon(btn,'download');}}else{let song=null;for(let k in artists){song=artists[k].songs.find(s=>s.file===fileId);if(song){song={...song,artistName:artists[k].name};break;}}if(song)addToDlQueue(song);} };
 
@@ -11533,6 +11979,7 @@
             const artistKey = currentArtistKey || Object.keys(artists).find((k) => artists[k].songs === currentSongs);
             const artistName = artistKey ? artists[artistKey].name : (song.artistName || '');
             playerArtist.textContent = artistName;
+            syncExplicitBadges(song);
             updatePlayerLikeBtn(song.file);
             updatePlayerDlBtn();
             audio.play().then(() => {
@@ -11552,6 +11999,7 @@
             document.getElementById('fsPoster').src = song.poster;
             document.getElementById('fsTitle').textContent = song.title;
             document.getElementById('fsArtist').textContent = artistName;
+            syncExplicitBadges(song);
             updateAmbientFromSong({
                 ...song,
                 artistName
@@ -11570,6 +12018,7 @@
                 artistName,
                 album: song.album || deriveSongAlbum(song, artistName),
                 duration: song.duration || songDurationMeta[song.file] || 0,
+                explicit: isExplicitSong(song),
                 playCount: songPlayCounts[song.file] || 0,
                 liked: likedSongs.has(song.file),
                 downloaded: isDownloaded(song.file),
@@ -11835,21 +12284,21 @@
             if (!body) return;
             let html = '';
             if (currentSong) {
-                html += `<div class="qp-section">Now Playing</div><div class="qp-item active"><img src="${escH(currentSong.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${escH(currentSong.title)}</div><div class="qp-item-artist">${escH(playerArtist.textContent)}</div></div></div>`;
+                html += `<div class="qp-section">Now Playing</div><div class="qp-item active"><img src="${escH(currentSong.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${songTitleHTML(currentSong)}</div><div class="qp-item-artist">${escH(playerArtist.textContent)}</div></div></div>`;
             }
             if (queue.length > 0) {
                 html += sortControlHTML('queue', currentQueueSortType, SORT_SECTION_OPTIONS.queue, 'Sort Queue');
                 html += `<div class="qp-section" style="margin-top:7px">Up Next (${queue.length})</div>`;
                 queue.forEach((song, i) => {
-                    html += `<div class="qp-item" draggable="true" data-queue-index="${i}" data-file="${escH(song.file || '')}" onclick="playFromQueue(${i})"><span class="qp-item-drag" title="Drag to reorder" onclick="event.stopPropagation()">${uiIcon('grip-vertical')}</span><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${escH(song.title)}</div><div class="qp-item-artist">${escH(song.artistName || '')}</div></div><button class="qp-item-rm" onclick="event.stopPropagation();removeFromQueue(${i})" title="Remove">${uiIcon('x')}</button></div>`;
+                    html += `<div class="qp-item" draggable="true" data-queue-index="${i}" data-file="${escH(song.file || '')}" onclick="playFromQueue(${i})"><span class="qp-item-drag" title="Drag to reorder" onclick="event.stopPropagation()">${uiIcon('grip-vertical')}</span><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${songTitleHTML(song)}</div><div class="qp-item-artist">${escH(song.artistName || '')}</div></div><button class="qp-item-rm" onclick="event.stopPropagation();removeFromQueue(${i})" title="Remove">${uiIcon('x')}</button></div>`;
                 });
             }
             if (currentSong && currentArtistKey && currentSongs.length > 1) {
                 const nextList = currentSongs.slice(currentIndex + 1, currentIndex + 5);
                 if (nextList.length > 0) {
-                    html += `<div class="qp-section" style="margin-top:7px">Autoplay from ${escH(currentArtistKey && artists[currentArtistKey] ? artists[currentArtistKey].name : '')}</div>`;
+                    html += `<div class="qp-section" style="margin-top:7px">Recommended Next</div>`;
                     nextList.forEach((song, i) => {
-                        html += `<div class="qp-item" onclick="playSong(${currentIndex + 1 + i},true)"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${escH(song.title)}</div><div class="qp-item-artist">${escH(currentArtistKey && artists[currentArtistKey] ? artists[currentArtistKey].name : '')}</div></div></div>`;
+                        html += `<div class="qp-item" onclick="playSong(${currentIndex + 1 + i},true)"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${songTitleHTML(song)}</div><div class="qp-item-artist">${escH(currentArtistKey && artists[currentArtistKey] ? artists[currentArtistKey].name : '')}</div></div></div>`;
                     });
                 }
             }
@@ -11996,6 +12445,7 @@
                 posterEl.src = song.poster;
                 playerTitle.textContent = song.title;
                 playerArtist.textContent = artistName;
+                syncExplicitBadges(song);
                 updatePlayerLikeBtn(song.file);
                 updatePlayerDlBtn();
                 updateAmbientFromSong(song);
@@ -12195,9 +12645,9 @@
             const playing = currentSong && currentSong.file === song.file && !audio.paused;
             const dl = isDownloaded(song.file);
             if (!compact) {
-                return `<div class="song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="song-actions"><button class="like-btn liked" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="dl-btn${dl ? ' downloaded' : ''}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button></div></div>`;
+                return `<div class="song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="song-actions"><button class="like-btn liked" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="dl-btn${dl ? ' downloaded' : ''}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button></div></div>`;
             }
-            return `<div class="fav-song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="fav-song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="fav-song-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="fav-song-text"><h4>${escH(song.title)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="fav-song-actions"><button class="fav-icon-btn liked" title="Remove from favorites" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="fav-icon-btn${dl ? ' downloaded' : ''}" title="${dl ? 'Remove download' : 'Download'}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="fav-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="fav-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button></div></div>`;
+            return `<div class="fav-song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="fav-song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="fav-song-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="fav-song-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="fav-song-actions"><button class="fav-icon-btn liked" title="Remove from favorites" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="fav-icon-btn${dl ? ' downloaded' : ''}" title="${dl ? 'Remove download' : 'Download'}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="fav-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="fav-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button></div></div>`;
         }
 
         function updateFavoritesPlayingState(autoScrollActive = false) {
@@ -13134,6 +13584,7 @@
             if (fsArtist) fsArtist.textContent = songArtist;
             if (fsHeaderSong) fsHeaderSong.textContent = songTitle;
             if (fsHeaderArtist) fsHeaderArtist.textContent = songArtist;
+            syncExplicitBadges(currentSong);
             if (fsPlay) setElementIcon(fsPlay, audio.paused ? 'play' : 'pause');
             if (fsLikeBtn) setElementIcon(fsLikeBtn, likedSongs.has(currentSong.file) ? 'heart' : 'heart-off');
             if (fsLikeBtn) fsLikeBtn.classList.toggle('liked', likedSongs.has(currentSong.file));
