@@ -8348,7 +8348,7 @@
                 <span class="nav-icon-wrap"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i></span> Stats
             </button>
             <button class="nav-btn" id="navAudio" onclick="showAudioSettings()">
-                <span class="nav-icon-wrap"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span> Audio
+                <span class="nav-icon-wrap"><i data-lucide="mic-vocal" aria-hidden="true"></i></span> Audio Lab
             </button>
         </div>
 
@@ -8607,7 +8607,7 @@
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showLikedSongs()"><i data-lucide="heart" aria-hidden="true"></i><span>Favorites</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showPlaylists()"><i data-lucide="list-music" aria-hidden="true"></i><span>Playlists</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showStatsDashboard()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
-            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="mic-vocal" aria-hidden="true"></i><span>Audio Lab</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
         </div>
     </aside>
@@ -11326,12 +11326,64 @@
             renderLucideIcons(mainArea);
         }
 
-        const AUDIO_SETTINGS_KEY = 'eq_audio_settings_v1';
+        const EQ_FREQUENCIES = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
+        let audioCtx = null, sourceNode = null, analyserNode = null, eqNodes = [], modeNode = null;
+
+        function initAudioContext() {
+            if (audioCtx) return;
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            try {
+                audioCtx = new AudioCtx();
+                sourceNode = audioCtx.createMediaElementSource(audio);
+                modeNode = audioCtx.createBiquadFilter();
+                
+                let prevNode = sourceNode;
+                sourceNode.connect(modeNode);
+                prevNode = modeNode;
+
+                eqNodes = EQ_FREQUENCIES.map(freq => {
+                    const node = audioCtx.createBiquadFilter();
+                    node.type = 'peaking';
+                    node.frequency.value = freq;
+                    node.Q.value = 1;
+                    node.gain.value = 0;
+                    prevNode.connect(node);
+                    prevNode = node;
+                    return node;
+                });
+
+                analyserNode = audioCtx.createAnalyser();
+                analyserNode.fftSize = 256;
+                prevNode.connect(analyserNode);
+                analyserNode.connect(audioCtx.destination);
+                
+                // Sync with existing visualizer variables
+                visualizerCtx = audioCtx;
+                visualizerAnalyser = analyserNode;
+                visualizerSource = sourceNode;
+                visualizerReady = true;
+            } catch (e) {
+                console.warn('Web Audio API not supported or already initialized elsewhere:', e);
+            }
+        }
+
+        const AUDIO_SETTINGS_KEY = 'eq_audio_settings_v2';
         function getAudioSettings() {
-            const defaults = { quality: 'auto', preset: 'balanced', bass: 0, vocal: 0, crossfade: .75, lowPower: false, bands: [0, 0, 0, 0, 0, 0, 0] };
+            const defaults = { 
+                quality: 'high', 
+                mode: 'normal', 
+                bass: 0, 
+                treble: 0, 
+                crossfade: .75, 
+                lowPower: false, 
+                bands: new Array(10).fill(0) 
+            };
             try {
                 const parsed = JSON.parse(localStorage.getItem(AUDIO_SETTINGS_KEY) || '{}');
-                return { ...defaults, ...(parsed && typeof parsed === 'object' ? parsed : {}), bands: Array.isArray(parsed?.bands) ? parsed.bands.slice(0, 7).map((v) => Number(v) || 0) : defaults.bands };
+                const bands = Array.isArray(parsed?.bands) ? parsed.bands.map(v => Number(v) || 0) : defaults.bands;
+                if (bands.length < 10) while(bands.length < 10) bands.push(0);
+                return { ...defaults, ...parsed, bands: bands.slice(0, 10) };
             } catch (e) {
                 return defaults;
             }
@@ -11343,65 +11395,259 @@
         }
 
         function applyAudioSettings(settings = getAudioSettings()) {
+            initAudioContext();
+            if (audioCtx) {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                // Mode logic
+                modeNode.gain.value = 0;
+                modeNode.Q.value = 1;
+                switch(settings.mode) {
+                    case 'vocal_only':
+                        modeNode.type = 'bandpass';
+                        modeNode.frequency.setTargetAtTime(1200, audioCtx.currentTime, 0.1);
+                        modeNode.Q.setTargetAtTime(0.6, audioCtx.currentTime, 0.1);
+                        break;
+                    case 'instrumental_only':
+                        modeNode.type = 'notch';
+                        modeNode.frequency.setTargetAtTime(1200, audioCtx.currentTime, 0.1);
+                        modeNode.Q.setTargetAtTime(0.6, audioCtx.currentTime, 0.1);
+                        break;
+                    case 'vocal_boost':
+                        modeNode.type = 'peaking';
+                        modeNode.frequency.setTargetAtTime(2000, audioCtx.currentTime, 0.1);
+                        modeNode.gain.setTargetAtTime(6, audioCtx.currentTime, 0.1);
+                        break;
+                    case 'bass_boost':
+                        modeNode.type = 'lowshelf';
+                        modeNode.frequency.setTargetAtTime(100, audioCtx.currentTime, 0.1);
+                        modeNode.gain.setTargetAtTime(8 + settings.bass, audioCtx.currentTime, 0.1);
+                        break;
+                    case 'treble_boost':
+                        modeNode.type = 'highshelf';
+                        modeNode.frequency.setTargetAtTime(6000, audioCtx.currentTime, 0.1);
+                        modeNode.gain.setTargetAtTime(8 + settings.treble, audioCtx.currentTime, 0.1);
+                        break;
+                    case 'studio':
+                        modeNode.type = 'highshelf';
+                        modeNode.frequency.setTargetAtTime(12000, audioCtx.currentTime, 0.1);
+                        modeNode.gain.setTargetAtTime(3, audioCtx.currentTime, 0.1);
+                        break;
+                    default:
+                        modeNode.type = 'allpass';
+                }
+
+                // EQ Bands
+                eqNodes.forEach((node, i) => {
+                    const val = Number(settings.bands[i]) || 0;
+                    node.gain.setTargetAtTime(val, audioCtx.currentTime, 0.1);
+                });
+            }
+
             document.body.classList.toggle('fx-low-power', !!settings.lowPower);
             document.documentElement.style.setProperty('--fx-bass', String(settings.bass || 0));
-            document.documentElement.style.setProperty('--fx-vocal', String(settings.vocal || 0));
-        }
-
-        function getAudioFadeSteps() {
-            const settings = getAudioSettings();
-            const seconds = clampNumber(Number(settings.crossfade) || .75, 0, 5);
-            return Math.max(1, Math.round((seconds * 1000) / 50));
-        }
-
-        function setAudioSetting(key, value) {
-            const settings = getAudioSettings();
-            if (key === 'lowPower') settings.lowPower = value === true || value === 'true';
-            else if (key === 'crossfade') settings.crossfade = clampNumber(Number(value) || 0, 0, 5);
-            else if (key === 'bass' || key === 'vocal') settings[key] = clampNumber(Number(value) || 0, -6, 6);
-            else settings[key] = String(value);
-            saveAudioSettings(settings);
-            if (document.getElementById('audioSettingsShell')) showAudioSettings();
-        }
-
-        function setEqBand(index, value) {
-            const settings = getAudioSettings();
-            settings.bands[index] = clampNumber(Number(value) || 0, -6, 6);
-            saveAudioSettings(settings);
-            const valueEl = document.getElementById(`eqBandValue_${index}`);
-            if (valueEl) valueEl.textContent = `${settings.bands[index] > 0 ? '+' : ''}${settings.bands[index]} dB`;
         }
 
         function showAudioSettings() {
             setNavActive('navAudio');
             setMobileBack(true);
             const settings = getAudioSettings();
-            const qualityOptions = ['auto', 'high', 'data saver'];
-            const presetOptions = ['balanced', 'bass', 'vocal', 'night'];
-            const bands = ['60', '150', '400', '1K', '2.4K', '6K', '12K'];
+            const modes = [
+                { id: 'normal', label: 'Normal', icon: 'music' },
+                { id: 'vocal_only', label: 'Vocal Only', icon: 'mic' },
+                { id: 'instrumental_only', label: 'Instrumental', icon: 'audio-lines' },
+                { id: 'vocal_boost', label: 'Vocal Boost', icon: 'mic-vocal' },
+                { id: 'bass_boost', label: 'Bass Boost', icon: 'speaker' },
+                { id: 'treble_boost', label: 'Treble Boost', icon: 'zap' },
+                { id: 'studio', label: 'Studio Mode', icon: 'layers' }
+            ];
+            const bands = ['31', '62', '125', '250', '500', '1K', '2K', '4K', '8K', '16K'];
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
-            <div class="audio-settings-shell" id="audioSettingsShell">
-                <div class="audio-settings-hero">
-                    <div><div class="audio-settings-kicker">Audio Settings</div><div class="audio-settings-title">Premium Sound Control</div><div class="audio-settings-sub">Equalizer, boosts, quality, crossfade, and low-power playback preferences.</div></div>
-                    <button class="btn btn-outline" onclick="loadArtists()">${uiIcon('house')}<span>Home</span></button>
+            <style>
+                .audio-lab-container { padding: 24px; max-width: 1000px; margin: 0 auto; }
+                .audio-lab-header { margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; }
+                .audio-lab-title { font-size: 2.2rem; font-weight: 900; letter-spacing: -0.5px; }
+                .audio-lab-subtitle { color: var(--text2); font-size: 0.95rem; margin-top: 4px; }
+                .audio-section { margin-bottom: 40px; }
+                .audio-section-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+                .modes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+                .mode-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+                .mode-card:hover { border-color: var(--accent); background: var(--surface3); transform: translateY(-2px); }
+                .mode-card.active { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.1); box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.15); }
+                .mode-card i { font-size: 1.4rem; color: var(--text2); transition: color 0.2s; }
+                .mode-card.active i { color: var(--accent); }
+                .mode-card span { font-size: 0.85rem; font-weight: 700; }
+                .eq-container { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 24px; position: relative; overflow: hidden; }
+                .eq-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 12px; align-items: end; height: 220px; }
+                .eq-col { display: flex; flex-direction: column; align-items: center; gap: 12px; height: 100%; }
+                .eq-slider-wrap { flex: 1; position: relative; width: 100%; display: flex; justify-content: center; }
+                .eq-slider-wrap input[type="range"] { writing-mode: vertical-rl; direction: rtl; width: 40px; height: 100%; -webkit-appearance: none; background: transparent; cursor: pointer; }
+                .eq-slider-wrap input[type="range"]::-webkit-slider-runnable-track { background: var(--surface3); border-radius: 4px; width: 6px; }
+                .eq-slider-wrap input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); margin-right: -6px; margin-top: 0; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+                .eq-freq { font-size: 0.65rem; font-weight: 800; color: var(--muted); }
+                .eq-val { font-size: 0.7rem; font-weight: 700; color: var(--accent); min-width: 35px; text-align: center; }
+                .notice-box { background: rgba(255, 165, 0, 0.1); border: 1px solid rgba(255, 165, 0, 0.2); border-radius: 12px; padding: 16px; display: flex; gap: 12px; margin-top: 24px; }
+                .notice-box i { color: orange; font-size: 1.2rem; }
+                .notice-text { font-size: 0.8rem; color: var(--text2); line-height: 1.4; }
+                .lab-visualizer { height: 60px; display: flex; align-items: flex-end; gap: 3px; margin-top: 20px; opacity: 0.6; }
+                .lab-vis-bar { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; min-height: 2px; transition: height 0.1s; }
+                @media (max-width: 768px) {
+                    .eq-grid { gap: 4px; padding: 0; }
+                    .eq-freq { font-size: 0.55rem; }
+                    .audio-lab-title { font-size: 1.8rem; }
+                    .modes-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+                }
+            </style>
+            <div class="audio-lab-container">
+                <div class="audio-lab-header">
+                    <div>
+                        <h1 class="audio-lab-title">Audio Lab</h1>
+                        <p class="audio-lab-subtitle">Professional sound engineering and mastering</p>
+                    </div>
+                    <button class="btn btn-outline" onclick="loadArtists()">${uiIcon('house')}<span>Done</span></button>
                 </div>
-                <div class="audio-card-grid">
-                    <div class="audio-card wide"><div class="chart-title">Equalizer</div><div class="eq-slider-grid">${bands.map((label, i) => `<label class="eq-band"><input type="range" min="-6" max="6" step="1" value="${settings.bands[i] || 0}" oninput="setEqBand(${i}, this.value)"><span class="eq-band-label">${label}</span><span class="eq-band-value" id="eqBandValue_${i}">${settings.bands[i] > 0 ? '+' : ''}${settings.bands[i] || 0} dB</span></label>`).join('')}</div></div>
-                    <div class="audio-card"><div class="chart-title">Presets</div><div class="fx-pill-row">${presetOptions.map((option) => `<button class="fx-pill${settings.preset === option ? ' active' : ''}" onclick="setAudioSetting('preset','${option}')">${escH(option)}</button>`).join('')}</div></div>
-                    <div class="audio-card"><div class="chart-title">Quality</div><div class="fx-pill-row">${qualityOptions.map((option) => `<button class="fx-pill${settings.quality === option ? ' active' : ''}" onclick="setAudioSetting('quality','${option}')">${escH(option)}</button>`).join('')}</div></div>
-                    <div class="audio-card"><div class="chart-title">Boosts</div><label class="eq-band"><span class="eq-band-label">Bass</span><input type="range" min="-6" max="6" step="1" value="${settings.bass}" oninput="setAudioSetting('bass', this.value)"><span class="eq-band-value">${settings.bass > 0 ? '+' : ''}${settings.bass} dB</span></label><label class="eq-band"><span class="eq-band-label">Vocal</span><input type="range" min="-6" max="6" step="1" value="${settings.vocal}" oninput="setAudioSetting('vocal', this.value)"><span class="eq-band-value">${settings.vocal > 0 ? '+' : ''}${settings.vocal} dB</span></label></div>
-                    <div class="audio-card"><div class="chart-title">Playback</div><label class="eq-band"><span class="eq-band-label">Crossfade</span><input type="range" min="0" max="5" step="0.25" value="${settings.crossfade}" oninput="setAudioSetting('crossfade', this.value)"><span class="eq-band-value">${settings.crossfade}s</span></label><div class="fx-pill-row"><button class="fx-pill${settings.lowPower ? ' active' : ''}" onclick="setAudioSetting('lowPower', ${!settings.lowPower})">Low Power</button></div></div>
-                    <div class="audio-card wide"><div class="chart-title">Output Meter</div><div class="fx-eq-meter">${Array.from({ length: 14 }, (_, i) => `<span style="--i:${i};--gain:${18 + ((i * 11) % 72)}"></span>`).join('')}</div></div>
+
+                <div class="audio-section">
+                    <div class="audio-section-title">${uiIcon('layers')} Choose Audio Mode</div>
+                    <div class="modes-grid">
+                        ${modes.map(m => `
+                            <div class="mode-card ${settings.mode === m.id ? 'active' : ''}" onclick="setAudioSetting('mode', '${m.id}')">
+                                ${uiIcon(m.icon)}
+                                <span>${m.label}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${(settings.mode === 'vocal_only' || settings.mode === 'instrumental_only') ? `
+                        <div class="notice-box">
+                            ${uiIcon('info')}
+                            <div class="notice-text">
+                                <strong>Isolation Note:</strong> Vocal and Instrumental isolation quality depends heavily on the source audio quality and mastering. Results may vary between tracks.
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="audio-section">
+                    <div class="audio-section-title">${uiIcon('sliders-horizontal')} 10-Band Equalizer</div>
+                    <div class="eq-container">
+                        <div class="eq-grid">
+                            ${bands.map((label, i) => `
+                                <div class="eq-col">
+                                    <div class="eq-val" id="eqBandValue_${i}">${settings.bands[i] > 0 ? '+' : ''}${settings.bands[i]}</div>
+                                    <div class="eq-slider-wrap">
+                                        <input type="range" min="-12" max="12" step="1" value="${settings.bands[i]}" oninput="setEqBand(${i}, this.value)">
+                                    </div>
+                                    <div class="eq-freq">${label}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="lab-visualizer" id="labVisualizer">
+                            ${Array.from({length: 40}).map(() => `<div class="lab-vis-bar"></div>`).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="audio-section">
+                    <div class="audio-section-title">${uiIcon('settings')} General Audio</div>
+                    <div class="audio-card-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+                        <div class="audio-card">
+                            <div class="chart-title">Bass & Treble</div>
+                            <label class="eq-band" style="display:flex; flex-direction:column; gap:10px">
+                                <div style="display:flex; justify-content:space-between; width:100%"><span class="eq-band-label">Extra Bass</span><span class="eq-band-value">${settings.bass > 0 ? '+' : ''}${settings.bass} dB</span></div>
+                                <input type="range" min="-10" max="10" value="${settings.bass}" oninput="setAudioSetting('bass', this.value)" style="width:100%; height:6px">
+                            </label>
+                            <label class="eq-band" style="display:flex; flex-direction:column; gap:10px">
+                                <div style="display:flex; justify-content:space-between; width:100%"><span class="eq-band-label">Extra Treble</span><span class="eq-band-value">${settings.treble > 0 ? '+' : ''}${settings.treble} dB</span></div>
+                                <input type="range" min="-10" max="10" value="${settings.treble}" oninput="setAudioSetting('treble', this.value)" style="width:100%; height:6px">
+                            </label>
+                        </div>
+                        <div class="audio-card">
+                            <div class="chart-title">Crossfade</div>
+                            <input type="range" min="0" max="5" step="0.25" value="${settings.crossfade}" oninput="setAudioSetting('crossfade', this.value)" style="width:100%; height:6px">
+                            <div style="text-align:center; font-size:0.8rem; font-weight:800; color:var(--accent); margin-top:8px">${settings.crossfade} seconds</div>
+                        </div>
+                        <div class="audio-card">
+                            <div class="chart-title">Preferences</div>
+                            <div class="fx-pill-row">
+                                <button class="fx-pill ${settings.lowPower ? 'active' : ''}" onclick="setAudioSetting('lowPower', ${!settings.lowPower})">Low Power Mode</button>
+                                <button class="fx-pill" onclick="resetAudioLab()">Reset Defaults</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>`;
             renderLucideIcons(mainArea);
+            startLabVisualizer();
         }
 
-        window.showStatsDashboard = showStatsDashboard;
+        function resetAudioLab() {
+            if (!confirm('Reset all audio settings to default?')) return;
+            saveAudioSettings({ 
+                quality: 'high', 
+                mode: 'normal', 
+                bass: 0, 
+                treble: 0, 
+                crossfade: .75, 
+                lowPower: false, 
+                bands: new Array(10).fill(0) 
+            });
+            showAudioSettings();
+            showToast('Settings reset');
+        }
+
+        function startLabVisualizer() {
+            const bars = document.querySelectorAll('.lab-vis-bar');
+            if (!bars.length) return;
+            
+            const update = () => {
+                if (!document.getElementById('labVisualizer')) return;
+                requestAnimationFrame(update);
+                
+                if (visualizerReady && visualizerAnalyser && !audio.paused) {
+                    const data = new Uint8Array(visualizerAnalyser.frequencyBinCount);
+                    visualizerAnalyser.getByteFrequencyData(data);
+                    
+                    for (let i = 0; i < bars.length; i++) {
+                        const idx = Math.floor((i / bars.length) * data.length * 0.6);
+                        const v = data[idx] / 255;
+                        const h = Math.max(2, v * 60);
+                        bars[i].style.height = h + 'px';
+                        bars[i].style.opacity = 0.3 + (v * 0.7);
+                    }
+                } else {
+                    for (let i = 0; i < bars.length; i++) {
+                        bars[i].style.height = '2px';
+                        bars[i].style.opacity = '0.3';
+                    }
+                }
+            };
+            update();
+        }
+
+        function setAudioSetting(key, value) {
+            const settings = getAudioSettings();
+            if (key === 'lowPower') settings.lowPower = value === true || value === 'true';
+            else if (key === 'crossfade') settings.crossfade = clampNumber(Number(value) || 0, 0, 5);
+            else if (key === 'bass' || key === 'treble') settings[key] = Number(value);
+            else settings[key] = String(value);
+            saveAudioSettings(settings);
+            if (document.getElementById('audioSettingsShell') || document.querySelector('.audio-lab-container')) showAudioSettings();
+        }
+
+        function setEqBand(index, value) {
+            const settings = getAudioSettings();
+            settings.bands[index] = Number(value);
+            saveAudioSettings(settings);
+            const valEl = document.getElementById(`eqBandValue_${index}`);
+            if (valEl) valEl.textContent = `${settings.bands[index] > 0 ? '+' : ''}${settings.bands[index]}`;
+        }
+
+        window.resetAudioLab = resetAudioLab;
         window.showAudioSettings = showAudioSettings;
         window.setAudioSetting = setAudioSetting;
         window.setEqBand = setEqBand;
+
 
         function getFavSortLabel(type) {
             return getSortLabel(type);
