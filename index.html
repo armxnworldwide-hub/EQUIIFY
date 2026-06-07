@@ -8013,6 +8013,291 @@
                 animation: none !important;
             }
         }
+        /* Audio Suite Styles */
+        
+        .eq-panel {
+            position: fixed;
+            bottom: calc(var(--player-h) + 12px);
+            right: 16px;
+            width: 360px;
+            max-width: calc(100vw - 32px);
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            z-index: 10000;
+            padding: 24px;
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .eq-panel.open {
+            display: flex;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .eq-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .eq-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .eq-close {
+            background: none;
+            border: none;
+            color: var(--text2);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+        
+        .eq-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+        
+        .eq-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+        
+        .eq-tab {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text2);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .eq-tab.active {
+            color: var(--accent);
+            background: rgba(var(--ambient-rgb, 200, 245, 66), 0.15);
+        }
+        
+        .eq-content {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .eq-content.active {
+            display: flex;
+        }
+        
+        .eq-sliders-container {
+            display: flex;
+            justify-content: space-between;
+            height: 160px;
+            align-items: flex-end;
+            gap: 4px;
+            padding: 10px 0;
+        }
+        
+        .eq-slider-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            height: 100%;
+        }
+        
+        .eq-slider-wrapper {
+            position: relative;
+            height: 120px;
+            width: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .eq-slider-input {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px;
+            height: 4px;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            outline: none;
+            transform: translate(-50%, -50%) rotate(-90deg);
+            cursor: pointer;
+        }
+        
+        .eq-slider-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--text);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s;
+        }
+        
+        .eq-slider-input:active::-webkit-slider-thumb {
+            transform: scale(1.3);
+            background: var(--accent);
+        }
+        
+        .eq-label {
+            font-size: 0.55rem;
+            color: var(--text2);
+            margin-top: 4px;
+            font-weight: 700;
+        }
+        
+        .eq-modes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .eq-mode-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            color: var(--text2);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .eq-mode-btn i {
+            width: 16px;
+            height: 16px;
+            opacity: 0.6;
+        }
+        
+        .eq-mode-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--text);
+        }
+        
+        .eq-mode-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            box-shadow: 0 8px 20px rgba(var(--ambient-rgb, 200, 245, 66), 0.3);
+        }
+        
+        .eq-mode-btn.active i {
+            opacity: 1;
+        }
+        
+        .custom-sliders {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        
+        .c-slider-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .c-slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: var(--text2);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .c-slider-input {
+            width: 100%;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .c-slider-input::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--text);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+            transition: transform 0.1s;
+        }
+        
+        .c-slider-input:active::-webkit-slider-thumb {
+            transform: scale(1.2);
+            background: var(--accent);
+        }
+        
+        .eq-visualizer-mini {
+            height: 30px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            margin-top: 10px;
+            padding: 0 2px;
+        }
+        
+        .vis-bar-mini {
+            flex: 1;
+            background: var(--accent);
+            min-height: 2px;
+            border-radius: 1px 1px 0 0;
+            opacity: 0.6;
+        }
+        
+        @media (max-width: 768px) {
+            .eq-panel {
+                width: calc(100% - 24px);
+                bottom: calc(var(--player-h) + 74px + var(--safe-bottom));
+                right: 12px;
+                left: 12px;
+                padding: 20px;
+            }
+            .eq-sliders-container {
+                height: 140px;
+            }
+            .eq-slider-wrapper {
+                height: 100px;
+            }
+            .eq-slider-input {
+                width: 100px;
+            }
+        }
     </style>
 </head>
 
@@ -8258,6 +8543,9 @@
             </div>
         </div>
         <div class="player-right">
+            <button class="topbar-icon-btn" id="eqToggleBtn" onclick="toggleEqPanel()" title="Audio Enhancement">
+                <i data-lucide="sliders-horizontal" aria-hidden="true"></i>
+            </button>
             <button class="dl-queue-btn" id="dlQueueBtn" onclick="toggleDownloadPanel()" title="Downloads">
                 <i data-lucide="download" aria-hidden="true"></i><span class="dl-queue-badge hidden" id="dlQueueBadge">0</span>
             </button>
@@ -13255,22 +13543,127 @@
             fullscreenPlayer.style.setProperty('--fs-energy', energy.toFixed(3));
         }
 
+        let eqPanelOpen = false;
+        let bassFilter, vocalFilter, trebleFilter;
+
+        function toggleEqPanel() {
+            showAudioSettings();
+        }
+
+        function setEqMode(mode) {
+            const presets = {
+                flat: [0, 0, 0],
+                bass: [8, 0, -2],
+                vocal: [-2, 8, 0],
+                treble: [-4, 0, 8]
+            };
+            const [b, v, t] = presets[mode] || presets.flat;
+            
+            const bS = document.getElementById('bassSlider');
+            const vS = document.getElementById('vocalSlider');
+            const tS = document.getElementById('trebleSlider');
+            
+            if (bS) bS.value = b;
+            if (vS) vS.value = v;
+            if (tS) tS.value = t;
+            
+            updateFilters();
+            
+            // Update active preset button
+            document.querySelectorAll('.eq-mode-btn').forEach(btn => {
+                const onClick = btn.getAttribute('onclick');
+                if (onClick && onClick.includes(`'${mode}'`)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            localStorage.setItem('falcon_eq_bass', b);
+            localStorage.setItem('falcon_eq_vocal', v);
+            localStorage.setItem('falcon_eq_treble', t);
+        }
+
+        function updateFilters() {
+            const bS = document.getElementById('bassSlider');
+            const vS = document.getElementById('vocalSlider');
+            const tS = document.getElementById('trebleSlider');
+            
+            const b = bS ? parseFloat(bS.value) : 0;
+            const v = vS ? parseFloat(vS.value) : 0;
+            const t = tS ? parseFloat(tS.value) : 0;
+            
+            if (bassFilter && visualizerCtx) {
+                bassFilter.gain.setTargetAtTime(b, visualizerCtx.currentTime, 0.05);
+            }
+            if (vocalFilter && visualizerCtx) {
+                vocalFilter.gain.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
+            }
+            if (trebleFilter && visualizerCtx) {
+                trebleFilter.gain.setTargetAtTime(t, visualizerCtx.currentTime, 0.05);
+            }
+            
+            localStorage.setItem('falcon_eq_bass', b);
+            localStorage.setItem('falcon_eq_vocal', v);
+            localStorage.setItem('falcon_eq_treble', t);
+        }
+
         function setupVisualizer() {
             if (visualizerReady || !fsVisualizerCanvas || !audio) return;
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             if (!AudioCtx) return;
             try {
                 visualizerCtx = new AudioCtx();
+                
+                // Create Filters
+                bassFilter = visualizerCtx.createBiquadFilter();
+                bassFilter.type = 'lowshelf';
+                bassFilter.frequency.value = 200;
+                
+                vocalFilter = visualizerCtx.createBiquadFilter();
+                vocalFilter.type = 'peaking';
+                vocalFilter.frequency.value = 1000;
+                vocalFilter.Q.value = 1;
+                
+                trebleFilter = visualizerCtx.createBiquadFilter();
+                trebleFilter.type = 'highshelf';
+                trebleFilter.frequency.value = 3000;
+                
+                // Load saved values
+                const b = parseFloat(localStorage.getItem('falcon_eq_bass') || '0');
+                const v = parseFloat(localStorage.getItem('falcon_eq_vocal') || '0');
+                const t = parseFloat(localStorage.getItem('falcon_eq_treble') || '0');
+                
+                bassFilter.gain.value = b;
+                vocalFilter.gain.value = v;
+                trebleFilter.gain.value = t;
+                
+                // Update slider UI
+                const bS = document.getElementById('bassSlider');
+                const vS = document.getElementById('vocalSlider');
+                const tS = document.getElementById('trebleSlider');
+                if (bS) bS.value = b;
+                if (vS) vS.value = v;
+                if (tS) tS.value = t;
+
                 visualizerAnalyser = visualizerCtx.createAnalyser();
                 visualizerAnalyser.fftSize = 256;
                 visualizerAnalyser.smoothingTimeConstant = 0.84;
+                
                 visualizerSource = visualizerCtx.createMediaElementSource(audio);
-                visualizerSource.connect(visualizerAnalyser);
+                
+                // Chain: source -> bass -> vocal -> treble -> analyser -> destination
+                visualizerSource.connect(bassFilter);
+                bassFilter.connect(vocalFilter);
+                vocalFilter.connect(trebleFilter);
+                trebleFilter.connect(visualizerAnalyser);
                 visualizerAnalyser.connect(visualizerCtx.destination);
+                
                 visualizerFreqData = new Uint8Array(visualizerAnalyser.frequencyBinCount);
                 visualizerWaveData = new Uint8Array(visualizerAnalyser.fftSize);
                 visualizerReady = true;
             } catch (e) {
+                console.error("Audio Context Error:", e);
                 visualizerReady = false;
             }
         }
@@ -13333,6 +13726,17 @@
 
                 energy /= bars;
                 fullscreenPlayer?.style.setProperty('--fs-energy', clampNumber(0.18 + energy * 0.9, 0.18, 0.98).toFixed(3));
+
+                // Update EQ meter bars
+                if (eqPanelOpen) {
+                    const meterBars = document.querySelectorAll('.fx-eq-meter span');
+                    meterBars.forEach((span, i) => {
+                        const idx = Math.floor((i / meterBars.length) * visualizerFreqData.length);
+                        const v = (visualizerFreqData[idx] || 0) / 255;
+                        span.style.transform = `scaleY(${0.15 + v * 0.85})`;
+                        span.style.opacity = (0.4 + v * 0.6).toFixed(2);
+                    });
+                }
 
                 ctx.beginPath();
                 for (let i = 0; i < visualizerWaveData.length; i += 1) {
@@ -13787,6 +14191,192 @@
         };
 
        
+        function showStatsDashboard() {
+            setNavActive('navStats');
+            setMobileBack(true);
+            const mainArea = document.getElementById('mainArea');
+            
+            const songPool = buildLibrarySongPool();
+            const totalSongs = songPool.length;
+            const totalArtists = Object.keys(artists).length;
+            const favCount = likedSongs.size;
+            
+            // Calculate most played
+            const mostPlayed = [...songPool]
+                .filter(s => s.playCount > 0)
+                .sort((a, b) => b.playCount - a.playCount)
+                .slice(0, 5);
+            
+            // Listening time (approximate in minutes)
+            let totalSec = 0;
+            Object.entries(songPlayCounts).forEach(([file, count]) => {
+                const duration = songDurationMeta[file] || 210; // default 3:30
+                totalSec += duration * count;
+            });
+            const listenMins = Math.floor(totalSec / 60);
+            const listenHrs = (totalSec / 3600).toFixed(1);
+
+            mainArea.innerHTML = `
+            <div class="main-topbar">
+                <div class="nav-arrows"><button class="nav-arrow-btn" onclick="loadArtists()">${uiIcon('chevron-left')}</button></div>
+                <div style="flex:1"><div style="font-size:1.2rem;font-weight:800">Stats Dashboard</div></div>
+                <div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div>
+            </div>
+            <div class="premium-dashboard">
+                <div class="premium-dashboard-hero">
+                    <div>
+                        <div class="premium-dashboard-kicker">Personal Insights</div>
+                        <div class="premium-dashboard-title">Your Music Journey</div>
+                        <p class="premium-dashboard-sub">Explore your listening habits and library statistics.</p>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Songs</div>
+                        <div class="stat-value">${totalSongs}</div>
+                        <div class="stat-note">Across all artists</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Artists</div>
+                        <div class="stat-value">${totalArtists}</div>
+                        <div class="stat-note">In your library</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Listening Time</div>
+                        <div class="stat-value">${listenHrs}h</div>
+                        <div class="stat-note">${listenMins} total minutes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Favorites</div>
+                        <div class="stat-value">${favCount}</div>
+                        <div class="stat-note">Songs you loved</div>
+                    </div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">${uiIcon('bar-chart-3')} Most Played Songs</div>
+                        <div class="recent-list">
+                            ${mostPlayed.length ? mostPlayed.map(s => `
+                                <div class="recent-item" onclick="playSongByFile('${escA(s.file)}')">
+                                    <img src="${escH(s.poster)}" onerror="this.style.background='var(--surface3)'">
+                                    <div class="recent-text">
+                                        <div style="font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(s.title)}</div>
+                                        <div style="font-size:.68rem;color:var(--text2)">${escH(s.artistName)}</div>
+                                    </div>
+                                    <div style="font-size:.75rem;font-weight:800;color:var(--accent)">${s.playCount} plays</div>
+                                </div>
+                            `).join('') : '<div class="empty-state" style="padding:20px 0"><p>No plays tracked yet.</p></div>'}
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">${uiIcon('history')} Recently Played</div>
+                        <div class="recent-list">
+                            ${continueListening.length ? continueListening.slice(0, 5).map(s => `
+                                <div class="recent-item" onclick="playFromHistory('${escA(s.file)}','${escA(s.artistKey || '')}')">
+                                    <img src="${escH(s.poster)}" onerror="this.style.background='var(--surface3)'">
+                                    <div class="recent-text">
+                                        <div style="font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(s.title)}</div>
+                                        <div style="font-size:.68rem;color:var(--text2)">${escH(s.artistName)}</div>
+                                    </div>
+                                    <div style="opacity:.4">${uiIcon('play')}</div>
+                                </div>
+                            `).join('') : '<div class="empty-state" style="padding:20px 0"><p>No recent history.</p></div>'}
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            renderLucideIcons(mainArea);
+        }
+
+        function showAudioSettings() {
+            setNavActive('navAudio');
+            setMobileBack(true);
+            const mainArea = document.getElementById('mainArea');
+            
+            // Load current values
+            const b = localStorage.getItem('falcon_eq_bass') || '0';
+            const v = localStorage.getItem('falcon_eq_vocal') || '0';
+            const t = localStorage.getItem('falcon_eq_treble') || '0';
+
+            mainArea.innerHTML = `
+            <div class="main-topbar">
+                <div class="nav-arrows"><button class="nav-arrow-btn" onclick="loadArtists()">${uiIcon('chevron-left')}</button></div>
+                <div style="flex:1"><div style="font-size:1.2rem;font-weight:800">Audio Suite</div></div>
+                <div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div>
+            </div>
+            <div class="audio-settings-shell">
+                <div class="audio-settings-hero">
+                    <div>
+                        <div class="audio-settings-kicker">Professional Grade</div>
+                        <div class="audio-settings-title">Sound Calibration</div>
+                        <p class="audio-settings-sub">Fine-tune your listening experience with high-fidelity audio controls.</p>
+                    </div>
+                </div>
+                
+                <div class="audio-card-grid">
+                    <div class="audio-card wide">
+                        <div class="chart-title">${uiIcon('sliders-horizontal')} 3-Band Equalizer</div>
+                        <div class="eq-sliders-container" style="height:200px; display:flex; justify-content:space-around; align-items:flex-end;">
+                            <div class="eq-slider-group" style="flex:1; display:flex; flex-direction:column; align-items:center;">
+                                <div class="eq-slider-wrapper" style="height:150px; width:40px; position:relative;">
+                                    <input type="range" class="eq-slider-input" id="pageBassSlider" min="-12" max="12" step="1" value="${b}" 
+                                        style="position:absolute; top:50%; left:50%; width:150px; transform:translate(-50%,-50%) rotate(-90deg);">
+                                </div>
+                                <div class="eq-label" style="margin-top:10px">BASS</div>
+                            </div>
+                            <div class="eq-slider-group" style="flex:1; display:flex; flex-direction:column; align-items:center;">
+                                <div class="eq-slider-wrapper" style="height:150px; width:40px; position:relative;">
+                                    <input type="range" class="eq-slider-input" id="pageVocalSlider" min="-12" max="12" step="1" value="${v}"
+                                        style="position:absolute; top:50%; left:50%; width:150px; transform:translate(-50%,-50%) rotate(-90deg);">
+                                </div>
+                                <div class="eq-label" style="margin-top:10px">VOCAL</div>
+                            </div>
+                            <div class="eq-slider-group" style="flex:1; display:flex; flex-direction:column; align-items:center;">
+                                <div class="eq-slider-wrapper" style="height:150px; width:40px; position:relative;">
+                                    <input type="range" class="eq-slider-input" id="pageTrebleSlider" min="-12" max="12" step="1" value="${t}"
+                                        style="position:absolute; top:50%; left:50%; width:150px; transform:translate(-50%,-50%) rotate(-90deg);">
+                                </div>
+                                <div class="eq-label" style="margin-top:10px">TREBLE</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="audio-card">
+                        <div class="chart-title">${uiIcon('zap')} Audio Presets</div>
+                        <div class="eq-modes-grid" style="grid-template-columns: 1fr; gap:8px;">
+                            <button class="eq-mode-btn ${b==='0'&&v==='0'&&t==='0'?'active':''}" onclick="setEqMode('flat')">${uiIcon('minus')} Flat</button>
+                            <button class="eq-mode-btn ${b==='8'?'active':''}" onclick="setEqMode('bass')">${uiIcon('activity')} Bass Boost</button>
+                            <button class="eq-mode-btn ${v==='8'?'active':''}" onclick="setEqMode('vocal')">${uiIcon('mic')} Clear Vocal</button>
+                            <button class="eq-mode-btn ${t==='8'?'active':''}" onclick="setEqMode('treble')">${uiIcon('zap')} Sharp Highs</button>
+                        </div>
+                    </div>
+                    <div class="audio-card">
+                        <div class="chart-title">${uiIcon('sparkles')} Visualizer Loop</div>
+                        <div class="fx-pill-row">
+                            <button class="fx-pill active">Classic Wave</button>
+                            <button class="fx-pill" onclick="showToast('More modes coming soon')">Bar Spectrum</button>
+                            <button class="fx-pill" onclick="showToast('More modes coming soon')">Circle Flow</button>
+                        </div>
+                        <div class="fx-eq-meter" style="margin-top:auto">
+                            <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span><span style="--i:6"></span><span style="--i:7"></span><span style="--i:8"></span><span style="--i:9"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+            
+            renderLucideIcons(mainArea);
+            
+            // Connect page sliders
+            const syncSliders = () => {
+                updateFilters();
+            };
+            
+            document.getElementById('pageBassSlider')?.addEventListener('input', syncSliders);
+            document.getElementById('pageVocalSlider')?.addEventListener('input', syncSliders);
+            document.getElementById('pageTrebleSlider')?.addEventListener('input', syncSliders);
+        }
+
         function fmt(s) { return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
         function setMobileBack(show) { const b=document.getElementById('mobileBackBtn'); if(b)b.classList.toggle('hidden',!show); }
         function syncMobileNavActive(tab) {
@@ -13802,8 +14392,11 @@
             if(e)e.classList.add('active');
             if (id === 'navFav') syncMobileNavActive('fav');
             else if (id === 'navPlaylists' || id === 'navDownloads') syncMobileNavActive('library');
+            else if (id === 'navStats') syncMobileNavActive('stats');
+            else if (id === 'navAudio') syncMobileNavActive('audio');
             else syncMobileNavActive('home');
         }
+
         function setSidebarActive(key) { document.querySelectorAll('.artist-item').forEach(e=>e.classList.remove('active')); const e=document.getElementById('sb_'+key); if(e){e.classList.add('active');} }
         function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
         function escA(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
@@ -13867,19 +14460,43 @@
                     showLikedSongs();
                 } else if (tab === 'library') {
                     showPlaylists();
+                } else if (tab === 'stats') {
+                    showStatsDashboard();
+                } else if (tab === 'audio') {
+                    showAudioSettings();
                 }
-            });
-        }
-        document.addEventListener('DOMContentLoaded', setupMobileNav);
+                });
+                }
+                document.addEventListener('DOMContentLoaded', setupMobileNav);
 
-        window.syncMobileAuthUI = syncMobileAuthUI;
+                window.syncMobileAuthUI = syncMobileAuthUI;
 
-        
-        window.playSong = playSong; window.next = next; window.previous = previous;
-        window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
-        window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue;
-        window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
-        window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch;
+
+                window.playSong = playSong; window.next = next; window.previous = previous;
+                window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
+                window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue;
+                window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
+                window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch;
+                window.toggleEqPanel = toggleEqPanel; window.setEqMode = setEqMode;
+                window.showStatsDashboard = showStatsDashboard; window.showAudioSettings = showAudioSettings;
+
+        // -- EQUALIZER INIT --
+        document.getElementById('eqTabBtn')?.addEventListener('click', () => {
+            document.getElementById('eqTabBtn').classList.add('active');
+            document.getElementById('fxTabBtn').classList.remove('active');
+            document.getElementById('eqContent').classList.add('active');
+            document.getElementById('fxContent').classList.remove('active');
+        });
+        document.getElementById('fxTabBtn')?.addEventListener('click', () => {
+            document.getElementById('fxTabBtn').classList.add('active');
+            document.getElementById('eqTabBtn').classList.remove('active');
+            document.getElementById('fxContent').classList.add('active');
+            document.getElementById('eqContent').classList.remove('active');
+        });
+
+        ['bassSlider', 'vocalSlider', 'trebleSlider'].forEach(id => {
+            document.getElementById(id)?.addEventListener('input', updateFilters);
+        });
 
         // -- INIT --
         initLucideSystem();
@@ -13931,25 +14548,16 @@
             <span><i data-lucide="list-music" aria-hidden="true"></i></span>
             <small>Library</small>
         </button>
+        <button class="mnav-btn" data-tab="stats">
+            <span><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i></span>
+            <small>Stats</small>
+        </button>
+        <button class="mnav-btn" data-tab="audio">
+            <span><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
+            <small>Audio</small>
+        </button>
     </nav>
 </body>
 
-</html> <span><i data-lucide="list-music" aria-hidden="true"></i></span>
-<small>Library</small>
-</button>
-</nav>
-</body>
-
-</html> <span><i data-lucide="list-music" aria-hidden="true"></i></span>
-<small>Library</small>
-</button>
-</nav>
-</body>
-
-</html> <span><i data-lucide="list-music" aria-hidden="true"></i></span>
-<small>Library</small>
-</button>
-</nav>
-</body>
 
 </html>
