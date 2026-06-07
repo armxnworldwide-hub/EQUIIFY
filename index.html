@@ -8402,10 +8402,10 @@
             <button class="nav-btn" id="navPlaylists" onclick="showPlaylists()">
                 <span class="nav-icon-wrap"><i data-lucide="list-music" aria-hidden="true"></i></span> Playlists
             </button>
-            <button class="nav-btn" id="navStats" onclick="showStatsDashboard()">
+            <button class="nav-btn" id="navStats" onclick="renderStatsPage()">
                 <span class="nav-icon-wrap"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i></span> Stats
             </button>
-            <button class="nav-btn" id="navAudio" onclick="showAudioSettings()">
+            <button class="nav-btn" id="navAudio" onclick="renderAudioPage()">
                 <span class="nav-icon-wrap"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span> Audio
             </button>
         </div>
@@ -8667,8 +8667,8 @@
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();loadArtists()"><i data-lucide="house" aria-hidden="true"></i><span>Home</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showLikedSongs()"><i data-lucide="heart" aria-hidden="true"></i><span>Favorites</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showPlaylists()"><i data-lucide="list-music" aria-hidden="true"></i><span>Playlists</span></button>
-            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showStatsDashboard()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
-            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();renderStatsPage()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();renderAudioPage()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
         </div>
     </aside>
@@ -14191,7 +14191,7 @@
         };
 
        
-        function showStatsDashboard() {
+        function renderStatsPage() {
             setNavActive('navStats');
             setMobileBack(true);
             const mainArea = document.getElementById('mainArea');
@@ -14290,7 +14290,7 @@
             renderLucideIcons(mainArea);
         }
 
-        function showAudioSettings() {
+        function renderAudioPage() {
             setNavActive('navAudio');
             setMobileBack(true);
             const mainArea = document.getElementById('mainArea');
@@ -14461,9 +14461,9 @@
                 } else if (tab === 'library') {
                     showPlaylists();
                 } else if (tab === 'stats') {
-                    showStatsDashboard();
+                    renderStatsPage();
                 } else if (tab === 'audio') {
-                    showAudioSettings();
+                    renderAudioPage();
                 }
                 });
                 }
@@ -14478,7 +14478,7 @@
                 window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
                 window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch;
                 window.toggleEqPanel = toggleEqPanel; window.setEqMode = setEqMode;
-                window.showStatsDashboard = showStatsDashboard; window.showAudioSettings = showAudioSettings;
+                window.renderStatsPage = renderStatsPage; window.renderAudioPage = renderAudioPage;
 
         // -- EQUALIZER INIT --
         document.getElementById('eqTabBtn')?.addEventListener('click', () => {
