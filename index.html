@@ -8667,8 +8667,8 @@
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();loadArtists()"><i data-lucide="house" aria-hidden="true"></i><span>Home</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showLikedSongs()"><i data-lucide="heart" aria-hidden="true"></i><span>Favorites</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showPlaylists()"><i data-lucide="list-music" aria-hidden="true"></i><span>Playlists</span></button>
-            <button class="mobile-drawer-link" onclick="closeMobileDrawer();renderStatsPage()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
-            <button class="mobile-drawer-link" onclick="closeMobileDrawer();renderAudioPage()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showStatsDashboard()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
         </div>
     </aside>
@@ -14190,31 +14190,301 @@
             if(confirm(`Signed in as ${name}\n\nSign out?`)) signOut();
         };
 
-       
+        /* ── Audio Engine ── */
+        let audioEngine = {
+            bands: [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000],
+            filters: [],
+            preamp: null,
+            compressor: null,
+            limiter: null,
+            reverb: null,
+            reverbGain: null,
+            delay: null,
+            delayGain: null,
+            panner: null,
+            ready: false,
+            vizMode: 'bars'
+        };
+
+        const AUDIO_PRESETS = {
+            'Flat': [0,0,0,0,0,0,0,0,0,0],
+            'Rock': [4,3,2,0,-1,-1,0,1,2,3],
+            'Pop': [-1,0,1,2,3,3,2,1,0,-1],
+            'Hip Hop': [5,4,2,0,-1,-1,0,1,2,4],
+            'Rap': [4,3,1,0,1,2,1,0,2,3],
+            'Punjabi Bass': [8,7,4,1,0,-1,-2,-1,2,4],
+            'EDM': [6,5,2,0,2,3,1,0,3,5],
+            'Trap': [7,6,3,0,-2,-3,0,2,4,6],
+            'Dance': [5,4,2,0,2,3,2,0,2,4],
+            'Club': [4,3,1,0,2,2,1,0,1,2],
+            'Bass Boost': [7,6,4,2,0,0,0,0,0,0],
+            'Extreme Bass': [12,10,7,4,1,0,-1,-2,-1,0],
+            'Treble Boost': [0,0,0,0,0,0,2,5,8,10],
+            'Vocal Boost': [-2,-2,-1,0,2,4,4,2,0,-1],
+            'Podcast': [-3,-2,-1,1,3,4,3,1,0,-2],
+            'Classical': [3,2,1,0,0,0,1,2,2,3],
+            'Jazz': [2,1,0,1,2,2,1,0,1,2],
+            'Acoustic': [2,2,1,0,1,2,2,1,2,3],
+            'Cinema': [4,2,0,0,0,0,0,1,3,5],
+            'Gaming': [5,3,1,0,0,1,2,3,4,5],
+            'Night Mode': [-4,-3,-2,-1,0,0,-1,-2,-3,-4],
+            'Loudness': [5,3,0,0,0,0,0,0,3,5]
+        };
+
+        function saveCustomPreset() {
+            const name = prompt("Enter a name for your custom preset:");
+            if (!name) return;
+            const gains = audioEngine.filters.map(f => f.gain.value);
+            const customPresets = JSON.parse(localStorage.getItem('as_custom_presets') || '{}');
+            customPresets[name] = gains;
+            localStorage.setItem('as_custom_presets', JSON.stringify(customPresets));
+            showToast(`Preset "${name}" saved`);
+            if (document.getElementById('as-presets')?.classList.contains('active')) renderAudioPage();
+        }
+
+        function getAudioPresets() {
+            const custom = JSON.parse(localStorage.getItem('as_custom_presets') || '{}');
+            return { ...AUDIO_PRESETS, ...custom };
+        }
+
+        function createReverb() {
+            if (!visualizerCtx) return;
+            const length = visualizerCtx.sampleRate * 2;
+            const impulse = visualizerCtx.createBuffer(2, length, visualizerCtx.sampleRate);
+            for (let i = 0; i < 2; i++) {
+                const channel = impulse.getChannelData(i);
+                for (let j = 0; j < length; j++) {
+                    channel[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / length, 2);
+                }
+            }
+            const convolver = visualizerCtx.createConvolver();
+            convolver.buffer = impulse;
+            return convolver;
+        }
+
+        function setupAudioEngine() {
+            if (audioEngine.ready || !visualizerCtx) return;
+            try {
+                const ctx = visualizerCtx;
+                audioEngine.preamp = ctx.createGain();
+                audioEngine.preamp.gain.value = parseFloat(localStorage.getItem('as_preamp') || '1');
+                audioEngine.filters = audioEngine.bands.map(freq => {
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'peaking';
+                    filter.frequency.value = freq;
+                    filter.Q.value = 1.4;
+                    const saved = localStorage.getItem(`as_eq_${freq}`);
+                    filter.gain.value = saved ? parseFloat(saved) : 0;
+                    return filter;
+                });
+                audioEngine.compressor = ctx.createDynamicsCompressor();
+                audioEngine.compressor.threshold.value = parseFloat(localStorage.getItem('as_comp_threshold') || '-24');
+                audioEngine.compressor.ratio.value = parseFloat(localStorage.getItem('as_comp_ratio') || '12');
+                audioEngine.reverb = createReverb();
+                audioEngine.reverbGain = ctx.createGain();
+                audioEngine.reverbGain.gain.value = parseFloat(localStorage.getItem('as_reverb') || '0');
+                audioEngine.delay = ctx.createDelay(5.0);
+                audioEngine.delay.delayTime.value = 0.3;
+                audioEngine.delayGain = ctx.createGain();
+                audioEngine.delayGain.gain.value = parseFloat(localStorage.getItem('as_delay') || '0');
+                audioEngine.panner = ctx.createStereoPanner();
+                audioEngine.panner.pan.value = parseFloat(localStorage.getItem('as_pan') || '0');
+                let lastNode = visualizerSource;
+                if (!lastNode) return;
+                visualizerSource.disconnect();
+                lastNode.connect(audioEngine.preamp);
+                lastNode = audioEngine.preamp;
+                audioEngine.filters.forEach(filter => { lastNode.connect(filter); lastNode = filter; });
+                lastNode.connect(audioEngine.compressor);
+                audioEngine.compressor.connect(audioEngine.reverb);
+                audioEngine.reverb.connect(audioEngine.reverbGain);
+                audioEngine.reverbGain.connect(audioEngine.panner);
+                audioEngine.compressor.connect(audioEngine.delay);
+                audioEngine.delay.connect(audioEngine.delayGain);
+                audioEngine.delayGain.connect(audioEngine.panner);
+                audioEngine.compressor.connect(audioEngine.panner);
+                audioEngine.panner.connect(visualizerAnalyser);
+                visualizerAnalyser.connect(ctx.destination);
+                audioEngine.ready = true;
+                startAudioSuiteViz();
+            } catch (e) { console.error("Audio Engine Init Error:", e); }
+        }
+
+        let asVizFrame = 0;
+        function startAudioSuiteViz() {
+            if (asVizFrame) cancelAnimationFrame(asVizFrame);
+            const canvas = document.getElementById('as-viz-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const draw = () => {
+                asVizFrame = requestAnimationFrame(draw);
+                if (!visualizerReady) return;
+                const w = canvas.width = canvas.clientWidth * 2;
+                const h = canvas.height = canvas.clientHeight * 2;
+                ctx.clearRect(0,0,w,h);
+                visualizerAnalyser.getByteFrequencyData(visualizerFreqData);
+                visualizerAnalyser.getByteTimeDomainData(visualizerWaveData);
+                if (audioEngine.vizMode === 'bars') {
+                    const bars = 64; const barW = w / bars;
+                    for (let i = 0; i < bars; i++) {
+                        const v = visualizerFreqData[i] / 255;
+                        ctx.fillStyle = `rgba(200, 245, 66, ${0.4 + v * 0.6})`;
+                        ctx.fillRect(i * barW, h, barW - 2, -v * h * 0.8);
+                    }
+                } else if (audioEngine.vizMode === 'wave') {
+                    ctx.beginPath(); ctx.strokeStyle = '#c8f542'; ctx.lineWidth = 4;
+                    for (let i = 0; i < visualizerWaveData.length; i++) {
+                        const x = (i / visualizerWaveData.length) * w;
+                        const y = (visualizerWaveData[i] / 255) * h;
+                        if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                    }
+                    ctx.stroke();
+                } else {
+                    const centerX = w / 2, centerY = h / 2, radius = Math.min(w,h) * 0.2;
+                    ctx.beginPath(); ctx.strokeStyle = '#c8f542'; ctx.lineWidth = 3;
+                    for (let i = 0; i < 360; i++) {
+                        const rad = i * Math.PI / 180;
+                        const idx = Math.floor((i / 360) * visualizerFreqData.length);
+                        const v = visualizerFreqData[idx] / 255;
+                        const r = radius + v * radius * 0.8;
+                        const x = centerX + Math.cos(rad) * r;
+                        const y = centerY + Math.sin(rad) * r;
+                        if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+                    }
+                    ctx.closePath(); ctx.stroke();
+                }
+            };
+            draw();
+        }
+
+        function setVizMode(mode) {
+            audioEngine.vizMode = mode;
+            document.querySelectorAll('#as-visualizer .as-card').forEach(c => {
+                c.classList.toggle('active', c.textContent.toLowerCase().includes(mode));
+            });
+        }
+
+        function updateEffect(effect, val) {
+            const v = parseFloat(val);
+            if (effect === 'reverb' && audioEngine.reverbGain) {
+                audioEngine.reverbGain.gain.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
+                localStorage.setItem('as_reverb', v);
+            } else if (effect === 'delay' && audioEngine.delayGain) {
+                audioEngine.delayGain.gain.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
+                localStorage.setItem('as_delay', v);
+            }
+        }
+
+        function updateEQBand(index, value) {
+            if (!audioEngine.filters[index]) return;
+            const val = parseFloat(value);
+            audioEngine.filters[index].gain.setTargetAtTime(val, visualizerCtx.currentTime, 0.05);
+            const el = document.getElementById(`eq-db-${index}`);
+            if (el) el.textContent = val.toFixed(1) + 'dB';
+            localStorage.setItem(`as_eq_${audioEngine.bands[index]}`, val);
+        }
+
+        function applyAudioPreset(name) {
+            const allPresets = getAudioPresets();
+            const gains = allPresets[name];
+            if (!gains) return;
+            gains.forEach((gain, i) => {
+                if (audioEngine.filters[i]) {
+                    audioEngine.filters[i].gain.setTargetAtTime(gain, visualizerCtx.currentTime, 0.1);
+                    const slider = document.querySelectorAll('.eq-slider-vertical')[i];
+                    if (slider) slider.value = gain;
+                    const dbLabel = document.getElementById(`eq-db-${i}`);
+                    if (dbLabel) dbLabel.textContent = gain.toFixed(1) + 'dB';
+                    localStorage.setItem(`as_eq_${audioEngine.bands[i]}`, gain);
+                }
+            });
+            localStorage.setItem('as_active_preset', name);
+            document.querySelectorAll('#as-presets .as-card').forEach(c => {
+                const title = c.querySelector('.as-card-title')?.textContent;
+                c.classList.toggle('active', title === name);
+            });
+        }
+
+        function resetEQ() { applyAudioPreset('Flat'); }
+
+        function updatePreamp(val) {
+            const v = parseFloat(val);
+            if (audioEngine.preamp) audioEngine.preamp.gain.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
+            const el = document.getElementById('preamp-val');
+            if (el) el.textContent = v.toFixed(2) + 'x';
+            localStorage.setItem('as_preamp', v);
+        }
+
+        function updatePan(val) {
+            const v = parseFloat(val);
+            if (audioEngine.panner) audioEngine.panner.pan.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
+            const el = document.getElementById('pan-val');
+            if (el) el.textContent = v.toFixed(1);
+            localStorage.setItem('as_pan', v);
+        }
+
+        function updateCompressor(param, val) {
+            const v = parseFloat(val);
+            if (audioEngine.compressor && audioEngine.compressor[param]) audioEngine.compressor[param].setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
+        }
+
+        function updateStats() {
+            if (!visualizerCtx) return;
+            const sr = document.getElementById('stat-sr'), st = document.getElementById('stat-state'), lt = document.getElementById('stat-latency'), peak = document.getElementById('stat-peak');
+            if (sr) sr.textContent = visualizerCtx.sampleRate + ' Hz';
+            if (st) st.textContent = visualizerCtx.state.charAt(0).toUpperCase() + visualizerCtx.state.slice(1);
+            if (lt) lt.textContent = (visualizerCtx.baseLatency || 0).toFixed(4) * 1000 + 'ms';
+            const updatePeak = () => {
+                if (!visualizerReady || !peak) return;
+                let max = 0; for (let i = 0; i < visualizerWaveData.length; i++) { const v = Math.abs(visualizerWaveData[i] - 128) / 128; if (v > max) max = v; }
+                peak.textContent = max.toFixed(2);
+                if (document.getElementById('as-stats')?.classList.contains('active')) requestAnimationFrame(updatePeak);
+            };
+            updatePeak();
+        }
+
+        function renderAudioPage() {
+            setNavActive('navAudio'); setMobileBack(true);
+            const mainArea = document.getElementById('mainArea'); if (!mainArea) return;
+            const allPresets = getAudioPresets();
+            mainArea.innerHTML = `
+                <div class="audio-suite-container">
+                    <div class="as-header"><div class="premium-dashboard-kicker">Studio Grade</div><h1 class="premium-dashboard-title">Audio Suite</h1><p class="premium-dashboard-sub">Master your sound with professional-grade processing and real-time analytics.</p></div>
+                    <div class="as-tabs"><div class="as-tab active" data-target="eq">Equalizer</div><div class="as-tab" data-target="presets">Presets</div><div class="as-tab" data-target="effects">Effects</div><div class="as-tab" data-target="visualizer">Visualizer</div><div class="as-tab" data-target="advanced">Advanced</div><div class="as-tab" data-target="stats">Statistics</div></div>
+                    <div class="as-content active" id="as-eq"><div class="eq-grid">${audioEngine.bands.map((freq, i) => `<div class="eq-band"><input type="range" class="eq-slider-vertical" min="-15" max="15" step="0.5" value="${audioEngine.filters[i]?.gain.value || 0}" oninput="updateEQBand(${i}, this.value)"><span class="eq-label-freq">${freq >= 1000 ? (freq/1000) + 'kHz' : freq + 'Hz'}</span><span class="eq-label-db" id="eq-db-${i}">${(audioEngine.filters[i]?.gain.value || 0).toFixed(1)}dB</span></div>`).join('')}</div><div style="display:flex; gap:15px; justify-content:center;"><button class="btn btn-outline" onclick="resetEQ()">Reset EQ</button><button class="btn btn-accent" onclick="saveCustomPreset()">Save Custom</button></div></div>
+                    <div class="as-content" id="as-presets"><div class="as-grid">${Object.keys(allPresets).map(name => `<div class="as-card ${localStorage.getItem('as_active_preset') === name ? 'active' : ''}" onclick="applyAudioPreset('${name}')"><div class="as-card-icon">${uiIcon('music')}</div><div class="as-card-title">${name}</div></div>`).join('')}</div></div>
+                    <div class="as-content" id="as-effects"><div class="as-grid"><div class="as-card"><div class="as-card-title">Preamp (Gain)</div><input type="range" min="0" max="2" step="0.05" value="${audioEngine.preamp?.gain.value || 1}" oninput="updatePreamp(this.value)"><span id="preamp-val">${(audioEngine.preamp?.gain.value || 1).toFixed(2)}x</span></div><div class="as-card"><div class="as-card-title">Stereo Pan</div><input type="range" min="-1" max="1" step="0.1" value="${audioEngine.panner?.pan.value || 0}" oninput="updatePan(this.value)"><span id="pan-val">${(audioEngine.panner?.pan.value || 0).toFixed(1)}</span></div><div class="as-card"><div class="as-card-title">Reverb (Space)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_reverb') || 0}" oninput="updateEffect('reverb', this.value)"></div><div class="as-card"><div class="as-card-title">Delay (Echo)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_delay') || 0}" oninput="updateEffect('delay', this.value)"></div></div></div>
+                    <div class="as-content" id="as-visualizer"><div class="viz-container"><canvas id="as-viz-canvas"></canvas></div><div class="as-grid" style="margin-top:20px"><div class="as-card ${audioEngine.vizMode==='bars'?'active':''}" onclick="setVizMode('bars')">Spectrum Bars</div><div class="as-card ${audioEngine.vizMode==='wave'?'active':''}" onclick="setVizMode('wave')">Waveform</div><div class="as-card ${audioEngine.vizMode==='circle'?'active':''}" onclick="setVizMode('circle')">Circular</div></div></div>
+                    <div class="as-content" id="as-advanced"><div class="as-grid"><div class="as-card"><div class="as-card-title">Compressor Threshold</div><input type="range" min="-60" max="0" step="1" value="${audioEngine.compressor?.threshold.value || -24}" oninput="updateCompressor('threshold', this.value)"></div><div class="as-card"><div class="as-card-title">Compressor Ratio</div><input type="range" min="1" max="20" step="1" value="${audioEngine.compressor?.ratio.value || 12}" oninput="updateCompressor('ratio', this.value)"></div></div></div>
+                    <div class="as-content" id="as-stats"><div class="stats-box"><div class="stats-row"><span class="stats-label">Sample Rate</span><span class="stats-value" id="stat-sr">44100 Hz</span></div><div class="stats-row"><span class="stats-label">Channels</span><span class="stats-value">2 (Stereo)</span></div><div class="stats-row"><span class="stats-label">Context State</span><span class="stats-value" id="stat-state">Running</span></div><div class="stats-row"><span class="stats-label">Audio Latency</span><span class="stats-value" id="stat-latency">0ms</span></div><div class="stats-row"><span class="stats-label">Peak Level</span><span class="stats-value" id="stat-peak">0.00</span></div><div class="stats-row"><span class="stats-label">Audio Engine</span><span class="stats-value">FalconX Pro v3.0</span></div></div></div>
+                </div>
+            `;
+            initAudioSuiteTabs(); setupAudioEngine(); updateStats(); renderLucideIcons(mainArea);
+        }
+
+        function initAudioSuiteTabs() {
+            const tabs = document.querySelectorAll('.as-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const target = tab.dataset.target;
+                    document.querySelectorAll('.as-content').forEach(c => c.classList.remove('active'));
+                    document.getElementById(`as-${target}`).classList.add('active');
+                });
+            });
+        }
+
         function renderStatsPage() {
-            setNavActive('navStats');
-            setMobileBack(true);
+            setNavActive('navStats'); setMobileBack(true);
             const mainArea = document.getElementById('mainArea');
-            
             const songPool = buildLibrarySongPool();
             const totalSongs = songPool.length;
             const totalArtists = Object.keys(artists).length;
             const favCount = likedSongs.size;
-            
-            // Calculate most played
-            const mostPlayed = [...songPool]
-                .filter(s => s.playCount > 0)
-                .sort((a, b) => b.playCount - a.playCount)
-                .slice(0, 5);
-            
-            // Listening time (approximate in minutes)
-            let totalSec = 0;
-            Object.entries(songPlayCounts).forEach(([file, count]) => {
-                const duration = songDurationMeta[file] || 210; // default 3:30
-                totalSec += duration * count;
-            });
-            const listenMins = Math.floor(totalSec / 60);
-            const listenHrs = (totalSec / 3600).toFixed(1);
+            const mostPlayed = [...songPool].filter(s => s.playCount > 0).sort((a, b) => b.playCount - a.playCount).slice(0, 5);
+            let totalSec = 0; Object.entries(songPlayCounts).forEach(([file, count]) => { const duration = songDurationMeta[file] || 210; totalSec += duration * count; });
+            const listenMins = Math.floor(totalSec / 60); const listenHrs = (totalSec / 3600).toFixed(1);
 
             mainArea.innerHTML = `
             <div class="main-topbar">
@@ -14223,280 +14493,50 @@
                 <div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div>
             </div>
             <div class="premium-dashboard">
-                <div class="premium-dashboard-hero">
-                    <div>
-                        <div class="premium-dashboard-kicker">Personal Insights</div>
-                        <div class="premium-dashboard-title">Your Music Journey</div>
-                        <p class="premium-dashboard-sub">Explore your listening habits and library statistics.</p>
-                    </div>
-                </div>
-                
+                <div class="premium-dashboard-hero"><div><div class="premium-dashboard-kicker">Personal Insights</div><div class="premium-dashboard-title">Your Music Journey</div><p class="premium-dashboard-sub">Explore your listening habits and library statistics.</p></div></div>
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Total Songs</div>
-                        <div class="stat-value">${totalSongs}</div>
-                        <div class="stat-note">Across all artists</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Total Artists</div>
-                        <div class="stat-value">${totalArtists}</div>
-                        <div class="stat-note">In your library</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Listening Time</div>
-                        <div class="stat-value">${listenHrs}h</div>
-                        <div class="stat-note">${listenMins} total minutes</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Favorites</div>
-                        <div class="stat-value">${favCount}</div>
-                        <div class="stat-note">Songs you loved</div>
-                    </div>
+                    <div class="stat-card"><div class="stat-label">Total Songs</div><div class="stat-value">${totalSongs}</div><div class="stat-note">Across all artists</div></div>
+                    <div class="stat-card"><div class="stat-label">Total Artists</div><div class="stat-value">${totalArtists}</div><div class="stat-note">In your library</div></div>
+                    <div class="stat-card"><div class="stat-label">Listening Time</div><div class="stat-value">${listenHrs}h</div><div class="stat-note">${listenMins} total minutes</div></div>
+                    <div class="stat-card"><div class="stat-label">Favorites</div><div class="stat-value">${favCount}</div><div class="stat-note">Songs you loved</div></div>
                 </div>
-
                 <div class="chart-grid">
-                    <div class="chart-card">
-                        <div class="chart-title">${uiIcon('bar-chart-3')} Most Played Songs</div>
-                        <div class="recent-list">
-                            ${mostPlayed.length ? mostPlayed.map(s => `
-                                <div class="recent-item" onclick="playSongByFile('${escA(s.file)}')">
-                                    <img src="${escH(s.poster)}" onerror="this.style.background='var(--surface3)'">
-                                    <div class="recent-text">
-                                        <div style="font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(s.title)}</div>
-                                        <div style="font-size:.68rem;color:var(--text2)">${escH(s.artistName)}</div>
-                                    </div>
-                                    <div style="font-size:.75rem;font-weight:800;color:var(--accent)">${s.playCount} plays</div>
-                                </div>
-                            `).join('') : '<div class="empty-state" style="padding:20px 0"><p>No plays tracked yet.</p></div>'}
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-title">${uiIcon('history')} Recently Played</div>
-                        <div class="recent-list">
-                            ${continueListening.length ? continueListening.slice(0, 5).map(s => `
-                                <div class="recent-item" onclick="playFromHistory('${escA(s.file)}','${escA(s.artistKey || '')}')">
-                                    <img src="${escH(s.poster)}" onerror="this.style.background='var(--surface3)'">
-                                    <div class="recent-text">
-                                        <div style="font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(s.title)}</div>
-                                        <div style="font-size:.68rem;color:var(--text2)">${escH(s.artistName)}</div>
-                                    </div>
-                                    <div style="opacity:.4">${uiIcon('play')}</div>
-                                </div>
-                            `).join('') : '<div class="empty-state" style="padding:20px 0"><p>No recent history.</p></div>'}
-                        </div>
-                    </div>
+                    <div class="chart-card"><div class="chart-title">${uiIcon('bar-chart-3')} Most Played Songs</div><div class="recent-list">${mostPlayed.length ? mostPlayed.map(s => `<div class="recent-item" onclick="playSongByFile('${escA(s.file)}')"><img src="${escH(s.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recent-text"><div style="font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(s.title)}</div><div style="font-size:.68rem;color:var(--text2)">${escH(s.artistName)}</div></div><div style="font-size:.75rem;font-weight:800;color:var(--accent)">${s.playCount} plays</div></div>`).join('') : '<div class="empty-state" style="padding:20px 0"><p>No plays tracked yet.</p></div>'}</div></div>
+                    <div class="chart-card"><div class="chart-title">${uiIcon('history')} Recently Played</div><div class="recent-list">${continueListening.length ? continueListening.slice(0, 5).map(s => `<div class="recent-item" onclick="playFromHistory('${escA(s.file)}','${escA(s.artistKey || '')}')"><img src="${escH(s.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recent-text"><div style="font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escH(s.title)}</div><div style="font-size:.68rem;color:var(--text2)">${escH(s.artistName)}</div></div><div style="opacity:.4">${uiIcon('play')}</div></div>`).join('') : '<div class="empty-state" style="padding:20px 0"><p>No recent history.</p></div>'}</div></div>
                 </div>
             </div>`;
             renderLucideIcons(mainArea);
-        }
-
-        function renderAudioPage() {
-            setNavActive('navAudio');
-            setMobileBack(true);
-            const mainArea = document.getElementById('mainArea');
-            
-            // Load current values
-            const b = localStorage.getItem('falcon_eq_bass') || '0';
-            const v = localStorage.getItem('falcon_eq_vocal') || '0';
-            const t = localStorage.getItem('falcon_eq_treble') || '0';
-
-            mainArea.innerHTML = `
-            <div class="main-topbar">
-                <div class="nav-arrows"><button class="nav-arrow-btn" onclick="loadArtists()">${uiIcon('chevron-left')}</button></div>
-                <div style="flex:1"><div style="font-size:1.2rem;font-weight:800">Audio Suite</div></div>
-                <div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div>
-            </div>
-            <div class="audio-settings-shell">
-                <div class="audio-settings-hero">
-                    <div>
-                        <div class="audio-settings-kicker">Professional Grade</div>
-                        <div class="audio-settings-title">Sound Calibration</div>
-                        <p class="audio-settings-sub">Fine-tune your listening experience with high-fidelity audio controls.</p>
-                    </div>
-                </div>
-                
-                <div class="audio-card-grid">
-                    <div class="audio-card wide">
-                        <div class="chart-title">${uiIcon('sliders-horizontal')} 3-Band Equalizer</div>
-                        <div class="eq-sliders-container" style="height:200px; display:flex; justify-content:space-around; align-items:flex-end;">
-                            <div class="eq-slider-group" style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                                <div class="eq-slider-wrapper" style="height:150px; width:40px; position:relative;">
-                                    <input type="range" class="eq-slider-input" id="pageBassSlider" min="-12" max="12" step="1" value="${b}" 
-                                        style="position:absolute; top:50%; left:50%; width:150px; transform:translate(-50%,-50%) rotate(-90deg);">
-                                </div>
-                                <div class="eq-label" style="margin-top:10px">BASS</div>
-                            </div>
-                            <div class="eq-slider-group" style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                                <div class="eq-slider-wrapper" style="height:150px; width:40px; position:relative;">
-                                    <input type="range" class="eq-slider-input" id="pageVocalSlider" min="-12" max="12" step="1" value="${v}"
-                                        style="position:absolute; top:50%; left:50%; width:150px; transform:translate(-50%,-50%) rotate(-90deg);">
-                                </div>
-                                <div class="eq-label" style="margin-top:10px">VOCAL</div>
-                            </div>
-                            <div class="eq-slider-group" style="flex:1; display:flex; flex-direction:column; align-items:center;">
-                                <div class="eq-slider-wrapper" style="height:150px; width:40px; position:relative;">
-                                    <input type="range" class="eq-slider-input" id="pageTrebleSlider" min="-12" max="12" step="1" value="${t}"
-                                        style="position:absolute; top:50%; left:50%; width:150px; transform:translate(-50%,-50%) rotate(-90deg);">
-                                </div>
-                                <div class="eq-label" style="margin-top:10px">TREBLE</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="audio-card">
-                        <div class="chart-title">${uiIcon('zap')} Audio Presets</div>
-                        <div class="eq-modes-grid" style="grid-template-columns: 1fr; gap:8px;">
-                            <button class="eq-mode-btn ${b==='0'&&v==='0'&&t==='0'?'active':''}" onclick="setEqMode('flat')">${uiIcon('minus')} Flat</button>
-                            <button class="eq-mode-btn ${b==='8'?'active':''}" onclick="setEqMode('bass')">${uiIcon('activity')} Bass Boost</button>
-                            <button class="eq-mode-btn ${v==='8'?'active':''}" onclick="setEqMode('vocal')">${uiIcon('mic')} Clear Vocal</button>
-                            <button class="eq-mode-btn ${t==='8'?'active':''}" onclick="setEqMode('treble')">${uiIcon('zap')} Sharp Highs</button>
-                        </div>
-                    </div>
-                    <div class="audio-card">
-                        <div class="chart-title">${uiIcon('sparkles')} Visualizer Loop</div>
-                        <div class="fx-pill-row">
-                            <button class="fx-pill active">Classic Wave</button>
-                            <button class="fx-pill" onclick="showToast('More modes coming soon')">Bar Spectrum</button>
-                            <button class="fx-pill" onclick="showToast('More modes coming soon')">Circle Flow</button>
-                        </div>
-                        <div class="fx-eq-meter" style="margin-top:auto">
-                            <span style="--i:0"></span><span style="--i:1"></span><span style="--i:2"></span><span style="--i:3"></span><span style="--i:4"></span><span style="--i:5"></span><span style="--i:6"></span><span style="--i:7"></span><span style="--i:8"></span><span style="--i:9"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-            
-            renderLucideIcons(mainArea);
-            
-            // Connect page sliders
-            const syncSliders = () => {
-                updateFilters();
-            };
-            
-            document.getElementById('pageBassSlider')?.addEventListener('input', syncSliders);
-            document.getElementById('pageVocalSlider')?.addEventListener('input', syncSliders);
-            document.getElementById('pageTrebleSlider')?.addEventListener('input', syncSliders);
         }
 
         function fmt(s) { return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'); }
         function setMobileBack(show) { const b=document.getElementById('mobileBackBtn'); if(b)b.classList.toggle('hidden',!show); }
-        function syncMobileNavActive(tab) {
-            const nav = document.getElementById('mobileNav');
-            if (!nav) return;
-            nav.querySelectorAll('.mnav-btn').forEach((btn) => {
-                btn.classList.toggle('active', btn.dataset.tab === tab);
-            });
-        }
-        function setNavActive(id) {
-            document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-            const e=document.getElementById(id);
-            if(e)e.classList.add('active');
-            if (id === 'navFav') syncMobileNavActive('fav');
-            else if (id === 'navPlaylists' || id === 'navDownloads') syncMobileNavActive('library');
-            else if (id === 'navStats') syncMobileNavActive('stats');
-            else if (id === 'navAudio') syncMobileNavActive('audio');
-            else syncMobileNavActive('home');
-        }
-
+        function syncMobileNavActive(tab) { const nav = document.getElementById('mobileNav'); if (!nav) return; nav.querySelectorAll('.mnav-btn').forEach((btn) => { btn.classList.toggle('active', btn.dataset.tab === tab); }); }
+        function setNavActive(id) { document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); const e=document.getElementById(id); if(e)e.classList.add('active'); if (id === 'navFav') syncMobileNavActive('fav'); else if (id === 'navPlaylists' || id === 'navDownloads') syncMobileNavActive('library'); else if (id === 'navStats') syncMobileNavActive('stats'); else if (id === 'navAudio') syncMobileNavActive('audio'); else syncMobileNavActive('home'); }
         function setSidebarActive(key) { document.querySelectorAll('.artist-item').forEach(e=>e.classList.remove('active')); const e=document.getElementById('sb_'+key); if(e){e.classList.add('active');} }
         function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
         function escA(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+        let toastTimer; function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.style.opacity='1'; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.style.opacity='0',2200); }
 
-        let toastTimer;
-        function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.style.opacity='1'; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.style.opacity='0',2200); }
-
-    
-        
-      
-        function syncMobileAuthUI(isLoggedIn, user) {
-            const mobileLoginBtn = document.getElementById('mobileLoginBtn');
-            const mobileUserBtn = document.getElementById('mobileUserBtn');
-            const mobileUserAvatar = document.getElementById('mobileUserAvatar');
-            if(isLoggedIn && user) {
-                if(mobileLoginBtn) mobileLoginBtn.style.display = 'none';
-                if(mobileUserBtn) mobileUserBtn.style.display = 'flex';
-                if(mobileUserAvatar && user.photoURL) mobileUserAvatar.src = user.photoURL;
-            } else {
-                if(mobileLoginBtn) mobileLoginBtn.style.display = 'flex';
-                if(mobileUserBtn) mobileUserBtn.style.display = 'none';
-            }
-        }
-
-        async function registerFalconServiceWorker() {
-            if (!('serviceWorker' in navigator)) return null;
-            try {
-                const registration = await navigator.serviceWorker.register('./sw.js', {
-                    scope: './'
-                });
-                if (registration && 'sync' in registration) {
-                    registration.sync.register('falconx-background-sync').catch(() => {});
-                }
-                return registration;
-            } catch (e) {
-                console.warn('Service worker registration failed:', e);
-                return null;
-            }
-        }
-          
         function setupMobileNav() {
-            const nav = document.getElementById('mobileNav');
-            if (!nav || nav.dataset.bound === '1') return;
-            nav.dataset.bound = '1';
-
+            const nav = document.getElementById('mobileNav'); if (!nav || nav.dataset.bound === '1') return; nav.dataset.bound = '1';
             nav.addEventListener('click', (e) => {
-                const btn = e.target.closest('.mnav-btn');
-                if (!btn) return;
-
-                nav.querySelectorAll('.mnav-btn').forEach((b) => b.classList.remove('active'));
-                btn.classList.add('active');
-
+                const btn = e.target.closest('.mnav-btn'); if (!btn) return;
+                nav.querySelectorAll('.mnav-btn').forEach((b) => b.classList.remove('active')); btn.classList.add('active');
                 const tab = btn.dataset.tab;
-                if (tab === 'home') {
-                    loadArtists();
-                } else if (tab === 'search') {
-                    loadArtists();
-                    syncMobileNavActive('search');
-                    setTimeout(() => document.querySelector('.search-box input')?.focus(), 60);
-                } else if (tab === 'fav') {
-                    showLikedSongs();
-                } else if (tab === 'library') {
-                    showPlaylists();
-                } else if (tab === 'stats') {
-                    renderStatsPage();
-                } else if (tab === 'audio') {
-                    renderAudioPage();
-                }
-                });
-                }
-                document.addEventListener('DOMContentLoaded', setupMobileNav);
+                if (tab === 'home') loadArtists();
+                else if (tab === 'search') { loadArtists(); syncMobileNavActive('search'); setTimeout(() => document.querySelector('.search-box input')?.focus(), 60); }
+                else if (tab === 'fav') showLikedSongs();
+                else if (tab === 'library') showPlaylists();
+                else if (tab === 'stats') renderStatsPage();
+                else if (tab === 'audio') renderAudioPage();
+            });
+        }
+        document.addEventListener('DOMContentLoaded', setupMobileNav);
 
-                window.syncMobileAuthUI = syncMobileAuthUI;
-
-
-                window.playSong = playSong; window.next = next; window.previous = previous;
-                window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
-                window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue;
-                window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
-                window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch;
-                window.toggleEqPanel = toggleEqPanel; window.setEqMode = setEqMode;
-                window.renderStatsPage = renderStatsPage; window.renderAudioPage = renderAudioPage;
-
-        // -- EQUALIZER INIT --
-        document.getElementById('eqTabBtn')?.addEventListener('click', () => {
-            document.getElementById('eqTabBtn').classList.add('active');
-            document.getElementById('fxTabBtn').classList.remove('active');
-            document.getElementById('eqContent').classList.add('active');
-            document.getElementById('fxContent').classList.remove('active');
-        });
-        document.getElementById('fxTabBtn')?.addEventListener('click', () => {
-            document.getElementById('fxTabBtn').classList.add('active');
-            document.getElementById('eqTabBtn').classList.remove('active');
-            document.getElementById('fxContent').classList.add('active');
-            document.getElementById('eqContent').classList.remove('active');
-        });
-
-        ['bassSlider', 'vocalSlider', 'trebleSlider'].forEach(id => {
-            document.getElementById(id)?.addEventListener('input', updateFilters);
-        });
+        window.playSong = playSong; window.next = next; window.previous = previous; window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
+        window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue; window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
+        window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch; window.toggleEqPanel = () => renderAudioPage(); window.setEqMode = (mode) => applyAudioPreset(mode.charAt(0).toUpperCase() + mode.slice(1));
+        window.renderStatsPage = renderStatsPage; window.renderAudioPage = renderAudioPage; window.setVizMode = setVizMode; window.updateEffect = updateEffect; window.updateEQBand = updateEQBand; window.applyAudioPreset = applyAudioPreset; window.resetEQ = resetEQ; window.updatePreamp = updatePreamp; window.updatePan = updatePan; window.updateCompressor = updateCompressor; window.saveCustomPreset = saveCustomPreset;
 
         // -- INIT --
         initLucideSystem();
