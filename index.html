@@ -8279,6 +8279,337 @@
             border-radius: 1px 1px 0 0;
             opacity: 0.6;
         }
+        /* Audio Suite Container */
+        
+        .audio-suite-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 20px 24px;
+        }
+        
+        .as-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .as-tabs {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+        
+        .as-tab {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text2);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .as-tab.active {
+            color: var(--accent);
+            background: rgba(var(--ambient-rgb, 200, 245, 66), 0.15);
+        }
+        
+        .as-tab:hover:not(.active) {
+            color: var(--text);
+        }
+        
+        .as-content {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .as-content.active {
+            display: flex;
+        }
+        
+        .as-glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .eq-graph-canvas {
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .eq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .eq-band {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .eq-slider-vertical {
+            width: 30px;
+            height: 140px;
+            appearance: slider-vertical;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+        
+        .eq-label-freq {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text2);
+        }
+        
+        .eq-label-db {
+            font-size: 0.7rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 12px;
+        }
+        
+        .preset-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .preset-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        
+        .preset-card.active {
+            background: rgba(var(--ambient-rgb, 200, 245, 66), 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .preset-icon {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+        }
+        
+        .preset-card.active .preset-icon {
+            background: rgba(var(--ambient-rgb, 200, 245, 66), 0.2);
+        }
+        
+        .preset-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text2);
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .stat-note {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        
+        .chart-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .chart-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .recent-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .recent-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+        
+        .recent-text {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text2);
+        }
+        
+        .fx-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .fx-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .fx-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        
+        .fx-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .fx-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .fx-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(200, 245, 66, 0.4);
+        }
+        
+        .fx-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 8px rgba(200, 245, 66, 0.4);
+        }
+        
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: center;
+        }
+        
+        .stat-pill .stat-label {
+            font-size: 0.75rem;
+            color: var(--text2);
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+        
+        .stat-pill .stat-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
         
         @media (max-width: 768px) {
             .eq-panel {
@@ -8510,6 +8841,9 @@
 
 
     <footer class="player">
+        <div class="player-waveform-bg">
+            <canvas id="footerWaveform"></canvas>
+        </div>
         <div class="player-song">
             <img class="player-poster" id="poster" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Crect width='56' height='56' fill='%23282828' rx='6'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='22' fill='%23535353'%3E?%3C/text%3E%3C/svg%3E"
                 onclick="openFullPlayer()">
@@ -8534,10 +8868,14 @@
                 <button class="ctrl-btn" id="repeatBtn" onclick="toggleRepeat()" title="Repeat"><i data-lucide="repeat" aria-hidden="true"></i></button>
                 <button class="queue-btn-player" id="queueToggleBtn" onclick="toggleQueuePanel()"><i data-lucide="list-music" aria-hidden="true"></i><span class="queue-count-badge hidden" id="queueCountBadge">0</span></button>
             </div>
-            <div class="player-progress">
+            <div class="player-progress-container">
                 <span class="time-label" id="currentTime">0:00</span>
-                <div class="progress-track" id="progressTrack" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
-                    <div class="progress-fill" id="progressBar"></div>
+                <div class="progress-track-wrapper">
+                    <div class="progress-track" id="progressTrack" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                        <div class="progress-fill" id="progressBar">
+                            <div class="progress-knob"></div>
+                        </div>
+                    </div>
                 </div>
                 <span class="time-label" id="duration">0:00</span>
             </div>
@@ -8551,7 +8889,10 @@
             </button>
             <div class="volume-wrap">
                 <span class="vol-icon" onclick="toggleMute()"><i data-lucide="volume-2" aria-hidden="true"></i></span>
-                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+                <div class="volume-slider-container">
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+                    <div class="volume-progress" id="volumeProgress"></div>
+                </div>
             </div>
         </div>
     </footer>
@@ -12898,6 +13239,10 @@
 
         function showLikedSongs() { setNavActive('navFav'); setMobileBack(true); refreshLikedDisplay(); }
 
+        function showStatsDashboard() { renderStatsPage(); }
+
+        function showAudioSettings() { renderAudioPage(); }
+
         function getFavSortLabel(type) {
             return getSortLabel(type);
         }
@@ -14154,7 +14499,18 @@
             savePlaybackMemory();
             updateNowPlayingIndicator();
         });
-        volumeSlider.addEventListener('input',()=>{ audio.volume=+volumeSlider.value; isMuted=audio.volume===0; localStorage.setItem('eq_volume',audio.volume); });
+        function updateVolumeProgress() {
+            const vol = +volumeSlider.value;
+            const progress = document.getElementById('volumeProgress');
+            if (progress) progress.style.width = (vol * 100) + '%';
+        }
+        volumeSlider.addEventListener('input',()=>{ 
+            audio.volume=+volumeSlider.value; 
+            isMuted=audio.volume===0; 
+            localStorage.setItem('eq_volume',audio.volume); 
+            updateVolumeProgress();
+        });
+        updateVolumeProgress();
         window.addEventListener('beforeunload',()=>savePlaybackMemory());
 
         if('mediaSession' in navigator){ navigator.mediaSession.setActionHandler('play',()=>audio.play()); navigator.mediaSession.setActionHandler('pause',()=>audio.pause()); navigator.mediaSession.setActionHandler('nexttrack',()=>next()); navigator.mediaSession.setActionHandler('previoustrack',()=>previous()); navigator.mediaSession.setActionHandler('seekto',(d)=>{if(d.seekTime)audio.currentTime=d.seekTime;}); }
@@ -14202,9 +14558,69 @@
             delay: null,
             delayGain: null,
             panner: null,
+            bassFilter: null,
+            vocalFilter: null,
+            trebleFilter: null,
+            loudnessGain: null,
             ready: false,
             vizMode: 'bars'
         };
+
+        function startAudioSuiteViz() {
+            // Initialize audio suite visualizer if canvas exists
+            const canvas = document.getElementById('as-viz-canvas');
+            if (!canvas || !visualizerAnalyser) return;
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            function draw() {
+                if (audioEngine.vizMode === 'bars') {
+                    const dataArray = new Uint8Array(visualizerAnalyser.frequencyBinCount);
+                    visualizerAnalyser.getByteFrequencyData(dataArray);
+                    
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    const barWidth = (canvas.width / dataArray.length) * 2.5;
+                    let x = 0;
+                    
+                    dataArray.forEach(val => {
+                        const hue = (x / canvas.width) * 360;
+                        ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                        ctx.fillRect(x, canvas.height - (val / 255) * canvas.height, barWidth, (val / 255) * canvas.height);
+                        x += barWidth + 1;
+                    });
+                } else if (audioEngine.vizMode === 'wave') {
+                    const dataArray = new Uint8Array(visualizerAnalyser.frequencyBinCount);
+                    visualizerAnalyser.getByteTimeDomainData(dataArray);
+                    
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = '#c8f542';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    
+                    const sliceWidth = canvas.width / dataArray.length;
+                    let x = 0;
+                    
+                    dataArray.forEach((val, i) => {
+                        const y = (val / 255) * canvas.height;
+                        if (i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                        x += sliceWidth;
+                    });
+                    ctx.stroke();
+                }
+                
+                requestAnimationFrame(draw);
+            }
+            
+            draw();
+        }
 
         const AUDIO_PRESETS = {
             'Flat': [0,0,0,0,0,0,0,0,0,0],
@@ -14231,43 +14647,15 @@
             'Loudness': [5,3,0,0,0,0,0,0,3,5]
         };
 
-        function saveCustomPreset() {
-            const name = prompt("Enter a name for your custom preset:");
-            if (!name) return;
-            const gains = audioEngine.filters.map(f => f.gain.value);
-            const customPresets = JSON.parse(localStorage.getItem('as_custom_presets') || '{}');
-            customPresets[name] = gains;
-            localStorage.setItem('as_custom_presets', JSON.stringify(customPresets));
-            showToast(`Preset "${name}" saved`);
-            if (document.getElementById('as-presets')?.classList.contains('active')) renderAudioPage();
-        }
-
-        function getAudioPresets() {
-            const custom = JSON.parse(localStorage.getItem('as_custom_presets') || '{}');
-            return { ...AUDIO_PRESETS, ...custom };
-        }
-
-        function createReverb() {
-            if (!visualizerCtx) return;
-            const length = visualizerCtx.sampleRate * 2;
-            const impulse = visualizerCtx.createBuffer(2, length, visualizerCtx.sampleRate);
-            for (let i = 0; i < 2; i++) {
-                const channel = impulse.getChannelData(i);
-                for (let j = 0; j < length; j++) {
-                    channel[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / length, 2);
-                }
-            }
-            const convolver = visualizerCtx.createConvolver();
-            convolver.buffer = impulse;
-            return convolver;
-        }
-
         function setupAudioEngine() {
             if (audioEngine.ready || !visualizerCtx) return;
             try {
                 const ctx = visualizerCtx;
+                
                 audioEngine.preamp = ctx.createGain();
                 audioEngine.preamp.gain.value = parseFloat(localStorage.getItem('as_preamp') || '1');
+
+                // 10-Band EQ
                 audioEngine.filters = audioEngine.bands.map(freq => {
                     const filter = ctx.createBiquadFilter();
                     filter.type = 'peaking';
@@ -14277,163 +14665,305 @@
                     filter.gain.value = saved ? parseFloat(saved) : 0;
                     return filter;
                 });
+
+                // Main 3-Band (for Effects tab)
+                audioEngine.bassFilter = ctx.createBiquadFilter();
+                audioEngine.bassFilter.type = 'lowshelf';
+                audioEngine.bassFilter.frequency.value = 200;
+                audioEngine.bassFilter.gain.value = parseFloat(localStorage.getItem('as_fx_bass') || '0');
+
+                audioEngine.vocalFilter = ctx.createBiquadFilter();
+                audioEngine.vocalFilter.type = 'peaking';
+                audioEngine.vocalFilter.frequency.value = 1000;
+                audioEngine.vocalFilter.gain.value = parseFloat(localStorage.getItem('as_fx_vocal') || '0');
+
+                audioEngine.trebleFilter = ctx.createBiquadFilter();
+                audioEngine.trebleFilter.type = 'highshelf';
+                audioEngine.trebleFilter.frequency.value = 3000;
+                audioEngine.trebleFilter.gain.value = parseFloat(localStorage.getItem('as_fx_treble') || '0');
+
+                // Compressor & Limiter
                 audioEngine.compressor = ctx.createDynamicsCompressor();
                 audioEngine.compressor.threshold.value = parseFloat(localStorage.getItem('as_comp_threshold') || '-24');
                 audioEngine.compressor.ratio.value = parseFloat(localStorage.getItem('as_comp_ratio') || '12');
-                audioEngine.reverb = createReverb();
+
+                // Effects (stub)
+                audioEngine.reverb = ctx.createGain();
                 audioEngine.reverbGain = ctx.createGain();
                 audioEngine.reverbGain.gain.value = parseFloat(localStorage.getItem('as_reverb') || '0');
+
                 audioEngine.delay = ctx.createDelay(5.0);
                 audioEngine.delay.delayTime.value = 0.3;
                 audioEngine.delayGain = ctx.createGain();
                 audioEngine.delayGain.gain.value = parseFloat(localStorage.getItem('as_delay') || '0');
+
                 audioEngine.panner = ctx.createStereoPanner();
                 audioEngine.panner.pan.value = parseFloat(localStorage.getItem('as_pan') || '0');
+
+                audioEngine.loudnessGain = ctx.createGain();
+                audioEngine.loudnessGain.gain.value = parseFloat(localStorage.getItem('as_loudness') || '1');
+
                 let lastNode = visualizerSource;
                 if (!lastNode) return;
-                visualizerSource.disconnect();
+                
+                try {
+                    visualizerSource.disconnect();
+                } catch (e) {}
+                
+                // Chain: Source -> Preamp -> 10-Band EQ -> 3-Band FX -> Compressor -> Loudness -> Panner -> Analyser -> Destination
                 lastNode.connect(audioEngine.preamp);
                 lastNode = audioEngine.preamp;
-                audioEngine.filters.forEach(filter => { lastNode.connect(filter); lastNode = filter; });
+
+                audioEngine.filters.forEach(filter => {
+                    lastNode.connect(filter);
+                    lastNode = filter;
+                });
+
+                lastNode.connect(audioEngine.bassFilter);
+                audioEngine.bassFilter.connect(audioEngine.vocalFilter);
+                audioEngine.vocalFilter.connect(audioEngine.trebleFilter);
+                lastNode = audioEngine.trebleFilter;
+
                 lastNode.connect(audioEngine.compressor);
+                
+                // Effects Branch
                 audioEngine.compressor.connect(audioEngine.reverb);
                 audioEngine.reverb.connect(audioEngine.reverbGain);
-                audioEngine.reverbGain.connect(audioEngine.panner);
+                audioEngine.reverbGain.connect(audioEngine.loudnessGain);
+
                 audioEngine.compressor.connect(audioEngine.delay);
                 audioEngine.delay.connect(audioEngine.delayGain);
-                audioEngine.delayGain.connect(audioEngine.panner);
-                audioEngine.compressor.connect(audioEngine.panner);
+                audioEngine.delayGain.connect(audioEngine.loudnessGain);
+
+                audioEngine.compressor.connect(audioEngine.loudnessGain);
+                
+                audioEngine.loudnessGain.connect(audioEngine.panner);
                 audioEngine.panner.connect(visualizerAnalyser);
                 visualizerAnalyser.connect(ctx.destination);
+
                 audioEngine.ready = true;
                 startAudioSuiteViz();
             } catch (e) { console.error("Audio Engine Init Error:", e); }
         }
 
-        let asVizFrame = 0;
-        function startAudioSuiteViz() {
-            if (asVizFrame) cancelAnimationFrame(asVizFrame);
-            const canvas = document.getElementById('as-viz-canvas');
+        function renderAudioPage() {
+            setNavActive('navAudio'); setMobileBack(true);
+            const mainArea = document.getElementById('mainArea'); if (!mainArea) return;
+            const allPresets = getAudioPresets();
+
+            mainArea.innerHTML = `
+                <div class="audio-suite-container">
+                    <div class="as-header">
+                        <div class="premium-dashboard-kicker">Premium Studio</div>
+                        <h1 class="premium-dashboard-title">Audio Suite</h1>
+                        <p class="premium-dashboard-sub">Experience high-fidelity sound with Dolby style calibration.</p>
+                    </div>
+
+                    <div class="as-tabs">
+                        <div class="as-tab active" data-target="eq">Equalizer</div>
+                        <div class="as-tab" data-target="presets">Presets</div>
+                        <div class="as-tab" data-target="effects">Effects</div>
+                        <div class="as-tab" data-target="visualizer">Visualizer</div>
+                        <div class="as-tab" data-target="stats">Statistics</div>
+                    </div>
+
+                    <!-- Equalizer Tab -->
+                    <div class="as-content active" id="as-eq">
+                        <div class="as-glass-card">
+                            <canvas class="eq-graph-canvas" id="eqGraph"></canvas>
+                            <div class="eq-grid">
+                                ${audioEngine.bands.map((freq, i) => `
+                                    <div class="eq-band">
+                                        <input type="range" class="eq-slider-vertical" min="-15" max="15" step="0.5" 
+                                               value="${audioEngine.filters[i]?.gain.value || 0}" 
+                                               oninput="updateEQBand(${i}, this.value)">
+                                        <span class="eq-label-freq">${freq >= 1000 ? (freq/1000) + 'k' : freq}</span>
+                                        <span class="eq-label-db" id="eq-db-${i}">${(audioEngine.filters[i]?.gain.value || 0).toFixed(1)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="display:flex; gap:15px; justify-content:center; margin-top:30px;">
+                                <button class="btn btn-outline" onclick="resetEQ()">Reset EQ</button>
+                                <button class="btn btn-accent" onclick="saveCustomPreset()">Save Preset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Presets Tab -->
+                    <div class="as-content" id="as-presets">
+                        <div class="as-glass-card">
+                            <div class="preset-grid">
+                                ${['Punjabi Bass', 'Bass Boost', 'EDM', 'Hip Hop', 'Vocal Boost', 'Classical', 'Podcast', 'Cinema'].map(name => `
+                                    <div class="preset-card ${localStorage.getItem('as_active_preset') === name ? 'active' : ''}" onclick="applyAudioPreset('${name}')">
+                                        <div class="preset-icon"><i data-lucide="music" aria-hidden="true"></i></div>
+                                        <div class="preset-name">${name}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div style="margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:0.75rem; font-weight:800; color:var(--text2); margin-bottom:15px; text-transform:uppercase;">Custom Presets</div>
+                                <div class="preset-grid" id="custom-presets-list">
+                                    ${Object.keys(allPresets).filter(n => !['Flat','Rock','Pop','Hip Hop','Rap','Punjabi Bass','EDM','Trap','Dance','Club','Bass Boost','Extreme Bass','Treble Boost','Vocal Boost','Podcast','Classical','Jazz','Acoustic','Cinema','Gaming','Night Mode','Loudness'].includes(n)).map(name => `
+                                        <div class="preset-card ${localStorage.getItem('as_active_preset') === name ? 'active' : ''}" onclick="applyAudioPreset('${name}')">
+                                            <div class="preset-icon"><i data-lucide="user" aria-hidden="true"></i></div>
+                                            <div class="preset-name">${name}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Effects Tab -->
+                    <div class="as-content" id="as-effects">
+                        <div class="as-glass-card">
+                            <div class="fx-control-group">
+                                <div class="fx-header"><span class="fx-title">Bass Boost</span><span class="fx-value" id="fx-bass-val">${(audioEngine.bassFilter?.gain.value || 0).toFixed(1)}dB</span></div>
+                                <input type="range" class="fx-slider" min="0" max="15" step="0.5" value="${audioEngine.bassFilter?.gain.value || 0}" oninput="updateFX('bass', this.value)">
+                            </div>
+                            <div class="fx-control-group">
+                                <div class="fx-header"><span class="fx-title">Vocal Focus</span><span class="fx-value" id="fx-vocal-val">${(audioEngine.vocalFilter?.gain.value || 0).toFixed(1)}dB</span></div>
+                                <input type="range" class="fx-slider" min="0" max="15" step="0.5" value="${audioEngine.vocalFilter?.gain.value || 0}" oninput="updateFX('vocal', this.value)">
+                            </div>
+                            <div class="fx-control-group">
+                                <div class="fx-header"><span class="fx-title">Treble Clarity</span><span class="fx-value" id="fx-treble-val">${(audioEngine.trebleFilter?.gain.value || 0).toFixed(1)}dB</span></div>
+                                <input type="range" class="fx-slider" min="0" max="15" step="0.5" value="${audioEngine.trebleFilter?.gain.value || 0}" oninput="updateFX('treble', this.value)">
+                            </div>
+                            <div class="fx-control-group">
+                                <div class="fx-header"><span class="fx-title">Loudness (Gain)</span><span class="fx-value" id="fx-loudness-val">${(audioEngine.loudnessGain?.gain.value || 1).toFixed(2)}x</span></div>
+                                <input type="range" class="fx-slider" min="0.5" max="2" step="0.05" value="${audioEngine.loudnessGain?.gain.value || 1}" oninput="updateFX('loudness', this.value)">
+                            </div>
+                            <div class="fx-control-group">
+                                <div class="fx-header"><span class="fx-title">Balance (L/R)</span><span class="fx-value" id="fx-pan-val">${(audioEngine.panner?.pan.value || 0).toFixed(2)}</span></div>
+                                <input type="range" class="fx-slider" min="-1" max="1" step="0.01" value="${audioEngine.panner?.pan.value || 0}" oninput="updateFX('pan', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualizer Tab -->
+                    <div class="as-content" id="as-visualizer">
+                        <div class="as-glass-card" style="padding: 0; overflow: hidden; height: 400px; background: #000;">
+                            <canvas id="as-viz-canvas" style="width:100%; height:100%;"></canvas>
+                        </div>
+                        <div class="preset-grid" style="margin-top:20px;">
+                            <div class="preset-card ${audioEngine.vizMode==='bars'?'active':''}" onclick="setVizMode('bars')">
+                                <div class="preset-icon"><i data-lucide="bar-chart-3" aria-hidden="true"></i></div>
+                                <div class="preset-name">Spectrum</div>
+                            </div>
+                            <div class="preset-card ${audioEngine.vizMode==='wave'?'active':''}" onclick="setVizMode('wave')">
+                                <div class="preset-icon"><i data-lucide="activity" aria-hidden="true"></i></div>
+                                <div class="preset-name">Waveform</div>
+                            </div>
+                            <div class="preset-card ${audioEngine.vizMode==='circle'?'active':''}" onclick="setVizMode('circle')">
+                                <div class="preset-icon"><i data-lucide="circle" aria-hidden="true"></i></div>
+                                <div class="preset-name">Circular</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Tab -->
+                    <div class="as-content" id="as-stats">
+                        <div class="as-glass-card">
+                            <div class="stats-grid">
+                                <div class="stat-pill"><span class="stat-label">Sample Rate</span><span class="stat-value" id="stat-sr">-</span></div>
+                                <div class="stat-pill"><span class="stat-label">Audio Quality</span><span class="stat-value">Studio (32-bit)</span></div>
+                                <div class="stat-pill"><span class="stat-label">Peak Level</span><span class="stat-value" id="stat-peak">0.00</span></div>
+                                <div class="stat-pill"><span class="stat-label">Active Preset</span><span class="stat-value" id="stat-active-preset">${localStorage.getItem('as_active_preset') || 'Custom'}</span></div>
+                                <div class="stat-pill"><span class="stat-label">Current Volume</span><span class="stat-value" id="stat-vol">-</span></div>
+                                <div class="stat-pill"><span class="stat-label">Engine Latency</span><span class="stat-value" id="stat-latency">-</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            initAudioSuiteTabs(); setupAudioEngine(); initEqGraph(); updateStats(); renderLucideIcons(mainArea);
+        }
+
+        let eqGraphFrame = 0;
+        function initEqGraph() {
+            const canvas = document.getElementById('eqGraph');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const draw = () => {
-                asVizFrame = requestAnimationFrame(draw);
-                if (!visualizerReady) return;
+                eqGraphFrame = requestAnimationFrame(draw);
+                if (!document.getElementById('as-eq')?.classList.contains('active')) return;
+                
                 const w = canvas.width = canvas.clientWidth * 2;
                 const h = canvas.height = canvas.clientHeight * 2;
-                ctx.clearRect(0,0,w,h);
-                visualizerAnalyser.getByteFrequencyData(visualizerFreqData);
-                visualizerAnalyser.getByteTimeDomainData(visualizerWaveData);
-                if (audioEngine.vizMode === 'bars') {
-                    const bars = 64; const barW = w / bars;
-                    for (let i = 0; i < bars; i++) {
-                        const v = visualizerFreqData[i] / 255;
-                        ctx.fillStyle = `rgba(200, 245, 66, ${0.4 + v * 0.6})`;
-                        ctx.fillRect(i * barW, h, barW - 2, -v * h * 0.8);
+                ctx.clearRect(0, 0, w, h);
+                
+                // Draw curve
+                ctx.beginPath();
+                ctx.strokeStyle = '#c8f542';
+                ctx.lineWidth = 4;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = 'rgba(200, 245, 66, 0.4)';
+                
+                const points = audioEngine.filters.map((f, i) => {
+                    const x = (i / (audioEngine.filters.length - 1)) * w;
+                    const y = (h / 2) - (f.gain.value / 15) * (h / 2.5);
+                    return {x, y};
+                });
+
+                ctx.moveTo(0, h/2);
+                for(let i=0; i<points.length; i++) {
+                    const p = points[i];
+                    if (i === 0) ctx.lineTo(p.x, p.y);
+                    else {
+                        const prev = points[i-1];
+                        const cx = (prev.x + p.x) / 2;
+                        ctx.quadraticCurveTo(prev.x, prev.y, cx, (prev.y + p.y) / 2);
                     }
-                } else if (audioEngine.vizMode === 'wave') {
-                    ctx.beginPath(); ctx.strokeStyle = '#c8f542'; ctx.lineWidth = 4;
-                    for (let i = 0; i < visualizerWaveData.length; i++) {
-                        const x = (i / visualizerWaveData.length) * w;
-                        const y = (visualizerWaveData[i] / 255) * h;
-                        if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-                    }
-                    ctx.stroke();
-                } else {
-                    const centerX = w / 2, centerY = h / 2, radius = Math.min(w,h) * 0.2;
-                    ctx.beginPath(); ctx.strokeStyle = '#c8f542'; ctx.lineWidth = 3;
-                    for (let i = 0; i < 360; i++) {
-                        const rad = i * Math.PI / 180;
-                        const idx = Math.floor((i / 360) * visualizerFreqData.length);
-                        const v = visualizerFreqData[idx] / 255;
-                        const r = radius + v * radius * 0.8;
-                        const x = centerX + Math.cos(rad) * r;
-                        const y = centerY + Math.sin(rad) * r;
-                        if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-                    }
-                    ctx.closePath(); ctx.stroke();
                 }
+                ctx.lineTo(w, h/2);
+                ctx.stroke();
+                
+                // Fill area under curve
+                ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
+                const grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, 'rgba(200, 245, 66, 0.15)');
+                grad.addColorStop(1, 'rgba(200, 245, 66, 0)');
+                ctx.fillStyle = grad; ctx.fill();
             };
             draw();
         }
 
-        function setVizMode(mode) {
-            audioEngine.vizMode = mode;
-            document.querySelectorAll('#as-visualizer .as-card').forEach(c => {
-                c.classList.toggle('active', c.textContent.toLowerCase().includes(mode));
-            });
-        }
-
-        function updateEffect(effect, val) {
+        function updateFX(fx, val) {
             const v = parseFloat(val);
-            if (effect === 'reverb' && audioEngine.reverbGain) {
-                audioEngine.reverbGain.gain.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
-                localStorage.setItem('as_reverb', v);
-            } else if (effect === 'delay' && audioEngine.delayGain) {
-                audioEngine.delayGain.gain.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
-                localStorage.setItem('as_delay', v);
+            const ctx = visualizerCtx;
+            if (!ctx) return;
+            
+            if (fx === 'bass') {
+                audioEngine.bassFilter.gain.setTargetAtTime(v, ctx.currentTime, 0.05);
+                document.getElementById('fx-bass-val').textContent = v.toFixed(1) + 'dB';
+                localStorage.setItem('as_fx_bass', v);
+            } else if (fx === 'vocal') {
+                audioEngine.vocalFilter.gain.setTargetAtTime(v, ctx.currentTime, 0.05);
+                document.getElementById('fx-vocal-val').textContent = v.toFixed(1) + 'dB';
+                localStorage.setItem('as_fx_vocal', v);
+            } else if (fx === 'treble') {
+                audioEngine.trebleFilter.gain.setTargetAtTime(v, ctx.currentTime, 0.05);
+                document.getElementById('fx-treble-val').textContent = v.toFixed(1) + 'dB';
+                localStorage.setItem('as_fx_treble', v);
+            } else if (fx === 'loudness') {
+                audioEngine.loudnessGain.gain.setTargetAtTime(v, ctx.currentTime, 0.05);
+                document.getElementById('fx-loudness-val').textContent = v.toFixed(2) + 'x';
+                localStorage.setItem('as_loudness', v);
+            } else if (fx === 'pan') {
+                audioEngine.panner.pan.setTargetAtTime(v, ctx.currentTime, 0.05);
+                document.getElementById('fx-pan-val').textContent = v.toFixed(2);
+                localStorage.setItem('as_pan', v);
             }
-        }
-
-        function updateEQBand(index, value) {
-            if (!audioEngine.filters[index]) return;
-            const val = parseFloat(value);
-            audioEngine.filters[index].gain.setTargetAtTime(val, visualizerCtx.currentTime, 0.05);
-            const el = document.getElementById(`eq-db-${index}`);
-            if (el) el.textContent = val.toFixed(1) + 'dB';
-            localStorage.setItem(`as_eq_${audioEngine.bands[index]}`, val);
-        }
-
-        function applyAudioPreset(name) {
-            const allPresets = getAudioPresets();
-            const gains = allPresets[name];
-            if (!gains) return;
-            gains.forEach((gain, i) => {
-                if (audioEngine.filters[i]) {
-                    audioEngine.filters[i].gain.setTargetAtTime(gain, visualizerCtx.currentTime, 0.1);
-                    const slider = document.querySelectorAll('.eq-slider-vertical')[i];
-                    if (slider) slider.value = gain;
-                    const dbLabel = document.getElementById(`eq-db-${i}`);
-                    if (dbLabel) dbLabel.textContent = gain.toFixed(1) + 'dB';
-                    localStorage.setItem(`as_eq_${audioEngine.bands[i]}`, gain);
-                }
-            });
-            localStorage.setItem('as_active_preset', name);
-            document.querySelectorAll('#as-presets .as-card').forEach(c => {
-                const title = c.querySelector('.as-card-title')?.textContent;
-                c.classList.toggle('active', title === name);
-            });
-        }
-
-        function resetEQ() { applyAudioPreset('Flat'); }
-
-        function updatePreamp(val) {
-            const v = parseFloat(val);
-            if (audioEngine.preamp) audioEngine.preamp.gain.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
-            const el = document.getElementById('preamp-val');
-            if (el) el.textContent = v.toFixed(2) + 'x';
-            localStorage.setItem('as_preamp', v);
-        }
-
-        function updatePan(val) {
-            const v = parseFloat(val);
-            if (audioEngine.panner) audioEngine.panner.pan.setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
-            const el = document.getElementById('pan-val');
-            if (el) el.textContent = v.toFixed(1);
-            localStorage.setItem('as_pan', v);
-        }
-
-        function updateCompressor(param, val) {
-            const v = parseFloat(val);
-            if (audioEngine.compressor && audioEngine.compressor[param]) audioEngine.compressor[param].setTargetAtTime(v, visualizerCtx.currentTime, 0.05);
         }
 
         function updateStats() {
             if (!visualizerCtx) return;
-            const sr = document.getElementById('stat-sr'), st = document.getElementById('stat-state'), lt = document.getElementById('stat-latency'), peak = document.getElementById('stat-peak');
+            const sr = document.getElementById('stat-sr'), st = document.getElementById('stat-latency'), vol = document.getElementById('stat-vol'), peak = document.getElementById('stat-peak');
             if (sr) sr.textContent = visualizerCtx.sampleRate + ' Hz';
-            if (st) st.textContent = visualizerCtx.state.charAt(0).toUpperCase() + visualizerCtx.state.slice(1);
-            if (lt) lt.textContent = (visualizerCtx.baseLatency || 0).toFixed(4) * 1000 + 'ms';
+            if (st) st.textContent = (visualizerCtx.baseLatency || 0).toFixed(4) * 1000 + 'ms';
+            if (vol) vol.textContent = Math.round(audio.volume * 100) + '%';
+            
             const updatePeak = () => {
                 if (!visualizerReady || !peak) return;
                 let max = 0; for (let i = 0; i < visualizerWaveData.length; i++) { const v = Math.abs(visualizerWaveData[i] - 128) / 128; if (v > max) max = v; }
@@ -14443,24 +14973,8 @@
             updatePeak();
         }
 
-        function renderAudioPage() {
-            setNavActive('navAudio'); setMobileBack(true);
-            const mainArea = document.getElementById('mainArea'); if (!mainArea) return;
-            const allPresets = getAudioPresets();
-            mainArea.innerHTML = `
-                <div class="audio-suite-container">
-                    <div class="as-header"><div class="premium-dashboard-kicker">Studio Grade</div><h1 class="premium-dashboard-title">Audio Suite</h1><p class="premium-dashboard-sub">Master your sound with professional-grade processing and real-time analytics.</p></div>
-                    <div class="as-tabs"><div class="as-tab active" data-target="eq">Equalizer</div><div class="as-tab" data-target="presets">Presets</div><div class="as-tab" data-target="effects">Effects</div><div class="as-tab" data-target="visualizer">Visualizer</div><div class="as-tab" data-target="advanced">Advanced</div><div class="as-tab" data-target="stats">Statistics</div></div>
-                    <div class="as-content active" id="as-eq"><div class="eq-grid">${audioEngine.bands.map((freq, i) => `<div class="eq-band"><input type="range" class="eq-slider-vertical" min="-15" max="15" step="0.5" value="${audioEngine.filters[i]?.gain.value || 0}" oninput="updateEQBand(${i}, this.value)"><span class="eq-label-freq">${freq >= 1000 ? (freq/1000) + 'kHz' : freq + 'Hz'}</span><span class="eq-label-db" id="eq-db-${i}">${(audioEngine.filters[i]?.gain.value || 0).toFixed(1)}dB</span></div>`).join('')}</div><div style="display:flex; gap:15px; justify-content:center;"><button class="btn btn-outline" onclick="resetEQ()">Reset EQ</button><button class="btn btn-accent" onclick="saveCustomPreset()">Save Custom</button></div></div>
-                    <div class="as-content" id="as-presets"><div class="as-grid">${Object.keys(allPresets).map(name => `<div class="as-card ${localStorage.getItem('as_active_preset') === name ? 'active' : ''}" onclick="applyAudioPreset('${name}')"><div class="as-card-icon">${uiIcon('music')}</div><div class="as-card-title">${name}</div></div>`).join('')}</div></div>
-                    <div class="as-content" id="as-effects"><div class="as-grid"><div class="as-card"><div class="as-card-title">Preamp (Gain)</div><input type="range" min="0" max="2" step="0.05" value="${audioEngine.preamp?.gain.value || 1}" oninput="updatePreamp(this.value)"><span id="preamp-val">${(audioEngine.preamp?.gain.value || 1).toFixed(2)}x</span></div><div class="as-card"><div class="as-card-title">Stereo Pan</div><input type="range" min="-1" max="1" step="0.1" value="${audioEngine.panner?.pan.value || 0}" oninput="updatePan(this.value)"><span id="pan-val">${(audioEngine.panner?.pan.value || 0).toFixed(1)}</span></div><div class="as-card"><div class="as-card-title">Reverb (Space)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_reverb') || 0}" oninput="updateEffect('reverb', this.value)"></div><div class="as-card"><div class="as-card-title">Delay (Echo)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_delay') || 0}" oninput="updateEffect('delay', this.value)"></div></div></div>
-                    <div class="as-content" id="as-visualizer"><div class="viz-container"><canvas id="as-viz-canvas"></canvas></div><div class="as-grid" style="margin-top:20px"><div class="as-card ${audioEngine.vizMode==='bars'?'active':''}" onclick="setVizMode('bars')">Spectrum Bars</div><div class="as-card ${audioEngine.vizMode==='wave'?'active':''}" onclick="setVizMode('wave')">Waveform</div><div class="as-card ${audioEngine.vizMode==='circle'?'active':''}" onclick="setVizMode('circle')">Circular</div></div></div>
-                    <div class="as-content" id="as-advanced"><div class="as-grid"><div class="as-card"><div class="as-card-title">Compressor Threshold</div><input type="range" min="-60" max="0" step="1" value="${audioEngine.compressor?.threshold.value || -24}" oninput="updateCompressor('threshold', this.value)"></div><div class="as-card"><div class="as-card-title">Compressor Ratio</div><input type="range" min="1" max="20" step="1" value="${audioEngine.compressor?.ratio.value || 12}" oninput="updateCompressor('ratio', this.value)"></div></div></div>
-                    <div class="as-content" id="as-stats"><div class="stats-box"><div class="stats-row"><span class="stats-label">Sample Rate</span><span class="stats-value" id="stat-sr">44100 Hz</span></div><div class="stats-row"><span class="stats-label">Channels</span><span class="stats-value">2 (Stereo)</span></div><div class="stats-row"><span class="stats-label">Context State</span><span class="stats-value" id="stat-state">Running</span></div><div class="stats-row"><span class="stats-label">Audio Latency</span><span class="stats-value" id="stat-latency">0ms</span></div><div class="stats-row"><span class="stats-label">Peak Level</span><span class="stats-value" id="stat-peak">0.00</span></div><div class="stats-row"><span class="stats-label">Audio Engine</span><span class="stats-value">FalconX Pro v3.0</span></div></div></div>
-                </div>
-            `;
-            initAudioSuiteTabs(); setupAudioEngine(); updateStats(); renderLucideIcons(mainArea);
-        }
+        window.updateFX = updateFX;
+
 
         function initAudioSuiteTabs() {
             const tabs = document.querySelectorAll('.as-tab');
@@ -14532,6 +15046,147 @@
             });
         }
         document.addEventListener('DOMContentLoaded', setupMobileNav);
+
+        function updateEQBand(index, value) {
+            if (!audioEngine.filters[index]) return;
+            const val = parseFloat(value);
+            const ctx = visualizerCtx;
+            if (ctx) {
+                audioEngine.filters[index].gain.setTargetAtTime(val, ctx.currentTime, 0.05);
+            }
+            const el = document.getElementById(`eq-db-${index}`);
+            if (el) el.textContent = val.toFixed(1);
+            localStorage.setItem(`as_eq_${audioEngine.bands[index]}`, val);
+            localStorage.removeItem('as_active_preset');
+            document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+        }
+
+        function applyAudioPreset(name) {
+            const allPresets = getAudioPresets();
+            const gains = allPresets[name];
+            if (!gains) return;
+            const ctx = visualizerCtx;
+            gains.forEach((gain, i) => {
+                if (audioEngine.filters[i]) {
+                    if (ctx) {
+                        audioEngine.filters[i].gain.setTargetAtTime(gain, ctx.currentTime, 0.1);
+                    }
+                    const slider = document.querySelectorAll('.eq-slider-vertical')[i];
+                    if (slider) slider.value = gain;
+                    const dbLabel = document.getElementById(`eq-db-${i}`);
+                    if (dbLabel) dbLabel.textContent = gain.toFixed(1);
+                    localStorage.setItem(`as_eq_${audioEngine.bands[i]}`, gain);
+                }
+            });
+            localStorage.setItem('as_active_preset', name);
+            document.querySelectorAll('.preset-card').forEach(c => {
+                const pName = c.querySelector('.preset-name')?.textContent;
+                c.classList.toggle('active', pName === name);
+            });
+            const activePresetEl = document.getElementById('stat-active-preset');
+            if (activePresetEl) activePresetEl.textContent = name;
+        }
+
+        function getAudioPresets() {
+            return AUDIO_PRESETS;
+        }
+
+        function resetEQ() {
+            const ctx = visualizerCtx;
+            audioEngine.filters.forEach((filter, i) => {
+                if (ctx) {
+                    filter.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+                }
+                const slider = document.querySelectorAll('.eq-slider-vertical')[i];
+                if (slider) slider.value = 0;
+                const dbLabel = document.getElementById(`eq-db-${i}`);
+                if (dbLabel) dbLabel.textContent = '0.0';
+                localStorage.removeItem(`as_eq_${audioEngine.bands[i]}`);
+            });
+            localStorage.removeItem('as_active_preset');
+            document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('active'));
+        }
+
+        function saveCustomPreset() {
+            const name = prompt('Enter preset name:', '');
+            if (!name) return;
+            const gains = audioEngine.filters.map(f => f.gain.value);
+            AUDIO_PRESETS[name] = gains;
+            localStorage.setItem(`as_preset_${name}`, JSON.stringify(gains));
+            alert(`Preset "${name}" saved!`);
+            const allPresets = getAudioPresets();
+            const customList = document.getElementById('custom-presets-list');
+            if (customList) {
+                customList.innerHTML = Object.keys(allPresets).filter(k => !['Flat', 'Rock', 'Pop', 'Hip Hop', 'Rap', 'Punjabi Bass', 'EDM', 'Trap', 'Dance', 'Club', 'Bass Boost', 'Extreme Bass', 'Treble Boost', 'Vocal Boost', 'Podcast', 'Classical', 'Jazz', 'Acoustic', 'Cinema', 'Gaming', 'Night Mode', 'Loudness'].includes(k)).map(name => `
+                    <div class="preset-card" onclick="applyAudioPreset('${name}')">
+                        <div class="preset-icon"><i data-lucide="music" aria-hidden="true"></i></div>
+                        <div class="preset-name">${name}</div>
+                    </div>
+                `).join('');
+                renderLucideIcons(customList);
+            }
+        }
+
+        function setVizMode(mode) {
+            audioEngine.vizMode = mode;
+            localStorage.setItem('as_viz_mode', mode);
+            document.querySelectorAll('[data-viz-card]').forEach(c => c.classList.remove('active'));
+            const activeCard = document.querySelector(`[data-viz-card="${mode}"]`);
+            if (activeCard) activeCard.classList.add('active');
+        }
+
+        function updateEffect(fx, val) {
+            const v = parseFloat(val);
+            const ctx = visualizerCtx;
+            if (!ctx) return;
+            
+            if (fx === 'reverb') {
+                if (audioEngine.reverbGain) audioEngine.reverbGain.gain.setTargetAtTime(v, ctx.currentTime, 0.05);
+                localStorage.setItem('as_fx_reverb', v);
+            }
+        }
+
+        function updatePreamp(val) {
+            const v = parseFloat(val);
+            const ctx = visualizerCtx;
+            if (audioEngine.preamp && ctx) {
+                audioEngine.preamp.gain.setTargetAtTime(v, ctx.currentTime, 0.05);
+            }
+            const el = document.getElementById('preamp-val');
+            if (el) el.textContent = v.toFixed(2);
+            localStorage.setItem('as_preamp', v);
+        }
+
+        function updatePan(val) {
+            const v = parseFloat(val);
+            const ctx = visualizerCtx;
+            if (audioEngine.panner && ctx) {
+                audioEngine.panner.pan.setTargetAtTime(v, ctx.currentTime, 0.05);
+            }
+            const el = document.getElementById('pan-val');
+            if (el) el.textContent = v.toFixed(2);
+            localStorage.setItem('as_pan', v);
+        }
+
+        function updateCompressor(param, val) {
+            const v = parseFloat(val);
+            const ctx = visualizerCtx;
+            if (!audioEngine.compressor || !ctx) return;
+            
+            if (param === 'threshold') {
+                audioEngine.compressor.threshold.setTargetAtTime(v, ctx.currentTime, 0.05);
+                localStorage.setItem('as_comp_threshold', v);
+            } else if (param === 'ratio') {
+                audioEngine.compressor.ratio.setTargetAtTime(v, ctx.currentTime, 0.05);
+                localStorage.setItem('as_comp_ratio', v);
+            } else if (param === 'attack') {
+                audioEngine.compressor.attack.setTargetAtTime(v, ctx.currentTime, 0.05);
+                localStorage.setItem('as_comp_attack', v);
+            } else if (param === 'release') {
+                audioEngine.compressor.release.setTargetAtTime(v, ctx.currentTime, 0.05);
+                localStorage.setItem('as_comp_release', v);
+            }
+        }
 
         window.playSong = playSong; window.next = next; window.previous = previous; window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
         window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue; window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
