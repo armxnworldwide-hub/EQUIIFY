@@ -1768,6 +1768,11 @@
             border-color: var(--accent);
             color: var(--accent)
         }
+
+        .lyrics-toggle-btn.active {
+            color: var(--accent);
+            background: rgba(200, 245, 66, .12);
+        }
         
         .queue-count-badge {
             position: absolute;
@@ -1859,6 +1864,210 @@
             opacity: 1;
             visibility: visible;
             pointer-events: auto
+        }
+
+        .lyrics-panel-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 690;
+            background: rgba(0, 0, 0, .42);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .28s ease, visibility .28s linear;
+        }
+
+        .lyrics-panel-backdrop.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .lyrics-panel {
+            position: fixed;
+            right: 16px;
+            bottom: calc(var(--player-h) + 12px);
+            width: min(420px, calc(100vw - 32px));
+            height: min(620px, calc(100vh - var(--player-h) - 38px));
+            z-index: 700;
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(26, 26, 26, .9), rgba(13, 13, 13, .94));
+            box-shadow: 0 24px 68px rgba(0, 0, 0, .72);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateX(28px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: transform .32s cubic-bezier(.2, .82, .2, 1), opacity .28s ease, visibility .28s linear;
+        }
+
+        .lyrics-panel.open {
+            transform: translateX(0);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .lyrics-panel-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto auto;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 16px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .lyrics-panel-title {
+            min-width: 0;
+            display: grid;
+            gap: 3px;
+        }
+
+        .lyrics-panel-title strong {
+            font-size: .92rem;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .lyrics-panel-title span {
+            color: var(--text2);
+            font-size: .72rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .lyrics-follow-btn,
+        .lyrics-close-btn {
+            border: 1px solid rgba(255, 255, 255, .12);
+            background: rgba(255, 255, 255, .06);
+            color: var(--text2);
+            cursor: pointer;
+            transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+        }
+
+        .lyrics-follow-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 999px;
+            padding: 7px 10px;
+            font-size: .68rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .lyrics-close-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lyrics-follow-btn:hover,
+        .lyrics-close-btn:hover {
+            color: var(--text);
+            border-color: rgba(255, 255, 255, .22);
+            background: rgba(255, 255, 255, .1);
+        }
+
+        .lyrics-follow-btn.active {
+            color: var(--accent);
+            border-color: rgba(200, 245, 66, .32);
+            background: rgba(200, 245, 66, .12);
+        }
+
+        .lyrics-panel-body {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 26px 22px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overscroll-behavior-y: contain;
+            scroll-behavior: smooth;
+        }
+
+        .lyrics-panel-body::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+
+        .lyrics-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 100%;
+            padding: 34px 0;
+        }
+
+        .lyrics-line {
+            border: 0;
+            background: none;
+            color: rgba(255, 255, 255, .38);
+            font: inherit;
+            font-size: 1.02rem;
+            font-weight: 800;
+            line-height: 1.42;
+            text-align: left;
+            padding: 0;
+            opacity: .58;
+            cursor: default;
+            transform: translate3d(0, 0, 0) scale(.96);
+            transform-origin: left center;
+            transition: color .28s ease, opacity .28s ease, transform .28s cubic-bezier(.2, .72, .2, 1), filter .28s ease;
+            will-change: transform, opacity;
+        }
+
+        .lyrics-line.clickable {
+            cursor: pointer;
+        }
+
+        .lyrics-line.past {
+            color: rgba(255, 255, 255, .48);
+            opacity: .44;
+        }
+
+        .lyrics-line.future {
+            color: rgba(255, 255, 255, .34);
+            opacity: .52;
+        }
+
+        .lyrics-line.active {
+            color: #d8ff72;
+            opacity: 1;
+            filter: drop-shadow(0 0 18px rgba(200, 245, 66, .28));
+            transform: translate3d(0, 0, 0) scale(1.08);
+        }
+
+        .lyrics-state {
+            display: grid;
+            place-items: center;
+            min-height: 100%;
+            padding: 36px 10px;
+            text-align: center;
+            color: var(--text2);
+            font-size: .88rem;
+            line-height: 1.45;
+        }
+
+        .lyrics-state strong {
+            display: block;
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 6px;
         }
         
         .dp-header {
@@ -5791,7 +6000,7 @@
             .player-controls {
                 width: 100%;
                 display: grid;
-                grid-template-columns: repeat(6, minmax(0, 1fr));
+                grid-template-columns: repeat(7, minmax(0, 1fr));
                 align-items: center;
                 justify-items: center;
                 gap: 4px;
@@ -6454,7 +6663,7 @@
             .player-controls {
                 width: 100%;
                 display: grid;
-                grid-template-columns: repeat(5, minmax(0, auto));
+                grid-template-columns: repeat(7, minmax(0, auto));
                 justify-content: center;
                 align-items: center;
                 column-gap: 9px;
@@ -7985,6 +8194,29 @@
             .audio-card.wide {
                 grid-column: auto;
             }
+            .lyrics-panel {
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                max-height: none;
+                border-radius: 0;
+                border-left: 0;
+                border-right: 0;
+                transform: translateY(32px);
+            }
+            .lyrics-panel.open {
+                transform: translateY(0);
+            }
+            .lyrics-panel-head {
+                padding: calc(13px + var(--safe-top)) 14px 11px;
+            }
+            .lyrics-panel-body {
+                padding: 24px 18px calc(var(--player-h) + 34px);
+            }
+            body.lyrics-panel-open {
+                overflow: hidden;
+                touch-action: none;
+            }
             .eq-slider-grid {
                 grid-template-columns: repeat(7, minmax(30px, 1fr));
                 gap: 4px;
@@ -8011,6 +8243,9 @@
             .fav-icon-btn,
             .player,
             .progress-fill,
+            .lyrics-panel,
+            .lyrics-panel-backdrop,
+            .lyrics-line,
             .eq-bar {
                 transition: none !important;
                 animation: none !important;
@@ -8519,6 +8754,7 @@
                 <button class="play-btn" id="playBtn" onclick="togglePlay()"><i data-lucide="play" aria-hidden="true"></i></button>
                 <button class="ctrl-btn" onclick="next()" title="Next"><i data-lucide="skip-forward" aria-hidden="true"></i></button>
                 <button class="ctrl-btn" id="repeatBtn" onclick="toggleRepeat()" title="Repeat"><i data-lucide="repeat" aria-hidden="true"></i></button>
+                <button class="ctrl-btn lyrics-toggle-btn" id="lyricsToggleBtn" onclick="toggleLyricsPanel()" title="Lyrics" aria-label="Lyrics"><i data-lucide="mic-2" aria-hidden="true"></i></button>
                 <button class="queue-btn-player" id="queueToggleBtn" onclick="toggleQueuePanel()"><i data-lucide="list-music" aria-hidden="true"></i><span class="queue-count-badge hidden" id="queueCountBadge">0</span></button>
             </div>
             <div class="player-progress">
@@ -8565,6 +8801,21 @@
         </div>
         <div class="qp-body" id="queuePanelBody"></div>
     </div>
+
+    <div class="lyrics-panel-backdrop" id="lyricsPanelBackdrop" onclick="closeLyricsPanel()"></div>
+    <aside class="lyrics-panel" id="lyricsPanel" aria-hidden="true" aria-label="Lyrics panel">
+        <div class="lyrics-panel-head">
+            <div class="lyrics-panel-title">
+                <strong id="lyricsPanelSong">Lyrics</strong>
+                <span id="lyricsPanelArtist">No song playing</span>
+            </div>
+            <button class="lyrics-follow-btn active" id="lyricsFollowBtn" onclick="toggleLyricsFollow()" aria-pressed="true"><i data-lucide="locate-fixed" aria-hidden="true"></i><span>Follow</span></button>
+            <button class="lyrics-close-btn" onclick="closeLyricsPanel()" aria-label="Close lyrics"><i data-lucide="x" aria-hidden="true"></i></button>
+        </div>
+        <div class="lyrics-panel-body" id="lyricsPanelBody">
+            <div class="lyrics-state"><div><strong>Lyrics</strong><span>Play a song to see lyrics.</span></div></div>
+        </div>
+    </aside>
 
     <audio id="audio"></audio>
     <audio id="audioFade"></audio>
@@ -11379,6 +11630,11 @@
         let shuffleHistory = [],
             continueListening = [],
             crossfadeTimer = null;
+        let crossfadeInTimer = null,
+            crossfadeSeconds = Math.max(0, Math.min(12, parseInt(localStorage.getItem('eq_crossfade_seconds') || '0', 10) || 0)),
+            crossfadeAutoArmed = false,
+            crossfadeTransitionActive = false,
+            crossfadePauseSuppressUntil = 0;
         let queuePanelOpen = false,
             modalCallback = null,
             currentPlaylistId = null;
@@ -11758,6 +12014,8 @@
                     explicit: isExplicitSong(last),
                     artistName: last.artistName || ''
                 });
+                syncLyricsPanelShell();
+                if (lyricsPanelOpen) loadLyricsPanel(currentSong);
                 getAudioSrc('songs/' + last.file).then(src => {
                     setPrimaryAudioSource(src);
                     audio.addEventListener('loadedmetadata', () => {
@@ -12317,6 +12575,58 @@
             }
         }
 
+        function getTargetVolume() {
+            return isMuted ? 0 : (parseFloat(volumeSlider.value) || 1);
+        }
+
+        function stopCrossfadeTimers() {
+            if (crossfadeTimer) {
+                cancelAnimationFrame(crossfadeTimer);
+                crossfadeTimer = null;
+            }
+            if (crossfadeInTimer) {
+                cancelAnimationFrame(crossfadeInTimer);
+                crossfadeInTimer = null;
+            }
+        }
+
+        function animateAudioVolume(mediaEl, from, to, durationMs, onComplete) {
+            const start = performance.now();
+            const duration = Math.max(80, durationMs || 0);
+            const step = (now) => {
+                const t = Math.min(1, (now - start) / duration);
+                const eased = t * t * (3 - 2 * t);
+                mediaEl.volume = from + ((to - from) * eased);
+                if (t < 1) return requestAnimationFrame(step);
+                mediaEl.volume = to;
+                if (onComplete) onComplete();
+                return null;
+            };
+            return requestAnimationFrame(step);
+        }
+
+        function updateCrossfadeSettingUI() {
+            const slider = document.getElementById('crossfadeSlider');
+            const value = document.getElementById('crossfadeValue');
+            if (slider) slider.value = String(crossfadeSeconds);
+            if (value) value.textContent = crossfadeSeconds === 0 ? 'Off' : `${crossfadeSeconds}s`;
+        }
+
+        function setCrossfadeSeconds(value) {
+            const nextValue = Math.max(0, Math.min(12, parseInt(value, 10) || 0));
+            crossfadeSeconds = nextValue;
+            localStorage.setItem('eq_crossfade_seconds', String(crossfadeSeconds));
+            updateCrossfadeSettingUI();
+            if (crossfadeSeconds === 0) {
+                stopCrossfadeTimers();
+                releaseAudioObjectUrl(audioFade.src);
+                audioFade.pause();
+                audioFade.removeAttribute('src');
+                audioFade.load();
+                audio.volume = getTargetVolume();
+            }
+        }
+
         window.showAddToPlaylistMenu = (e,fileId,rowIdx) => { e.stopPropagation(); closeDropdown(); const song=currentSongs[rowIdx]; if(!song)return; const artistName=currentArtistKey?artists[currentArtistKey].name:''; window.__ctxSong=song; window.__ctxArtist=artistName; const ids=Object.keys(playlists); const dd=document.createElement('div'); dd.className='add-to-playlist-dropdown'; dd.style.position='fixed'; const rect=e.target.getBoundingClientRect(); dd.style.top=(rect.bottom+4)+'px'; dd.style.left=Math.max(10,rect.left-140)+'px'; if(!ids.length){dd.innerHTML=`<div class="no-playlists">No playlists yet.</div><button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>Create playlist</span></button>`;}else{dd.innerHTML=`<button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>New playlist</span></button>`+ids.map(id=>`<button onclick="addSongToPlaylistById(window.__ctxSong,window.__ctxArtist,'${escA(id)}');closeDropdown()">${escH(playlists[id].name)}</button>`).join('');}document.body.appendChild(dd);renderLucideIcons(dd);openDropdownEl=dd; };
 
       
@@ -12335,33 +12645,42 @@
             song.liked = likedSongs.has(song.file);
             song.downloaded = isDownloaded(song.file);
             song.lastPlayed = Date.now();
-            if (crossfadeTimer) {
-                clearInterval(crossfadeTimer);
-                crossfadeTimer = null;
+            stopCrossfadeTimers();
+            if (audioFade.src) {
+                releaseAudioObjectUrl(audioFade.src);
+                audioFade.pause();
+                audioFade.removeAttribute('src');
+                audioFade.load();
             }
-            const targetVol = isMuted ? 0 : (parseFloat(volumeSlider.value) || 1);
-            if (!audio.paused && audio.currentTime > 0) {
+            crossfadeAutoArmed = false;
+            const targetVol = getTargetVolume();
+            const fadeMs = crossfadeSeconds * 1000;
+            const shouldCrossfade = crossfadeSeconds > 0 && !audio.paused && audio.currentTime > 0 && audio.src;
+            crossfadeTransitionActive = shouldCrossfade;
+            if (shouldCrossfade) {
                 const fadingObjectUrl = activeAudioObjectUrl;
                 audioFade.src = audio.src;
                 audioFade.currentTime = audio.currentTime;
                 audioFade.volume = targetVol;
                 audioFade.play().catch(() => {});
-                let fv = targetVol;
-                crossfadeTimer = setInterval(() => {
-                    fv = Math.max(0, fv - targetVol / 15);
-                    audioFade.volume = fv;
-                    if (fv <= 0) {
-                        audioFade.pause();
-                        audioFade.src = '';
-                        releaseAudioObjectUrl(fadingObjectUrl);
-                        clearInterval(crossfadeTimer);
-                        crossfadeTimer = null;
-                    }
-                }, 50);
+                crossfadeTimer = animateAudioVolume(audioFade, targetVol, 0, fadeMs, () => {
+                    audioFade.pause();
+                    audioFade.removeAttribute('src');
+                    audioFade.load();
+                    releaseAudioObjectUrl(fadingObjectUrl);
+                    crossfadeTimer = null;
+                    crossfadeTransitionActive = false;
+                });
+            } else {
+                crossfadeTransitionActive = false;
+                audioFade.pause();
+                audioFade.removeAttribute('src');
+                audioFade.load();
             }
             const src = await getAudioSrc('songs/' + song.file);
-            setPrimaryAudioSource(src, audioFade.src === '');
-            audio.volume = 0;
+            if (shouldCrossfade) crossfadePauseSuppressUntil = performance.now() + 350;
+            setPrimaryAudioSource(src, !shouldCrossfade);
+            audio.volume = shouldCrossfade ? 0 : targetVol;
             posterEl.src = song.poster;
             playerTitle.textContent = song.title;
             const artistKey = currentArtistKey || Object.keys(artists).find((k) => artists[k].songs === currentSongs);
@@ -12371,17 +12690,26 @@
             updatePlayerLikeBtn(song.file);
             updatePlayerDlBtn();
             audio.play().then(() => {
-                let v = 0;
-                const fi = setInterval(() => {
-                    v = Math.min(targetVol, v + targetVol / 15);
-                    audio.volume = v;
-                    if (v >= targetVol) {
-                        audio.volume = targetVol;
-                        clearInterval(fi);
-                    }
-                }, 50);
+                if (!shouldCrossfade) {
+                    audio.volume = targetVol;
+                    return;
+                }
+                crossfadeInTimer = animateAudioVolume(audio, 0, targetVol, fadeMs, () => {
+                    audio.volume = targetVol;
+                    crossfadeInTimer = null;
+                });
             }).catch(() => {
                 audio.volume = targetVol;
+                if (crossfadeTimer) {
+                    cancelAnimationFrame(crossfadeTimer);
+                    crossfadeTimer = null;
+                    crossfadeTransitionActive = false;
+                    try {
+                        audioFade.pause();
+                        audioFade.removeAttribute('src');
+                        audioFade.load();
+                    } catch (e) {}
+                }
             });
             setPlayButtonIcons(false);
             document.getElementById('fsPoster').src = song.poster;
@@ -12422,6 +12750,8 @@
             renderQueuePanel();
             syncPlaybackModeUI();
             updateFullPlayerUI();
+            if (lyricsPanelOpen) loadLyricsPanel(currentSong);
+            else syncLyricsPanelShell();
             updateNowPlayingIndicator();
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -13355,6 +13685,13 @@
         const fsLyricsList = document.getElementById('fsLyricsList');
         const fsLyricsScroll = document.getElementById('fsLyricsScroll');
         const fsLyricTimestamp = document.getElementById('fsLyricTimestamp');
+        const lyricsToggleBtn = document.getElementById('lyricsToggleBtn');
+        const lyricsPanel = document.getElementById('lyricsPanel');
+        const lyricsPanelBackdrop = document.getElementById('lyricsPanelBackdrop');
+        const lyricsPanelBody = document.getElementById('lyricsPanelBody');
+        const lyricsPanelSong = document.getElementById('lyricsPanelSong');
+        const lyricsPanelArtist = document.getElementById('lyricsPanelArtist');
+        const lyricsFollowBtn = document.getElementById('lyricsFollowBtn');
         const syncedLyricsCatalog = Object.create(null);
         const lrclibLyricsRequests = new Map();
         const ambientPaletteCache = new Map();
@@ -13370,6 +13707,15 @@
         let lyricLineEls = [];
         let activeLyricIndex = -1;
         let fullPlayerLyricsOpen = localStorage.getItem('eq_fs_lyrics_open') !== 'false';
+        let lyricsPanelOpen = localStorage.getItem('eq_lyrics_panel_open') === 'true';
+        let lyricsPanelFollow = localStorage.getItem('eq_lyrics_follow') !== 'false';
+        let lyricsPanelLines = [];
+        let lyricsPanelTimed = false;
+        let lyricsPanelLineEls = [];
+        let lyricsPanelActiveIndex = -1;
+        let lyricsPanelRequestToken = '';
+        let lyricsPanelManualUntil = 0;
+        let lyricsPanelAutoWriteAt = 0;
         let lyricAutoFrame = 0;
         let lyricManualPauseUntil = 0;
         let lyricLastAutoWriteAt = 0;
@@ -13560,10 +13906,11 @@
             const syncedText = payload.syncedLyrics || payload.synced || payload.lrc || '';
             const lines = parseSyncedLyrics(syncedText);
             const plainLyrics = String(payload.plainLyrics || '').trim();
-            if (!lines.length && !plainLyrics) return null;
+            if (!lines.length && !plainLyrics && !payload.instrumental) return null;
             return {
                 syncedLyrics: syncedText,
                 plainLyrics,
+                instrumental: !!payload.instrumental,
                 savedAt: Date.now()
             };
         }
@@ -13603,6 +13950,221 @@
             } finally {
                 lrclibLyricsRequests.delete(cacheKey);
             }
+        }
+
+        function parseStaticLyrics(raw) {
+            if (!raw || typeof raw !== 'string') return [];
+            return raw.split(/\r?\n/).map((line) => line.trim()).filter(Boolean).map((text, idx) => ({
+                time: idx * 4,
+                text
+            }));
+        }
+
+        function hasTimestampedLyrics(raw) {
+            return typeof raw === 'string' && /\[\d{1,2}:\d{2}(?:[.:]\d{1,3})?\]/.test(raw);
+        }
+
+        function setLyricsPanelState(title, message) {
+            if (!lyricsPanelBody) return;
+            lyricsPanelLines = [];
+            lyricsPanelLineEls = [];
+            lyricsPanelTimed = false;
+            lyricsPanelActiveIndex = -1;
+            lyricsPanelBody.innerHTML = `<div class="lyrics-state"><div><strong>${escH(title)}</strong><span>${escH(message)}</span></div></div>`;
+        }
+
+        function syncLyricsPanelShell() {
+            if (lyricsPanelSong) lyricsPanelSong.textContent = currentSong?.title || 'Lyrics';
+            if (lyricsPanelArtist) lyricsPanelArtist.textContent = currentSong ? (playerArtist.textContent || currentSong.artistName || 'Unknown Artist') : 'No song playing';
+            if (lyricsPanel) lyricsPanel.classList.toggle('open', lyricsPanelOpen);
+            if (lyricsPanelBackdrop) lyricsPanelBackdrop.classList.toggle('open', lyricsPanelOpen);
+            if (lyricsToggleBtn) lyricsToggleBtn.classList.toggle('active', lyricsPanelOpen);
+            if (lyricsPanel) lyricsPanel.setAttribute('aria-hidden', lyricsPanelOpen ? 'false' : 'true');
+            document.body.classList.toggle('lyrics-panel-open', lyricsPanelOpen);
+            if (lyricsFollowBtn) {
+                lyricsFollowBtn.classList.toggle('active', lyricsPanelFollow);
+                lyricsFollowBtn.setAttribute('aria-pressed', String(lyricsPanelFollow));
+            }
+        }
+
+        function renderLyricsPanelLines(lines, timed) {
+            if (!lyricsPanelBody) return;
+            lyricsPanelLines = Array.isArray(lines) ? lines : [];
+            lyricsPanelTimed = !!timed;
+            lyricsPanelActiveIndex = -1;
+            if (!lyricsPanelLines.length) {
+                setLyricsPanelState('Lyrics unavailable', 'No lyrics are available for this track yet.');
+                return;
+            }
+            lyricsPanelBody.innerHTML = `<div class="lyrics-lines">${lyricsPanelLines.map((line, idx) => `<button class="lyrics-line ${timed ? 'clickable' : ''}" data-lyrics-index="${idx}" ${timed ? `onclick="seekLyricsPanelLine(${line.time.toFixed(3)})"` : ''}>${escH(line.text || '...')}</button>`).join('')}</div>`;
+            lyricsPanelLineEls = Array.from(lyricsPanelBody.querySelectorAll('.lyrics-line'));
+            updateLyricsPanelPlayback(audio.currentTime || 0, true);
+        }
+
+        async function loadLyricsPanel(song) {
+            if (!lyricsPanelBody) return;
+            syncLyricsPanelShell();
+            if (!song) {
+                setLyricsPanelState('Lyrics', 'Play a song to see lyrics.');
+                return;
+            }
+            const token = `${normalizeSongFile(song.file)}|${Date.now()}|${Math.random().toString(36).slice(2, 8)}`;
+            lyricsPanelRequestToken = token;
+            setLyricsPanelState('Loading lyrics', 'Finding the best lyrics for this track...');
+
+            const embeddedRaw = song.syncedLyrics || song.lyricsLrc || song.lrc || song.lyrics || '';
+            const embeddedTimed = parseSyncedLyrics(embeddedRaw);
+            if (embeddedTimed.length && hasTimestampedLyrics(embeddedRaw)) {
+                if (lyricsPanelRequestToken === token) renderLyricsPanelLines(embeddedTimed, true);
+                return;
+            }
+            const embeddedStatic = parseStaticLyrics(embeddedRaw);
+            if (embeddedStatic.length) {
+                if (lyricsPanelRequestToken === token) renderLyricsPanelLines(embeddedStatic, false);
+                return;
+            }
+
+            const cacheKey = getLyricsCacheKey(song);
+            const cached = cacheKey ? lyricsCacheStore[cacheKey] : null;
+            if (cached?.instrumental) {
+                if (lyricsPanelRequestToken === token) setLyricsPanelState('Instrumental track', 'There are no lyrics for this song.');
+                return;
+            }
+            const cachedTimedRaw = cached?.syncedLyrics || cached?.synced || cached?.lrc || '';
+            const cachedTimed = parseSyncedLyrics(cachedTimedRaw);
+            if (cachedTimed.length && hasTimestampedLyrics(cachedTimedRaw)) {
+                if (lyricsPanelRequestToken === token) renderLyricsPanelLines(cachedTimed, true);
+                return;
+            }
+            const cachedStatic = parseStaticLyrics(cached?.plainLyrics || '');
+            if (cachedStatic.length) {
+                if (lyricsPanelRequestToken === token) renderLyricsPanelLines(cachedStatic, false);
+                return;
+            }
+            if (!navigator.onLine) {
+                if (lyricsPanelRequestToken === token) setLyricsPanelState('Network error', 'Connect to the internet to load lyrics for this track.');
+                return;
+            }
+
+            let remote = null;
+            try {
+                remote = await fetchLyricsFromLrclib(song);
+            } catch (e) {
+                if (lyricsPanelRequestToken === token) setLyricsPanelState('Network error', 'Lyrics could not be loaded right now.');
+                return;
+            }
+            if (lyricsPanelRequestToken !== token) return;
+            if (!remote) {
+                setLyricsPanelState('Lyrics unavailable', 'No lyrics are available for this track yet.');
+                return;
+            }
+            lyricsCacheStore[cacheKey] = remote;
+            if (remote.syncedLyrics) syncedLyricsCatalog[normalizeSongFile(song.file)] = remote.syncedLyrics;
+            saveLyricsCacheStore();
+            if (remote.instrumental) {
+                setLyricsPanelState('Instrumental track', 'There are no lyrics for this song.');
+                return;
+            }
+            const remoteTimed = parseSyncedLyrics(remote.syncedLyrics || '');
+            if (remoteTimed.length && hasTimestampedLyrics(remote.syncedLyrics || '')) {
+                renderLyricsPanelLines(remoteTimed, true);
+                return;
+            }
+            const remoteStatic = parseStaticLyrics(remote.plainLyrics || '');
+            if (remoteStatic.length) {
+                renderLyricsPanelLines(remoteStatic, false);
+                return;
+            }
+            setLyricsPanelState('Lyrics unavailable', 'No lyrics are available for this track yet.');
+        }
+
+        function getLyricsPanelIndexAtTime(currentTime) {
+            if (!lyricsPanelTimed || !lyricsPanelLines.length) return -1;
+            let lo = 0;
+            let hi = lyricsPanelLines.length - 1;
+            let result = -1;
+            while (lo <= hi) {
+                const mid = (lo + hi) >> 1;
+                if (lyricsPanelLines[mid].time <= currentTime) {
+                    result = mid;
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            return result;
+        }
+
+        function followLyricsPanelLine(index, force = false) {
+            if (!lyricsPanelBody || !lyricsPanelLineEls[index] || !lyricsPanelFollow) return;
+            if (!force && performance.now() < lyricsPanelManualUntil) return;
+            const line = lyricsPanelLineEls[index];
+            const maxScroll = Math.max(0, lyricsPanelBody.scrollHeight - lyricsPanelBody.clientHeight);
+            const target = clampNumber(line.offsetTop + (line.offsetHeight / 2) - (lyricsPanelBody.clientHeight / 2), 0, maxScroll);
+            lyricsPanelAutoWriteAt = performance.now();
+            lyricsPanelBody.scrollTo({
+                top: target,
+                behavior: force ? 'auto' : 'smooth'
+            });
+        }
+
+        function updateLyricsPanelPlayback(currentTime = audio.currentTime, force = false) {
+            if (!lyricsPanelOpen || !lyricsPanelTimed || !lyricsPanelLineEls.length) return;
+            const nextIndex = getLyricsPanelIndexAtTime((currentTime || 0) + 0.08);
+            if (nextIndex !== lyricsPanelActiveIndex || force) {
+                lyricsPanelActiveIndex = nextIndex;
+                lyricsPanelLineEls.forEach((lineEl, idx) => {
+                    lineEl.classList.toggle('active', idx === nextIndex);
+                    lineEl.classList.toggle('past', nextIndex >= 0 && idx < nextIndex);
+                    lineEl.classList.toggle('future', nextIndex < 0 || idx > nextIndex);
+                });
+                if (nextIndex >= 0) followLyricsPanelLine(nextIndex, force);
+            }
+        }
+
+        window.seekLyricsPanelLine = (time) => {
+            if (!Number.isFinite(time) || !audio.duration) return;
+            audio.currentTime = clampNumber(time, 0, audio.duration);
+            lyricsPanelManualUntil = performance.now() + 500;
+            updateLyricsPanelPlayback(audio.currentTime, true);
+        };
+
+        window.openLyricsPanel = () => {
+            lyricsPanelOpen = true;
+            localStorage.setItem('eq_lyrics_panel_open', 'true');
+            syncLyricsPanelShell();
+            loadLyricsPanel(currentSong);
+        };
+
+        window.closeLyricsPanel = () => {
+            lyricsPanelOpen = false;
+            localStorage.setItem('eq_lyrics_panel_open', 'false');
+            syncLyricsPanelShell();
+        };
+
+        window.toggleLyricsPanel = () => {
+            if (lyricsPanelOpen) closeLyricsPanel();
+            else openLyricsPanel();
+        };
+
+        window.toggleLyricsFollow = () => {
+            lyricsPanelFollow = !lyricsPanelFollow;
+            localStorage.setItem('eq_lyrics_follow', String(lyricsPanelFollow));
+            syncLyricsPanelShell();
+            if (lyricsPanelFollow) updateLyricsPanelPlayback(audio.currentTime || 0, true);
+        };
+
+        if (lyricsPanelBody && lyricsPanelBody.dataset.bound !== '1') {
+            lyricsPanelBody.dataset.bound = '1';
+            lyricsPanelBody.addEventListener('wheel', () => {
+                if ((performance.now() - lyricsPanelAutoWriteAt) > 90) lyricsPanelManualUntil = performance.now() + 2600;
+            }, { passive: true });
+            lyricsPanelBody.addEventListener('touchstart', () => {
+                lyricsPanelManualUntil = performance.now() + 3200;
+            }, { passive: true });
+            lyricsPanelBody.addEventListener('scroll', () => {
+                if ((performance.now() - lyricsPanelAutoWriteAt) > 90) lyricsPanelManualUntil = performance.now() + 2200;
+            }, { passive: true });
         }
 
         function rgbArrayToCss(rgb = [200, 245, 66]) {
@@ -14370,7 +14932,12 @@
             const fsCurrentTime = document.getElementById('fsCurrentTime');
             if(fsCurrentTime) fsCurrentTime.textContent = fmt(current);
             updateFullPlayerLyrics(current);
+            updateLyricsPanelPlayback(current);
             setFullPlayerEnergy();
+            if (crossfadeSeconds > 0 && !crossfadeAutoArmed && !isRepeat && duration > crossfadeSeconds + 1 && current > 0 && (duration - current) <= crossfadeSeconds) {
+                crossfadeAutoArmed = true;
+                next();
+            }
             const now = performance.now();
             if (current > 0 && (now - lastPlaybackSaveAt) > 14000) {
                 lastPlaybackSaveAt = now;
@@ -14391,6 +14958,13 @@
         });
         audio.addEventListener('pause',()=>{ 
             setPlayButtonIcons(true);
+            if ((performance.now() > crossfadePauseSuppressUntil) && !audioFade.paused) {
+                stopCrossfadeTimers();
+                releaseAudioObjectUrl(audioFade.src);
+                audioFade.pause();
+                audioFade.removeAttribute('src');
+                audioFade.load();
+            }
             if(currentArtistKey) updateArtistPlayingState(false);
             if(currentPlaylistId && document.getElementById('playlistSongsList')) updatePlaylistPlayingState(false);
             if(document.getElementById('favSongsList')) updateFavoritesPlayingState(false);
@@ -14398,7 +14972,7 @@
             savePlaybackMemory();
             updateNowPlayingIndicator();
         });
-        volumeSlider.addEventListener('input',()=>{ audio.volume=+volumeSlider.value; isMuted=audio.volume===0; localStorage.setItem('eq_volume',audio.volume); });
+        volumeSlider.addEventListener('input',()=>{ const nextVolume=+volumeSlider.value; audio.volume=nextVolume; if(audioFade.src)audioFade.volume=Math.min(audioFade.volume,nextVolume); isMuted=nextVolume===0; localStorage.setItem('eq_volume',nextVolume); });
         window.addEventListener('beforeunload',()=>savePlaybackMemory());
 
         if('mediaSession' in navigator){ navigator.mediaSession.setActionHandler('play',()=>audio.play()); navigator.mediaSession.setActionHandler('pause',()=>audio.pause()); navigator.mediaSession.setActionHandler('nexttrack',()=>next()); navigator.mediaSession.setActionHandler('previoustrack',()=>previous()); navigator.mediaSession.setActionHandler('seekto',(d)=>{if(d.seekTime)audio.currentTime=d.seekTime;}); }
@@ -14697,13 +15271,13 @@
                     <div class="as-tabs"><div class="as-tab active" data-target="eq">Equalizer</div><div class="as-tab" data-target="presets">Presets</div><div class="as-tab" data-target="effects">Effects</div><div class="as-tab" data-target="visualizer">Visualizer</div><div class="as-tab" data-target="advanced">Advanced</div><div class="as-tab" data-target="stats">Statistics</div></div>
                     <div class="as-content active" id="as-eq"><div class="eq-grid">${audioEngine.bands.map((freq, i) => `<div class="eq-band"><input type="range" class="eq-slider-vertical" min="-15" max="15" step="0.5" value="${audioEngine.filters[i]?.gain.value || 0}" oninput="updateEQBand(${i}, this.value)"><span class="eq-label-freq">${freq >= 1000 ? (freq/1000) + 'kHz' : freq + 'Hz'}</span><span class="eq-label-db" id="eq-db-${i}">${(audioEngine.filters[i]?.gain.value || 0).toFixed(1)}dB</span></div>`).join('')}</div><div style="display:flex; gap:15px; justify-content:center;"><button class="btn btn-outline" onclick="resetEQ()">Reset EQ</button><button class="btn btn-accent" onclick="saveCustomPreset()">Save Custom</button></div></div>
                     <div class="as-content" id="as-presets"><div class="as-grid">${Object.keys(allPresets).map(name => `<div class="as-card ${localStorage.getItem('as_active_preset') === name ? 'active' : ''}" onclick="applyAudioPreset('${name}')"><div class="as-card-icon">${uiIcon('music')}</div><div class="as-card-title">${name}</div></div>`).join('')}</div></div>
-                    <div class="as-content" id="as-effects"><div class="as-grid"><div class="as-card"><div class="as-card-title">Preamp (Gain)</div><input type="range" min="0" max="2" step="0.05" value="${audioEngine.preamp?.gain.value || 1}" oninput="updatePreamp(this.value)"><span id="preamp-val">${(audioEngine.preamp?.gain.value || 1).toFixed(2)}x</span></div><div class="as-card"><div class="as-card-title">Stereo Pan</div><input type="range" min="-1" max="1" step="0.1" value="${audioEngine.panner?.pan.value || 0}" oninput="updatePan(this.value)"><span id="pan-val">${(audioEngine.panner?.pan.value || 0).toFixed(1)}</span></div><div class="as-card"><div class="as-card-title">Reverb (Space)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_reverb') || 0}" oninput="updateEffect('reverb', this.value)"></div><div class="as-card"><div class="as-card-title">Delay (Echo)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_delay') || 0}" oninput="updateEffect('delay', this.value)"></div></div></div>
+                    <div class="as-content" id="as-effects"><div class="as-grid"><div class="as-card"><div class="as-card-title">Preamp (Gain)</div><input type="range" min="0" max="2" step="0.05" value="${audioEngine.preamp?.gain.value || 1}" oninput="updatePreamp(this.value)"><span id="preamp-val">${(audioEngine.preamp?.gain.value || 1).toFixed(2)}x</span></div><div class="as-card"><div class="as-card-title">Stereo Pan</div><input type="range" min="-1" max="1" step="0.1" value="${audioEngine.panner?.pan.value || 0}" oninput="updatePan(this.value)"><span id="pan-val">${(audioEngine.panner?.pan.value || 0).toFixed(1)}</span></div><div class="as-card"><div class="as-card-title">Reverb (Space)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_reverb') || 0}" oninput="updateEffect('reverb', this.value)"></div><div class="as-card"><div class="as-card-title">Delay (Echo)</div><input type="range" min="0" max="1" step="0.05" value="${localStorage.getItem('as_delay') || 0}" oninput="updateEffect('delay', this.value)"></div><div class="as-card wide"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px"><div class="as-card-title">Crossfade</div><span id="crossfadeValue" style="font-size:.82rem;font-weight:900;color:var(--accent)">Off</span></div><input id="crossfadeSlider" type="range" min="0" max="12" step="1" value="${crossfadeSeconds}" oninput="setCrossfadeSeconds(this.value)"><div style="font-size:.78rem;color:var(--text2);line-height:1.45">Blend the end of one song into the beginning of the next.</div></div></div></div>
                     <div class="as-content" id="as-visualizer"><div class="viz-container"><canvas id="as-viz-canvas"></canvas></div><div class="as-grid" style="margin-top:20px"><div class="as-card ${audioEngine.vizMode==='bars'?'active':''}" onclick="setVizMode('bars')">Spectrum Bars</div><div class="as-card ${audioEngine.vizMode==='wave'?'active':''}" onclick="setVizMode('wave')">Waveform</div><div class="as-card ${audioEngine.vizMode==='circle'?'active':''}" onclick="setVizMode('circle')">Circular</div></div></div>
                     <div class="as-content" id="as-advanced"><div class="as-grid"><div class="as-card"><div class="as-card-title">Compressor Threshold</div><input type="range" min="-60" max="0" step="1" value="${audioEngine.compressor?.threshold.value || -24}" oninput="updateCompressor('threshold', this.value)"></div><div class="as-card"><div class="as-card-title">Compressor Ratio</div><input type="range" min="1" max="20" step="1" value="${audioEngine.compressor?.ratio.value || 12}" oninput="updateCompressor('ratio', this.value)"></div></div></div>
                     <div class="as-content" id="as-stats"><div class="stats-box"><div class="stats-row"><span class="stats-label">Sample Rate</span><span class="stats-value" id="stat-sr">44100 Hz</span></div><div class="stats-row"><span class="stats-label">Channels</span><span class="stats-value">2 (Stereo)</span></div><div class="stats-row"><span class="stats-label">Context State</span><span class="stats-value" id="stat-state">Running</span></div><div class="stats-row"><span class="stats-label">Audio Latency</span><span class="stats-value" id="stat-latency">0ms</span></div><div class="stats-row"><span class="stats-label">Peak Level</span><span class="stats-value" id="stat-peak">0.00</span></div><div class="stats-row"><span class="stats-label">Audio Engine</span><span class="stats-value">FalconX Pro v3.0</span></div></div></div>
                 </div>
             `;
-            initAudioSuiteTabs(); setupAudioEngine(); updateStats(); renderLucideIcons(mainArea);
+            initAudioSuiteTabs(); setupAudioEngine(); updateStats(); updateCrossfadeSettingUI(); renderLucideIcons(mainArea);
         }
 
         function initAudioSuiteTabs() {
@@ -14780,13 +15354,15 @@
         window.playSong = playSong; window.next = next; window.previous = previous; window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
         window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue; window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
         window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch; window.toggleEqPanel = () => renderAudioPage(); window.setEqMode = (mode) => applyAudioPreset(mode.charAt(0).toUpperCase() + mode.slice(1));
-        window.renderStatsPage = renderStatsPage; window.renderAudioPage = renderAudioPage; window.setVizMode = setVizMode; window.updateEffect = updateEffect; window.updateEQBand = updateEQBand; window.applyAudioPreset = applyAudioPreset; window.resetEQ = resetEQ; window.updatePreamp = updatePreamp; window.updatePan = updatePan; window.updateCompressor = updateCompressor; window.saveCustomPreset = saveCustomPreset;
+        window.renderStatsPage = renderStatsPage; window.renderAudioPage = renderAudioPage; window.setVizMode = setVizMode; window.updateEffect = updateEffect; window.updateEQBand = updateEQBand; window.applyAudioPreset = applyAudioPreset; window.resetEQ = resetEQ; window.updatePreamp = updatePreamp; window.updatePan = updatePan; window.updateCompressor = updateCompressor; window.saveCustomPreset = saveCustomPreset; window.setCrossfadeSeconds = setCrossfadeSeconds;
 
         // -- INIT --
         initLucideSystem();
         buildSidebar();
         loadArtists();
         loadPlaybackMemory();
+        syncLyricsPanelShell();
+        if (lyricsPanelOpen) loadLyricsPanel(currentSong);
         renderQueuePanel();
         setupQueuePanelInteractions();
         setupSongRowSwipeGestures();
@@ -14810,6 +15386,7 @@
       
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape') return;
+            if (lyricsPanelOpen) closeLyricsPanel();
             if (fullPlayerOpen) closeFullPlayer();
             if (mobileDrawer?.classList.contains('open')) closeMobileDrawer();
         });
