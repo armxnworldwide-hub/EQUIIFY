@@ -785,6 +785,11 @@
         .search-clear:hover {
             color: var(--text)
         }
+
+        .search-highlight {
+            color: var(--accent);
+            font-weight: 900;
+        }
         
         .topbar-actions {
             display: flex;
@@ -13155,18 +13160,169 @@
         window.refreshLikedDisplay = refreshLikedDisplay;
 
         
+        let searchIndexCache = null;
+        const SEARCH_RESULT_LIMITS = { songs: 30, artists: 12, albums: 12, playlists: 12, genres: 12 };
+
+        function normalizeSearchText(value) {
+            return String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[_\-]+/g, ' ').replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
+        }
+
+        function searchTokens(query) {
+            return normalizeSearchText(query).split(' ').filter(Boolean);
+        }
+
+        function boundedEditDistance(a, b, limit) {
+            if (!a || !b) return Math.max(a.length, b.length);
+            if (Math.abs(a.length - b.length) > limit) return limit + 1;
+            let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+            for (let i = 1; i <= a.length; i++) {
+                const curr = [i];
+                let rowMin = curr[0];
+                for (let j = 1; j <= b.length; j++) {
+                    const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                    curr[j] = Math.min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost);
+                    rowMin = Math.min(rowMin, curr[j]);
+                }
+                if (rowMin > limit) return limit + 1;
+                prev = curr;
+            }
+            return prev[b.length];
+        }
+
+        function searchMatchScore(fields, query) {
+            const q = normalizeSearchText(query);
+            if (!q) return null;
+            const tokens = searchTokens(query);
+            let best = null;
+            fields.map(normalizeSearchText).filter(Boolean).forEach((field) => {
+                if (field === q) best = best === null ? 0 : Math.min(best, 0);
+                else if (field.startsWith(q)) best = best === null ? 1 : Math.min(best, 1);
+                else if (field.includes(q) || tokens.every((token) => field.includes(token))) best = best === null ? 2 : Math.min(best, 2);
+                else {
+                    const limit = q.length < 5 ? 1 : q.length < 9 ? 2 : 3;
+                    const fieldWords = field.split(' ');
+                    const fuzzy = boundedEditDistance(field, q, limit) <= limit || tokens.every((token) => fieldWords.some((word) => boundedEditDistance(word, token, token.length < 5 ? 1 : 2) <= (token.length < 5 ? 1 : 2)));
+                    if (fuzzy) best = best === null ? 3 : Math.min(best, 3);
+                }
+            });
+            return best;
+        }
+
+        function highlightedText(value, query) {
+            const text = String(value || '');
+            const tokens = [...new Set(searchTokens(query))].filter((token) => token.length > 0).sort((a, b) => b.length - a.length);
+            if (!tokens.length) return escH(text);
+            const pattern = new RegExp(tokens.map((token) => token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'gi');
+            let html = '';
+            let last = 0;
+            text.replace(pattern, (match, offset) => {
+                html += escH(text.slice(last, offset));
+                html += `<span class="search-highlight">${escH(match)}</span>`;
+                last = offset + match.length;
+                return match;
+            });
+            return html + escH(text.slice(last));
+        }
+
+        function getSearchIndex() {
+            if (searchIndexCache) return searchIndexCache;
+            const songs = [];
+            const artistResults = [];
+            const albumMap = new Map();
+            const genreMap = new Map();
+            Object.keys(artists).forEach((key) => {
+                const artist = artists[key];
+                artistResults.push({ type: 'artist', key, name: artist.name, image: artist.image, songCount: artist.songs.length, fields: [artist.name] });
+                artist.songs.forEach((song, index) => {
+                    const album = deriveSongAlbum(song, artist.name);
+                    const genre = String(song.genre || '').trim();
+                    const normalizedSong = normalizeSongForSorting({ ...song, artistName: artist.name, artist: artist.name, artistKey: key, album, genre }, index, { scope: 'search', artistName: artist.name });
+                    songs.push({ type: 'song', key, index, song: normalizedSong, artistName: artist.name, album, genre, fields: [song.title, artist.name, album, genre] });
+                    const albumKey = `${normalizeSearchText(album)}|${normalizeSearchText(artist.name)}`;
+                    if (!albumMap.has(albumKey)) albumMap.set(albumKey, { type: 'album', id: albumKey, name: album, artistName: artist.name, image: song.poster, songs: [], fields: [album, artist.name] });
+                    albumMap.get(albumKey).songs.push({ ...normalizedSong, index });
+                    if (genre) {
+                        const genreKey = normalizeSearchText(genre);
+                        if (!genreMap.has(genreKey)) genreMap.set(genreKey, { type: 'genre', id: genreKey, name: genre, songs: [], fields: [genre] });
+                        genreMap.get(genreKey).songs.push({ ...normalizedSong, index });
+                    }
+                });
+            });
+            searchIndexCache = { songs, artists: artistResults, albums: [...albumMap.values()], genres: [...genreMap.values()] };
+            return searchIndexCache;
+        }
+
+        function rankedSearchResults(items, query) {
+            return items.map((item, order) => ({ ...item, score: searchMatchScore(item.fields, query), order }))
+                .filter((item) => item.score !== null)
+                .sort((a, b) => a.score - b.score || compareText(a.name || a.song?.title || '', b.name || b.song?.title || '') || a.order - b.order);
+        }
+
+        function playlistSearchResults(query) {
+            return Object.keys(playlists).map((id, order) => {
+                const pl = playlists[id];
+                const songs = Array.isArray(pl?.songs) ? pl.songs : [];
+                return { type: 'playlist', id, name: pl?.name || 'Playlist', songs, image: songs[0]?.poster || '', fields: [pl?.name || '', ...songs.slice(0, 8).map((song) => song.title || '')], order };
+            }).map((item) => ({ ...item, score: searchMatchScore(item.fields, query) }))
+                .filter((item) => item.score !== null)
+                .sort((a, b) => a.score - b.score || compareText(a.name, b.name) || a.order - b.order);
+        }
+
+        function searchSongRowHTML(result, i, query) {
+            const song = result.song;
+            const liked = likedSongs.has(song.file);
+            const dl = isDownloaded(song.file);
+            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playSongByFile('${escA(song.file)}')"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${highlightedText(song.title, query)}</h4><p>${highlightedText(result.artistName, query)}${result.album ? ` • ${highlightedText(result.album, query)}` : ''}${result.genre ? ` • ${highlightedText(result.genre, query)}` : ''}</p></div></div><div class="song-actions" style="opacity:1"><button class="like-btn${liked ? ' liked' : ''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}')">${liked ? uiIcon('heart') : uiIcon('heart-off')}</button><button class="dl-btn${dl ? ' downloaded' : ''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button></div></div>`;
+        }
+
+        function searchArtistCardHTML(result, query) {
+            return `<div class="artist-card" onclick="openArtist('${escA(result.key)}')"><div class="artist-card-img-wrap"><img src="${escH(result.image)}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${escA(result.key)}')">${uiIcon('play')}</button></div><div class="artist-card-name">${highlightedText(result.name, query)}</div><div class="artist-card-count">${result.songCount} songs</div></div>`;
+        }
+
+        function searchAlbumCardHTML(result, query) {
+            const firstSong = result.songs[0];
+            return `<div class="artist-card" onclick="playSongByFile('${escA(firstSong.file)}')"><div class="artist-card-img-wrap"><img src="${escH(result.image)}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playSongByFile('${escA(firstSong.file)}')">${uiIcon('play')}</button></div><div class="artist-card-name">${highlightedText(result.name, query)}</div><div class="artist-card-count">${highlightedText(result.artistName, query)} • ${result.songs.length} tracks</div></div>`;
+        }
+
+        function searchPlaylistCardHTML(result, query) {
+            const covers = result.songs.slice(0, 4).map((song) => song.poster);
+            while (covers.length < 4) covers.push(null);
+            return `<div class="playlist-card" onclick="openPlaylist('${escA(result.id)}')"><div class="playlist-card-cover">${covers.map((cover) => cover ? `<img src="${escH(cover)}" onerror="this.parentElement.style.background='var(--surface3)'">` : `<div class="cover-ph">${uiIcon('music-2')}</div>`).join('')}</div><div class="playlist-card-name">${highlightedText(result.name, query)}</div><div class="playlist-card-count">${result.songs.length} song${result.songs.length !== 1 ? 's' : ''}</div>${result.songs.length ? `<button class="playlist-card-play" onclick="event.stopPropagation();playPlaylistById('${escA(result.id)}')">${uiIcon('play')}</button>` : ''}</div>`;
+        }
+
+        function searchGenreCardHTML(result, query) {
+            const firstSong = result.songs[0];
+            return `<div class="artist-card" onclick="playSongByFile('${escA(firstSong.file)}')"><div class="artist-card-img-wrap"><img src="${escH(firstSong.poster)}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playSongByFile('${escA(firstSong.file)}')">${uiIcon('play')}</button></div><div class="artist-card-name">${highlightedText(result.name, query)}</div><div class="artist-card-count">${result.songs.length} tracks</div></div>`;
+        }
+
+        function searchSectionHTML(title, count, content, gridClass = '') {
+            if (!count) return '';
+            return `<div style="padding:20px 24px 0"><div class="section-title" style="margin-bottom:14px">${title}</div>${gridClass ? `<div class="${gridClass}" style="padding:0">${content}</div>` : content}</div>`;
+        }
+
         function globalSearch() {
             const searchEl = document.getElementById('searchBar'); if(!searchEl)return;
-            const q = searchEl.value.toLowerCase().trim();
+            const rawQuery = searchEl.value || '';
+            const q = normalizeSearchText(rawQuery);
             const clr = document.getElementById('searchClear'); if(clr)clr.classList.toggle('visible',q.length>0);
             if(!q){loadArtists();return;}
             setMobileBack(false);
-            let artistHtml='',songHtml='',ac=0,sc=0;
-            for(let key in artists){ const a=artists[key]; if(a.name.toLowerCase().includes(q)){artistHtml+=`<div class="artist-card" onclick="openArtist('${key}')"><div class="artist-card-img-wrap"><img src="${a.image}"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${key}')">${uiIcon('play')}</button></div><div class="artist-card-name">${a.name}</div><div class="artist-card-count">${a.songs.length} songs</div></div>`;ac++;} a.songs.forEach((s,i)=>{if(s.title.toLowerCase().includes(q)){songHtml+=`<div class="song-row" data-file="${escH(s.file)}" onclick="openArtistAndPlay('${key}',${i})"><div class="song-num">${sc+1}</div><div class="song-row-info"><img src="${s.poster}" onerror="this.style.background='#282828'"><div class="song-row-text"><h4>${escH(s.title)}</h4><p>${escH(a.name)}</p></div></div><div class="song-actions" style="opacity:1"><button class="like-btn${likedSongs.has(s.file)?' liked':''}" onclick="event.stopPropagation();toggleLike('${escA(s.file)}')">${likedSongs.has(s.file)?uiIcon('heart'):uiIcon('heart-off')}</button><button class="dl-btn${isDownloaded(s.file)?' downloaded':''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(s.file)}')">${isDownloaded(s.file)?uiIcon('check'):uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(s.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(s.file)}',false)" title="Add to end">${uiIcon('plus')}</button></div></div>`;sc++;}}); }
-            const total = ac+sc;
+            const index = getSearchIndex();
+            const songResults = rankedSearchResults(index.songs, q).slice(0, SEARCH_RESULT_LIMITS.songs);
+            const artistResults = rankedSearchResults(index.artists, q).slice(0, SEARCH_RESULT_LIMITS.artists);
+            const albumResults = rankedSearchResults(index.albums, q).slice(0, SEARCH_RESULT_LIMITS.albums);
+            const playlistResults = playlistSearchResults(q).slice(0, SEARCH_RESULT_LIMITS.playlists);
+            const genreResults = rankedSearchResults(index.genres, q).slice(0, SEARCH_RESULT_LIMITS.genres);
+            const total = songResults.length + artistResults.length + albumResults.length + playlistResults.length + genreResults.length;
             const mainArea = document.getElementById('mainArea');
-            const topbarHTML = `<div class="main-topbar"><div class="nav-arrows"><button class="nav-arrow-btn" onclick="loadArtists()">${uiIcon('chevron-left')}</button></div><div class="search-box"><span class="search-icon">${uiIcon('search')}</span><input type="text" id="searchBar" value="${escH(document.getElementById('searchBar')?.value||q)}" placeholder="Search artists or songs…" oninput="globalSearch()"><button class="search-clear visible" id="searchClear" onclick="clearSearch()">${uiIcon('x')}</button></div><div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div></div>`;
-            mainArea.innerHTML = topbarHTML+`${ac>0?`<div style="padding:20px 24px 0"><div class="section-title" style="margin-bottom:14px">Artists</div><div class="artists-grid" style="padding:0">${artistHtml}</div></div>`:''}<div style="height:20px"></div>${sc>0?`<div class="songs-section"><div style="font-size:1.1rem;font-weight:800;margin-bottom:12px">Songs</div>${songHtml}</div>`:''}${!total?`<div class="empty-state"><div class="emoji">${uiIcon('search')}</div><p>No results for "${escH(q)}"</p></div>`:''}`;
+            const topbarHTML = `<div class="main-topbar"><div class="nav-arrows"><button class="nav-arrow-btn" onclick="loadArtists()">${uiIcon('chevron-left')}</button></div><div class="search-box"><span class="search-icon">${uiIcon('search')}</span><input type="text" id="searchBar" value="${escH(rawQuery)}" placeholder="Search songs, artists, albums, playlists…" oninput="globalSearch()"><button class="search-clear visible" id="searchClear" onclick="clearSearch()">${uiIcon('x')}</button></div><div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div></div>`;
+            mainArea.innerHTML = topbarHTML +
+                searchSectionHTML('Songs', songResults.length, `<div class="songs-section" style="padding:0">${songResults.map((result, i) => searchSongRowHTML(result, i, rawQuery)).join('')}</div>`) +
+                searchSectionHTML('Artists', artistResults.length, artistResults.map((result) => searchArtistCardHTML(result, rawQuery)).join(''), 'artists-grid') +
+                searchSectionHTML('Albums', albumResults.length, albumResults.map((result) => searchAlbumCardHTML(result, rawQuery)).join(''), 'artists-grid') +
+                searchSectionHTML('Playlists', playlistResults.length, playlistResults.map((result) => searchPlaylistCardHTML(result, rawQuery)).join(''), 'playlist-grid') +
+                searchSectionHTML('Genres', genreResults.length, genreResults.map((result) => searchGenreCardHTML(result, rawQuery)).join(''), 'artists-grid') +
+                (!total ? `<div class="empty-state"><div class="emoji">${uiIcon('search')}</div><p>No results found</p></div>` : '<div style="height:20px"></div>');
             renderLucideIcons(mainArea);
             const newInp = document.getElementById('searchBar'); if(newInp){newInp.focus();newInp.setSelectionRange(newInp.value.length,newInp.value.length);} initSearchClear();
         }
