@@ -10868,10 +10868,44 @@
         };
 
 
-        const CACHE_NAME = 'falcon-offline-v2';
+        const CACHE_NAME = 'falcon-offline-v3';
+        const LEGACY_CACHE_NAMES = ['falcon-offline-v2'];
+        const SONG_CACHE_PREFIX = 'songs/';
         let downloadedFiles = new Set();
         let downloadedSongMeta = {};
         let songDurationMeta = {};
+
+        function normalizeCachePath(path = '') {
+            const raw = String(path || '').replace(/\\/g, '/').replace(/^\.?\//, '');
+            return raw.startsWith(SONG_CACHE_PREFIX) ? raw : SONG_CACHE_PREFIX + raw;
+        }
+
+        function cacheRequestCandidates(path = '') {
+            const normalized = normalizeCachePath(path);
+            const encoded = normalized.split('/').map((part) => encodeURIComponent(part)).join('/');
+            const candidates = [normalized, encoded];
+            try {
+                candidates.push(new URL(normalized, location.href).href);
+                candidates.push(new URL(encoded, location.href).href);
+            } catch (e) {}
+            return [...new Set(candidates)];
+        }
+
+        async function matchOfflineCache(path = '') {
+            if (!('caches' in window)) return null;
+            const candidates = cacheRequestCandidates(path);
+            const names = [CACHE_NAME, ...LEGACY_CACHE_NAMES];
+            for (const name of names) {
+                try {
+                    const cache = await caches.open(name);
+                    for (const candidate of candidates) {
+                        const match = await cache.match(candidate, { ignoreSearch: true });
+                        if (match) return { cache, response: match, cacheName: name, key: candidate };
+                    }
+                } catch (e) {}
+            }
+            return null;
+        }
 
         function loadDownloaded() {
             try {
@@ -11290,11 +11324,47 @@
         window.loadSortPreference = loadSortPreference;
         window.applySorting = applySorting;
 
+        const DL_QUEUE_STORAGE_KEY = 'falcon_download_queue_v1';
         let dlQueue = [],
             dlPaused = false,
             dlBusy = false,
             dlAbortController = null;
         const dpanel = () => document.getElementById('downloadPanel');
+
+        function saveDlQueue() {
+            try {
+                const pending = dlQueue.filter((item) => item.status !== 'done').map((item) => ({
+                    ...item,
+                    status: item.status === 'active' ? 'queued' : item.status,
+                    progress: item.status === 'active' ? 0 : item.progress,
+                    rateBps: 0,
+                    etaSec: 0
+                }));
+                localStorage.setItem(DL_QUEUE_STORAGE_KEY, JSON.stringify(pending));
+            } catch (e) {}
+        }
+
+        function loadDlQueue() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(DL_QUEUE_STORAGE_KEY) || '[]');
+                if (!Array.isArray(saved)) return;
+                dlQueue = saved.filter((item) => item && item.song && typeof item.song.file === 'string' && !isDownloaded(item.song.file)).map((item) => ({
+                    ...item,
+                    id: typeof item.id === 'string' ? item.id : 'dl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5),
+                    status: item.status === 'error' ? 'error' : 'queued',
+                    progress: item.status === 'error' ? 0 : Math.max(0, Math.min(95, Number(item.progress) || 0)),
+                    bytesDone: Number(item.bytesDone) || 0,
+                    bytesTotal: Number(item.bytesTotal) || 0,
+                    startedAt: 0,
+                    lastTickAt: 0,
+                    rateBps: 0,
+                    etaSec: 0,
+                    errorMessage: typeof item.errorMessage === 'string' ? item.errorMessage : ''
+                }));
+            } catch (e) {
+                dlQueue = [];
+            }
+        }
 
         function queueStats() {
             const q = dlQueue.filter(i => i.status === 'queued').length,
@@ -11397,6 +11467,7 @@
 
         window.removeFromDlQueue = (id) => {
             dlQueue = dlQueue.filter(i => i.id !== id);
+            saveDlQueue();
             const el = document.getElementById('dpi_' + id);
             if (el) el.remove();
             if (!dlQueue.length) {
@@ -11418,6 +11489,7 @@
             item.rateBps = 0;
             item.etaSec = 0;
             renderDpItem(item);
+            saveDlQueue();
             updateDpStats();
             if (!dlBusy && !dlPaused) processQueue();
         };
@@ -11430,6 +11502,7 @@
                 } catch (e) {}
             }
             dlQueue = [];
+            saveDlQueue();
             const items = document.getElementById('dpItems');
             items.innerHTML = `<div class="dp-empty">${uiIcon('download')} <span>Queue empty - tap download on any song</span></div>`;
             renderLucideIcons(items);
@@ -11439,6 +11512,7 @@
 
         window.toggleQueuePause = () => {
             dlPaused = !dlPaused;
+            saveDlQueue();
             document.getElementById('dpPauseBtn').textContent = dlPaused ? 'Resume All' : 'Pause All';
             if (dlPaused && dlAbortController) {
                 try {
@@ -11449,8 +11523,18 @@
             showToast(dlPaused ? 'Downloads paused' : 'Downloads resumed');
         };
 
-        function addToDlQueue(song) {
+        async function addToDlQueue(song) {
             if (isDownloaded(song.file)) {
+                showToast('Already downloaded');
+                return;
+            }
+            const cached = await matchOfflineCache(song.file);
+            if (cached?.response) {
+                downloadedFiles.add(song.file);
+                downloadedSongMeta[song.file] = downloadedSongMeta[song.file] || Date.now();
+                saveDownloaded();
+                refreshVisibleSongLists();
+                updatePlayerDlBtn();
                 showToast('Already downloaded');
                 return;
             }
@@ -11473,6 +11557,7 @@
                 errorMessage: ''
             };
             dlQueue.push(item);
+            saveDlQueue();
             renderDpItem(item);
             updateDpStats();
             updateDownloadStorageStats();
@@ -11493,10 +11578,11 @@
             next.rateBps = 0;
             next.etaSec = 0;
             next.errorMessage = '';
+            saveDlQueue();
             renderDpItem(next);
             updateDpStats();
             try {
-                const url = 'songs/' + next.song.file;
+                const url = normalizeCachePath(next.song.file);
                 let cache;
                 try {
                     cache = await caches.open(CACHE_NAME);
@@ -11566,6 +11652,7 @@
                 next.progress = 100;
                 next.etaSec = 0;
                 next.rateBps = 0;
+                saveDlQueue();
                 renderDpItem(next);
                 updateDpStats();
                 updateDownloadStorageStats();
@@ -11581,6 +11668,7 @@
                         setTimeout(() => el.remove(), 400);
                     }
                     dlQueue = dlQueue.filter(i => i.id !== next.id);
+                    saveDlQueue();
                     updateDpStats();
                     updateDownloadStorageStats();
                 }, 3000);
@@ -11597,6 +11685,7 @@
                     console.error('DL error:', err);
                 }
                 renderDpItem(next);
+                saveDlQueue();
                 updateDpStats();
             }
             dlAbortController = null;
@@ -11635,6 +11724,7 @@
             crossfadeAutoArmed = false,
             crossfadeTransitionActive = false,
             crossfadePauseSuppressUntil = 0;
+        let pageFrozen = false;
         let queuePanelOpen = false,
             modalCallback = null,
             currentPlaylistId = null;
@@ -12028,15 +12118,17 @@
         }
 
         async function getAudioSrc(filePath) {
+            const normalized = normalizeCachePath(filePath);
             try {
-                const cache = await caches.open(CACHE_NAME);
-                const match = await cache.match(filePath);
-                if (match) {
-                    const blob = await match.blob();
+                const cached = await matchOfflineCache(normalized);
+                if (cached?.response) {
+                    const blob = await cached.response.blob();
                     return URL.createObjectURL(blob);
                 }
-            } catch (e) {}
-            return filePath;
+            } catch (e) {
+                console.warn('Offline cache lookup failed:', e);
+            }
+            return normalized;
         }
 
         let activeAudioObjectUrl = '';
@@ -12055,8 +12147,13 @@
 
         async function removeCachedSong(fileId) {
             try {
-                const cache = await caches.open(CACHE_NAME);
-                await cache.delete('songs/' + fileId);
+                const keys = cacheRequestCandidates(fileId);
+                for (const name of [CACHE_NAME, ...LEGACY_CACHE_NAMES]) {
+                    try {
+                        const cache = await caches.open(name);
+                        await Promise.all(keys.map((key) => cache.delete(key)));
+                    } catch (e) {}
+                }
             } catch (e) {}
             downloadedFiles.delete(fileId);
             delete downloadedSongMeta[fileId];
@@ -12148,7 +12245,7 @@
         }
 
         window.playDlSong = (i) => { if (!window.__dlSongs) return; currentSongs = window.__dlSongs; currentArtistKey = null; currentIndex = i; playSong(i,true); };
-        window.clearAllDownloads = async () => { if (!confirm('Remove all downloads?')) return; try { await caches.delete(CACHE_NAME); downloadedFiles.clear(); downloadedSongMeta = {}; saveDownloaded(); refreshVisibleSongLists(); updatePlayerDlBtn(); showToast('All downloads cleared'); showDownloads(); } catch(e) { showToast('Error clearing cache'); } };
+        window.clearAllDownloads = async () => { if (!confirm('Remove all downloads?')) return; try { await Promise.all([CACHE_NAME, ...LEGACY_CACHE_NAMES].map((name) => caches.delete(name))); downloadedFiles.clear(); downloadedSongMeta = {}; saveDownloaded(); refreshVisibleSongLists(); updatePlayerDlBtn(); showToast('All downloads cleared'); showDownloads(); } catch(e) { showToast('Error clearing cache'); } };
 
         // -- PLAYLISTS --
         function saveSongPlayCounts() {
@@ -12579,6 +12676,18 @@
             return isMuted ? 0 : (parseFloat(volumeSlider.value) || 1);
         }
 
+        function isBackgroundPlayback() {
+            return document.hidden || pageFrozen;
+        }
+
+        function resumeAudioContext(reason = 'playback') {
+            if (!visualizerCtx || visualizerCtx.state !== 'suspended' || audio.paused) return Promise.resolve(false);
+            return visualizerCtx.resume().then(() => true).catch((err) => {
+                console.warn('AudioContext resume failed:', reason, err);
+                return false;
+            });
+        }
+
         function stopCrossfadeTimers() {
             if (crossfadeTimer) {
                 cancelAnimationFrame(crossfadeTimer);
@@ -12591,6 +12700,11 @@
         }
 
         function animateAudioVolume(mediaEl, from, to, durationMs, onComplete) {
+            if (isBackgroundPlayback()) {
+                mediaEl.volume = to;
+                if (onComplete) window.setTimeout(onComplete, Math.max(80, durationMs || 0));
+                return 0;
+            }
             const start = performance.now();
             const duration = Math.max(80, durationMs || 0);
             const step = (now) => {
@@ -12681,6 +12795,8 @@
             if (shouldCrossfade) crossfadePauseSuppressUntil = performance.now() + 350;
             setPrimaryAudioSource(src, !shouldCrossfade);
             audio.volume = shouldCrossfade ? 0 : targetVol;
+            setupVisualizer();
+            resumeAudioContext('song-change');
             posterEl.src = song.poster;
             playerTitle.textContent = song.title;
             const artistKey = currentArtistKey || Object.keys(artists).find((k) => artists[k].songs === currentSongs);
@@ -12690,6 +12806,7 @@
             updatePlayerLikeBtn(song.file);
             updatePlayerDlBtn();
             audio.play().then(() => {
+                resumeAudioContext('song-play');
                 if (!shouldCrossfade) {
                     audio.volume = targetVol;
                     return;
@@ -12766,7 +12883,7 @@
             }
         }
 
-        function togglePlay() { if(audio.paused){audio.play();setPlayButtonIcons(false);}else{audio.pause();setPlayButtonIcons(true);savePlaybackMemory();} updateNowPlayingIndicator(); }
+        function togglePlay() { if(audio.paused){audio.play().then(()=>resumeAudioContext('toggle-play')).catch(()=>{});setPlayButtonIcons(false);}else{audio.pause();setPlayButtonIcons(true);savePlaybackMemory();} updateNowPlayingIndicator(); }
 
         function next() {
             if (queue.length > 0) {
@@ -14917,6 +15034,7 @@
         });
 
         audio.addEventListener('timeupdate',()=>{ 
+            if (!audio.paused && visualizerCtx?.state === 'suspended') resumeAudioContext('timeupdate');
             const current = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
             const duration = Number.isFinite(audio.duration) ? audio.duration : 0;
             if(duration > 0){
@@ -14951,6 +15069,7 @@
             if(currentPlaylistId && document.getElementById('playlistSongsList')) updatePlaylistPlayingState(false);
             if(document.getElementById('favSongsList')) updateFavoritesPlayingState(false);
             setupVisualizer();
+            resumeAudioContext('play-event');
             if (fullPlayerOpen) startVisualizerLoop();
             setFullPlayerPlaybackState(true);
             updateFullPlayerLyrics(audio.currentTime, true);
@@ -14972,10 +15091,31 @@
             savePlaybackMemory();
             updateNowPlayingIndicator();
         });
+        audio.addEventListener('playing', () => resumeAudioContext('playing-event'));
+        audio.addEventListener('canplay', () => resumeAudioContext('canplay-event'));
         volumeSlider.addEventListener('input',()=>{ const nextVolume=+volumeSlider.value; audio.volume=nextVolume; if(audioFade.src)audioFade.volume=Math.min(audioFade.volume,nextVolume); isMuted=nextVolume===0; localStorage.setItem('eq_volume',nextVolume); });
         window.addEventListener('beforeunload',()=>savePlaybackMemory());
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) pageFrozen = false;
+            if (!audio.paused) resumeAudioContext('visibilitychange');
+        });
+        window.addEventListener('pagehide', () => {
+            if (!audio.paused) resumeAudioContext('pagehide');
+        });
+        window.addEventListener('pageshow', () => {
+            pageFrozen = false;
+            if (!audio.paused) resumeAudioContext('pageshow');
+        });
+        document.addEventListener('freeze', () => {
+            pageFrozen = true;
+            if (!audio.paused) resumeAudioContext('freeze');
+        });
+        document.addEventListener('resume', () => {
+            pageFrozen = false;
+            if (!audio.paused) resumeAudioContext('resume');
+        });
 
-        if('mediaSession' in navigator){ navigator.mediaSession.setActionHandler('play',()=>audio.play()); navigator.mediaSession.setActionHandler('pause',()=>audio.pause()); navigator.mediaSession.setActionHandler('nexttrack',()=>next()); navigator.mediaSession.setActionHandler('previoustrack',()=>previous()); navigator.mediaSession.setActionHandler('seekto',(d)=>{if(d.seekTime)audio.currentTime=d.seekTime;}); }
+        if('mediaSession' in navigator){ navigator.mediaSession.setActionHandler('play',()=>audio.play().then(()=>resumeAudioContext('media-session-play')).catch(()=>{})); navigator.mediaSession.setActionHandler('pause',()=>audio.pause()); navigator.mediaSession.setActionHandler('nexttrack',()=>next()); navigator.mediaSession.setActionHandler('previoustrack',()=>previous()); navigator.mediaSession.setActionHandler('seekto',(d)=>{if(d.seekTime)audio.currentTime=d.seekTime;}); }
 
         window.openMobileDrawer = () => {
             if (!mobileDrawer || !mobileDrawerBackdrop) return;
@@ -15351,6 +15491,20 @@
         }
         document.addEventListener('DOMContentLoaded', setupMobileNav);
 
+        function registerFalconServiceWorker() {
+            if (!('serviceWorker' in navigator)) return;
+            const register = () => {
+                navigator.serviceWorker.register('sw.js').then((registration) => {
+                    if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    registration.update().catch(() => {});
+                }).catch((err) => {
+                    console.warn('Service worker registration failed:', err);
+                });
+            };
+            if (document.readyState === 'complete') register();
+            else window.addEventListener('load', register, { once: true });
+        }
+
         window.playSong = playSong; window.next = next; window.previous = previous; window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
         window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue; window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
         window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch; window.toggleEqPanel = () => renderAudioPage(); window.setEqMode = (mode) => applyAudioPreset(mode.charAt(0).toUpperCase() + mode.slice(1));
@@ -15363,11 +15517,14 @@
         loadPlaybackMemory();
         syncLyricsPanelShell();
         if (lyricsPanelOpen) loadLyricsPanel(currentSong);
+        loadDlQueue();
+        dlQueue.forEach((item) => renderDpItem(item));
         renderQueuePanel();
         setupQueuePanelInteractions();
         setupSongRowSwipeGestures();
         updateQueueIndicators();
         updateDpStats();
+        if (dlQueue.some((item) => item.status === 'queued') && !dlPaused) processQueue();
         if (currentSong) updateAmbientFromSong(currentSong);
         registerFalconServiceWorker();
 
