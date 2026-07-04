@@ -10871,9 +10871,15 @@
         const CACHE_NAME = 'falcon-offline-v3';
         const LEGACY_CACHE_NAMES = ['falcon-offline-v2'];
         const SONG_CACHE_PREFIX = 'songs/';
+        const NETWORK_STATE_KEY = 'falcon_network_state_v1';
         let downloadedFiles = new Set();
         let downloadedSongMeta = {};
         let songDurationMeta = {};
+        let networkState = {
+            online: navigator.onLine !== false,
+            offlineOnly: false,
+            lastToastAt: 0
+        };
 
         function normalizeCachePath(path = '') {
             const raw = String(path || '').replace(/\\/g, '/').replace(/^\.?\//, '');
@@ -10905,6 +10911,30 @@
                 } catch (e) {}
             }
             return null;
+        }
+
+        async function ensureSongPlayable(song) {
+            if (!song?.file) return { playable: false, reason: 'missing' };
+            const cached = await matchOfflineCache(song.file);
+            if (cached?.response) {
+                if (!downloadedFiles.has(song.file)) {
+                    downloadedFiles.add(song.file);
+                    downloadedSongMeta[song.file] = downloadedSongMeta[song.file] || Date.now();
+                    saveDownloaded();
+                }
+                return { playable: true, offline: true };
+            }
+            if (canUseNetwork()) return { playable: true, offline: false };
+            return { playable: false, reason: networkState.offlineOnly ? 'offline-only' : 'offline' };
+        }
+
+        function findNextDownloadedIndex(startIndex = 0) {
+            if (!Array.isArray(currentSongs) || !currentSongs.length) return -1;
+            for (let offset = 1; offset <= currentSongs.length; offset += 1) {
+                const index = (startIndex + offset) % currentSongs.length;
+                if (isDownloaded(currentSongs[index]?.file)) return index;
+            }
+            return -1;
         }
 
         function loadDownloaded() {
@@ -10947,6 +10977,26 @@
             return downloadedFiles.has(f);
         }
         loadDownloaded();
+
+        function loadNetworkState() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(NETWORK_STATE_KEY) || '{}');
+                networkState.offlineOnly = !!saved.offlineOnly;
+            } catch (e) {}
+            networkState.online = navigator.onLine !== false;
+        }
+
+        function saveNetworkState() {
+            try {
+                localStorage.setItem(NETWORK_STATE_KEY, JSON.stringify({ offlineOnly: !!networkState.offlineOnly }));
+            } catch (e) {}
+        }
+
+        loadNetworkState();
+
+        function canUseNetwork() {
+            return networkState.online && !networkState.offlineOnly;
+        }
 
         function saveSongDurationMeta() {
             try {
@@ -11359,11 +11409,33 @@
                     lastTickAt: 0,
                     rateBps: 0,
                     etaSec: 0,
+                    retryCount: Number(item.retryCount) || 0,
+                    retryAt: Number(item.retryAt) || 0,
                     errorMessage: typeof item.errorMessage === 'string' ? item.errorMessage : ''
                 }));
             } catch (e) {
                 dlQueue = [];
             }
+        }
+
+        function scheduleDownloadRetry(item, err) {
+            const retryCount = (Number(item.retryCount) || 0) + 1;
+            item.retryCount = retryCount;
+            item.status = 'queued';
+            item.progress = Math.max(0, Math.min(item.progress || 0, 95));
+            item.rateBps = 0;
+            item.etaSec = 0;
+            item.errorMessage = '';
+            const delay = Math.min(30000, 1500 * Math.pow(2, Math.min(retryCount - 1, 4)));
+            item.retryAt = Date.now() + delay;
+            saveDlQueue();
+            renderDpItem(item);
+            updateDpStats();
+            window.setTimeout(() => {
+                if (!dlBusy && !dlPaused && canUseNetwork()) processQueue();
+            }, delay + 80);
+            if (retryCount === 1) showToast('Network interrupted. Retrying download...');
+            console.warn('Download retry scheduled:', err);
         }
 
         function queueStats() {
