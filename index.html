@@ -2550,10 +2550,31 @@
             box-shadow: -18px 0 52px rgba(0, 0, 0, .55);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
+            visibility: hidden;
+            pointer-events: none;
         }
         
         .queue-panel.open {
-            transform: translateX(0)
+            transform: translateX(0);
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .queue-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .45);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .24s ease, visibility .24s ease;
+            z-index: 490;
+            pointer-events: none;
+        }
+
+        .queue-backdrop.open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
         }
         
         .qp-header {
@@ -6871,7 +6892,7 @@
                 top: auto;
                 left: 0;
                 right: 0;
-                bottom: calc(var(--mobile-nav-h) + var(--safe-bottom));
+                bottom: calc(var(--mobile-nav-h) + var(--mobile-player-h) + var(--safe-bottom) + 12px);
                 width: 100%;
                 max-height: min(72vh, 620px);
                 border-left: none;
@@ -6883,6 +6904,8 @@
 
             .queue-panel.open {
                 transform: translateY(0);
+                visibility: visible;
+                pointer-events: auto;
             }
 
             .mini-player {
@@ -9011,8 +9034,10 @@
             /* Appearance panel styles - inserted for theme controls */
             .appearance-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.48);backdrop-filter:blur(4px);z-index:120;display:none;opacity:0;transition:opacity .22s ease}
             .appearance-backdrop.open{display:block;opacity:1}
-            .appearance-panel{position:fixed;left:0;right:0;bottom:0;background:var(--glass-bg);color:var(--text);z-index:125;border-top-left-radius:16px;border-top-right-radius:16px;max-height:86vh;padding:12px 12px 20px;box-shadow:0 -18px 40px rgba(0,0,0,.5);transform:translateY(100%);transition:transform .28s cubic-bezier(.22,1,.36,1);overflow:auto}
-            .appearance-panel.open{transform:translateY(0)}
+            .appearance-panel{position:fixed;left:0;right:0;bottom:0;background:var(--glass-bg);color:var(--text);z-index:125;border-top-left-radius:16px;border-top-right-radius:16px;max-height:86vh;padding:12px 12px 20px;box-shadow:0 -18px 40px rgba(0,0,0,.5);transform:translateY(100%);opacity:0;transition:transform .28s cubic-bezier(.22,1,.36,1),opacity .22s ease;overflow:auto}
+            .appearance-panel.open{transform:translateY(0);opacity:1}
+            .appearance-panel.desktop-modal{left:50%;top:50%;bottom:auto;right:auto;transform:translate(-50%,-50%) scale(.92);max-width:520px;width:min(520px,calc(100% - 40px));border-radius:20px;padding:20px;box-shadow:0 28px 80px rgba(0,0,0,.45);background:rgba(10,10,15,.95);border:1px solid rgba(255,255,255,.08);}
+            .appearance-panel.desktop-modal.open{transform:translate(-50%,-50%) scale(1);opacity:1}
             .appearance-panel .ap-head{display:flex;align-items:center;gap:12px;padding:8px 6px 12px}
             .appearance-panel .ap-title{font-weight:800;font-size:1.05rem}
             .appearance-panel .ap-close{margin-left:auto;background:none;border:none;color:var(--text);font-size:1.1rem;padding:8px;cursor:pointer}
@@ -9028,15 +9053,14 @@
             .ap-switch .dot{position:absolute;left:4px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .18s ease,background .18s}
             .ap-switch.on{background:linear-gradient(90deg,var(--accent),var(--accent2))}
             .ap-switch.on .dot{left:20px;background:#fff}
-            /* Desktop modal variant */
-            @media(min-width:769px){
-                .appearance-panel{left:50%;top:50%;bottom:auto;right:auto;transform:translate(-50%,-50%) scale(.98);max-width:760px;width:min(92%,760px);border-radius:14px;padding:18px;box-shadow:0 26px 60px rgba(0,0,0,.55)}
-                .appearance-panel.open{transform:translate(-50%,-50%) scale(1)}
-            }
             /* Toggle helpers */
             .no-blur .app-header,.no-blur .sidebar,.no-blur .featured-hero{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
             .no-animations *{transition:none!important;animation:none!important}
             .dynamic-album .artist-card img{box-shadow:0 10px 28px rgba(var(--ambient-rgb),.18)}
+                /* Desktop more-button dropdown */
+                .desktop-menu-dropdown{position:fixed;z-index:140;background:var(--surface);border:1px solid rgba(255,255,255,.06);box-shadow:0 12px 30px rgba(0,0,0,.45);border-radius:10px;overflow:hidden}
+                .desktop-menu-dropdown button{display:block;padding:10px 14px;background:none;border:none;color:var(--text);width:100%;text-align:left;cursor:pointer}
+                .desktop-menu-dropdown button:hover{background:rgba(255,255,255,.03)}
             </style>
 </head>
 
@@ -9167,6 +9191,9 @@
             </button>
             <button class="topbar-icon-btn desktop-queue-btn" onclick="toggleQueuePanel()" title="Queue" aria-label="Queue">
                 <i data-lucide="list-music" aria-hidden="true"></i>
+            </button>
+            <button class="topbar-icon-btn desktop-more-btn" onclick="showDesktopMenu(event)" title="More" aria-label="More">
+                <i data-lucide="more-vertical" aria-hidden="true"></i>
             </button>
         </div>
 
@@ -9340,6 +9367,7 @@
         </div>
         <div class="qp-body" id="queuePanelBody"></div>
     </div>
+    <div id="queueBackdrop" class="queue-backdrop" onclick="closeQueuePanel()" aria-hidden="true"></div>
 
     <div class="lyrics-panel-backdrop" id="lyricsPanelBackdrop" onclick="closeLyricsPanel()"></div>
     <aside class="lyrics-panel" id="lyricsPanel" aria-hidden="true" aria-label="Lyrics panel">
@@ -9644,8 +9672,8 @@
             function loadSettings(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaults; }catch(e){ return defaults; } }
 
             // Open/close
-            window.openAppearance = function(){ const bp = $('#appearanceBackdrop'); const panel = $('#appearancePanel'); if(!bp||!panel) return; bp.classList.add('open'); panel.classList.add('open'); bp.setAttribute('aria-hidden','false'); panel.setAttribute('aria-hidden','false'); }
-            window.closeAppearance = function(){ const bp = $('#appearanceBackdrop'); const panel = $('#appearancePanel'); if(!bp||!panel) return; bp.classList.remove('open'); panel.classList.remove('open'); bp.setAttribute('aria-hidden','true'); panel.setAttribute('aria-hidden','true'); }
+            window.openAppearance = function(){ const bp = $('#appearanceBackdrop'); const panel = $('#appearancePanel'); if(!bp||!panel) return; bp.classList.add('open'); panel.classList.add('open'); panel.classList.toggle('desktop-modal', window.innerWidth >= 769); bp.setAttribute('aria-hidden','false'); panel.setAttribute('aria-hidden','false'); }
+            window.closeAppearance = function(){ const bp = $('#appearanceBackdrop'); const panel = $('#appearancePanel'); if(!bp||!panel) return; bp.classList.remove('open'); panel.classList.remove('open'); panel.classList.remove('desktop-modal'); bp.setAttribute('aria-hidden','true'); panel.setAttribute('aria-hidden','true'); }
 
             // Reset
             window.resetAppearance = function(){ localStorage.removeItem(STORAGE_KEY); applySettings(defaults); }
@@ -13363,6 +13391,25 @@
         document.addEventListener('click',e=>{ if(openDropdownEl&&!openDropdownEl.contains(e.target))closeDropdown(); });
         window.closeDropdown = closeDropdown;
 
+        // Desktop 'more' menu that includes Appearance
+        window.showDesktopMenu = (e) => {
+            e.stopPropagation(); closeDropdown();
+            const btn = e.currentTarget || e.target;
+            const rect = btn.getBoundingClientRect();
+            const dd = document.createElement('div');
+            dd.className = 'desktop-menu-dropdown';
+            dd.style.top = (rect.bottom + 8) + 'px';
+            dd.style.left = Math.max(8, rect.right - 160) + 'px';
+            dd.innerHTML = `
+                <button onclick="openAppearance();closeDropdown()">Appearance</button>
+                <button onclick="closeDropdown();showDownloads()">Downloads</button>
+                <button onclick="closeDropdown();showPlaylists()">Playlists</button>
+            `;
+            document.body.appendChild(dd);
+            renderLucideIcons(dd);
+            openDropdownEl = dd;
+        };
+
         function buildSidebar() { const sb=document.getElementById('sidebarArtists'); sb.innerHTML=''; for(let key in artists){ const a=artists[key]; sb.innerHTML+=`<div class="artist-item" id="sb_${key}" onclick="openArtist('${key}')"><img src="${a.image}" onerror="this.style.background='#282828'"><span class="artist-item-name">${a.name}</span></div>`; } }
 
      
@@ -14134,16 +14181,72 @@
         function toggleMute() { if(isMuted){audio.volume=prevVol;volumeSlider.value=prevVol;isMuted=false;}else{prevVol=audio.volume||1;audio.volume=0;volumeSlider.value=0;isMuted=true;} }
         function toggleQueuePanel() {
             queuePanelOpen = !queuePanelOpen;
-            document.getElementById('queuePanel').classList.toggle('open', queuePanelOpen);
+            const panel = document.getElementById('queuePanel');
+            const backdrop = document.getElementById('queueBackdrop');
+            panel.classList.toggle('open', queuePanelOpen);
             document.getElementById('queueToggleBtn').classList.toggle('active', queuePanelOpen);
             document.getElementById('queueToggleBtn')?.setAttribute('aria-expanded', String(queuePanelOpen));
-            document.getElementById('queuePanel')?.setAttribute('aria-hidden', String(!queuePanelOpen));
+            panel?.setAttribute('aria-hidden', String(!queuePanelOpen));
+            if (backdrop) {
+                backdrop.classList.toggle('open', queuePanelOpen);
+                backdrop.setAttribute('aria-hidden', String(!queuePanelOpen));
+            }
             if (fsQueueBtn) fsQueueBtn.classList.toggle('active', queuePanelOpen);
             if (queuePanelOpen) {
                 renderQueuePanel();
                 setupQueuePanelInteractions();
+                bindQueueSheetSwipe();
+            } else {
+                const panelStyle = panel?.style;
+                if (panelStyle) panelStyle.transform = '';
             }
             updateQueueIndicators();
+        }
+
+        function closeQueuePanel() {
+            if (!queuePanelOpen) return;
+            toggleQueuePanel();
+        }
+
+        function bindQueueSheetSwipe() {
+            const panel = document.getElementById('queuePanel');
+            if (!panel || panel.dataset.sheetBound === '1') return;
+            panel.dataset.sheetBound = '1';
+            let swipeStartY = 0;
+            let swipeActive = false;
+            let currentTranslate = 0;
+            const threshold = 96;
+            const onTouchStart = (e) => {
+                if (window.innerWidth > 768) return;
+                if (!queuePanelOpen) return;
+                if (!e.touches || e.touches.length !== 1) return;
+                swipeStartY = e.touches[0].clientY;
+                currentTranslate = 0;
+                swipeActive = true;
+            };
+            const onTouchMove = (e) => {
+                if (!swipeActive || !queuePanelOpen || !e.touches || e.touches.length !== 1) return;
+                const deltaY = e.touches[0].clientY - swipeStartY;
+                if (deltaY <= 0) return;
+                e.preventDefault();
+                currentTranslate = deltaY;
+                panel.style.transition = 'none';
+                panel.style.transform = `translateY(${deltaY}px)`;
+            };
+            const onTouchEnd = () => {
+                if (!swipeActive) return;
+                swipeActive = false;
+                panel.style.transition = '';
+                if (currentTranslate >= threshold || currentTranslate > panel.offsetHeight * 0.35) {
+                    closeQueuePanel();
+                } else {
+                    panel.style.transform = '';
+                }
+            };
+            panel.addEventListener('touchstart', onTouchStart, { passive: true });
+            panel.addEventListener('touchmove', onTouchMove, { passive: false });
+            panel.addEventListener('touchend', onTouchEnd, { passive: true });
+            panel.addEventListener('touchcancel', onTouchEnd, { passive: true });
         }
 
         function renderQueuePanel() {
@@ -16879,6 +16982,7 @@
             if (lyricsPanelOpen) closeLyricsPanel();
             if (fullPlayerOpen) closeFullPlayer();
             if (mobileDrawer?.classList.contains('open')) closeMobileDrawer();
+            if (queuePanelOpen) closeQueuePanel();
         });
     </script>
 
