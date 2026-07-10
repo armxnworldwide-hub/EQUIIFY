@@ -9008,6 +9008,35 @@
             .audio-suite-container {
                 padding: 20px 14px;
             }
+            /* Appearance panel styles - inserted for theme controls */
+            .appearance-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.48);backdrop-filter:blur(4px);z-index:120;display:none;opacity:0;transition:opacity .22s ease}
+            .appearance-backdrop.open{display:block;opacity:1}
+            .appearance-panel{position:fixed;left:0;right:0;bottom:0;background:var(--glass-bg);color:var(--text);z-index:125;border-top-left-radius:16px;border-top-right-radius:16px;max-height:86vh;padding:12px 12px 20px;box-shadow:0 -18px 40px rgba(0,0,0,.5);transform:translateY(100%);transition:transform .28s cubic-bezier(.22,1,.36,1);overflow:auto}
+            .appearance-panel.open{transform:translateY(0)}
+            .appearance-panel .ap-head{display:flex;align-items:center;gap:12px;padding:8px 6px 12px}
+            .appearance-panel .ap-title{font-weight:800;font-size:1.05rem}
+            .appearance-panel .ap-close{margin-left:auto;background:none;border:none;color:var(--text);font-size:1.1rem;padding:8px;cursor:pointer}
+            .appearance-sections{padding:6px 6px 18px;display:grid;gap:12px}
+            .ap-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+            .ap-label{font-weight:700;color:var(--text2);font-size:.78rem;margin-bottom:6px}
+            .ap-swatch{width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.06);cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.26);display:inline-flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s}
+            .ap-swatch:hover{transform:translateY(-4px)}
+            .ap-swatch.active{outline:3px solid rgba(255,255,255,.06);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+            .ap-radio{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,.03);cursor:pointer}
+            .ap-toggle{display:inline-flex;align-items:center;gap:8px}
+            .ap-switch{width:44px;height:26px;background:rgba(255,255,255,.08);border-radius:999px;position:relative;cursor:pointer}
+            .ap-switch .dot{position:absolute;left:4px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .18s ease,background .18s}
+            .ap-switch.on{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+            .ap-switch.on .dot{left:20px;background:#fff}
+            /* Desktop modal variant */
+            @media(min-width:769px){
+                .appearance-panel{left:50%;top:50%;bottom:auto;right:auto;transform:translate(-50%,-50%) scale(.98);max-width:760px;width:min(92%,760px);border-radius:14px;padding:18px;box-shadow:0 26px 60px rgba(0,0,0,.55)}
+                .appearance-panel.open{transform:translate(-50%,-50%) scale(1)}
+            }
+            /* Toggle helpers */
+            .no-blur .app-header,.no-blur .sidebar,.no-blur .featured-hero{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+            .no-animations *{transition:none!important;animation:none!important}
+            .dynamic-album .artist-card img{box-shadow:0 10px 28px rgba(var(--ambient-rgb),.18)}
             </style>
 </head>
 
@@ -9433,6 +9462,7 @@
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showStatsDashboard()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
+            <button class="mobile-drawer-link" onclick="closeMobileDrawer();openAppearance()"><i data-lucide="sun" aria-hidden="true"></i><span>Appearance</span></button>
         </div>
     </aside>
 
@@ -9444,6 +9474,66 @@
             <div class="modal-actions">
                 <button class="modal-cancel" onclick="closeModal()">Cancel</button>
                 <button class="modal-confirm" id="modalConfirm" onclick="confirmModal()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appearance Panel -->
+    <div id="appearanceBackdrop" class="appearance-backdrop" onclick="closeAppearance()" aria-hidden="true"></div>
+    <div id="appearancePanel" class="appearance-panel" aria-hidden="true">
+        <div class="ap-head">
+            <div class="ap-title">Appearance</div>
+            <button class="ap-close" onclick="closeAppearance()" aria-label="Close">✕</button>
+        </div>
+        <div class="appearance-sections">
+            <div>
+                <div class="ap-label">THEME</div>
+                <div class="ap-row" id="apThemeModes">
+                    <label class="ap-radio"><input type="radio" name="ap-mode" value="light"> ☀️ Light Mode</label>
+                    <label class="ap-radio"><input type="radio" name="ap-mode" value="dark"> 🌙 Dark Mode</label>
+                    <label class="ap-radio"><input type="radio" name="ap-mode" value="amoled"> ⚫ AMOLED Black</label>
+                </div>
+            </div>
+
+            <div>
+                <div class="ap-label">COLOR THEMES</div>
+                <div class="ap-row" id="apThemes">
+                    <button class="ap-swatch" data-theme="green" title="Falcon Green" style="background:linear-gradient(180deg,#c8f542,#9fd02a)"></button>
+                    <button class="ap-swatch" data-theme="blue" title="Ocean Blue" style="background:linear-gradient(180deg,#4e9cff,#3b7be0)"></button>
+                    <button class="ap-swatch" data-theme="purple" title="Royal Purple" style="background:linear-gradient(180deg,#a45fff,#7b3fd6)"></button>
+                    <button class="ap-swatch" data-theme="red" title="Crimson Red" style="background:linear-gradient(180deg,#ff6b6b,#d94a4a)"></button>
+                    <button class="ap-swatch" data-theme="gold" title="Gold" style="background:linear-gradient(180deg,#ffd166,#e6b800)"></button>
+                    <button class="ap-swatch" data-theme="orange" title="Sunset Orange" style="background:linear-gradient(180deg,#ff9248,#ff6a24)"></button>
+                    <button class="ap-swatch" data-theme="pink" title="Rose Pink" style="background:linear-gradient(180deg,#ff9ac2,#ff6fa8)"></button>
+                </div>
+            </div>
+
+            <div>
+                <div class="ap-label">ACCENT COLORS</div>
+                <div class="ap-row" id="apAccents">
+                    <button class="ap-swatch" data-accent="#c8f542" title="Green" style="background:#c8f542"></button>
+                    <button class="ap-swatch" data-accent="#4e9cff" title="Blue" style="background:#4e9cff"></button>
+                    <button class="ap-swatch" data-accent="#a45fff" title="Purple" style="background:#a45fff"></button>
+                    <button class="ap-swatch" data-accent="#ff6b6b" title="Red" style="background:#ff6b6b"></button>
+                    <button class="ap-swatch" data-accent="#ff9248" title="Orange" style="background:#ff9248"></button>
+                    <button class="ap-swatch" data-accent="#ffd166" title="Gold" style="background:#ffd166"></button>
+                    <button class="ap-swatch" data-accent="#ffffff" title="White" style="background:#ffffff;border:1px solid #ccc"></button>
+                </div>
+            </div>
+
+            <div>
+                <div class="ap-label">DISPLAY OPTIONS</div>
+                <div class="ap-row" id="apDisplayOptions">
+                    <div class="ap-toggle"><div>Dynamic Album Colors</div><div class="ap-switch" data-key="dynamicAlbum"><div class="dot"></div></div></div>
+                    <div class="ap-toggle"><div>Blur Effects</div><div class="ap-switch" data-key="blurEffects"><div class="dot"></div></div></div>
+                    <div class="ap-toggle"><div>UI Animations</div><div class="ap-switch" data-key="animations"><div class="dot"></div></div></div>
+                    <div class="ap-toggle"><div>Glass Effect</div><div class="ap-switch" data-key="glass"><div class="dot"></div></div></div>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;padding-top:8px">
+                <button class="btn" onclick="resetAppearance()">Reset</button>
+                <button class="btn btn-accent" onclick="closeAppearance()">Done</button>
             </div>
         </div>
     </div>
@@ -9479,6 +9569,109 @@
         if(mobileLoginBtn)mobileLoginBtn.style.display="flex"; if(mobileUserBtn)mobileUserBtn.style.display="none"; syncDot.className="sync-dot"; syncLabel.textContent="Offline"; } });
     </script>
     <script>
+        // Appearance system: themes, accents, toggles, persistence
+        (function(){
+            const STORAGE_KEY = 'appearance_settings_v1';
+            const defaults = { mode: 'dark', theme: 'green', accent: '#c8f542', dynamicAlbum: true, blurEffects: true, animations: true, glass: true };
+
+            function $(sel,root=document) { return root.querySelector(sel); }
+            function $all(sel,root=document){ return Array.from(root.querySelectorAll(sel)); }
+
+            function applySettings(s){
+                const set = Object.assign({}, defaults, s);
+                // Mode palettes
+                if(set.mode==='light'){
+                    document.documentElement.style.setProperty('--bg','#f7f8fb');
+                    document.documentElement.style.setProperty('--bg2','#f2f3f6');
+                    document.documentElement.style.setProperty('--surface','#ffffff');
+                    document.documentElement.style.setProperty('--surface2','#fbfbfd');
+                    document.documentElement.style.setProperty('--surface3','#f0f0f0');
+                    document.documentElement.style.setProperty('--text','#0a0a0a');
+                    document.documentElement.style.setProperty('--text2','#505050');
+                } else if(set.mode==='amoled'){
+                    document.documentElement.style.setProperty('--bg','#000000');
+                    document.documentElement.style.setProperty('--bg2','#050505');
+                    document.documentElement.style.setProperty('--surface','#0a0a0a');
+                    document.documentElement.style.setProperty('--surface2','#0d0d0d');
+                    document.documentElement.style.setProperty('--surface3','#111111');
+                    document.documentElement.style.setProperty('--text','#eaeaea');
+                    document.documentElement.style.setProperty('--text2','#9b9b9b');
+                } else {
+                    // dark
+                    document.documentElement.style.setProperty('--bg','#0a0a0a');
+                    document.documentElement.style.setProperty('--bg2','#121212');
+                    document.documentElement.style.setProperty('--surface','#181818');
+                    document.documentElement.style.setProperty('--surface2','#1f1f1f');
+                    document.documentElement.style.setProperty('--surface3','#282828');
+                    document.documentElement.style.setProperty('--text','#ffffff');
+                    document.documentElement.style.setProperty('--text2','#b3b3b3');
+                }
+
+                // Theme palettes
+                const themeMap = {
+                    green: {accent:'#c8f542',accent2:'#9fd02a',ambient:'200,245,66'},
+                    blue: {accent:'#4e9cff',accent2:'#3b7be0',ambient:'78,156,255'},
+                    purple: {accent:'#a45fff',accent2:'#7b3fd6',ambient:'164,95,255'},
+                    red: {accent:'#ff6b6b',accent2:'#d94a4a',ambient:'255,107,107'},
+                    gold: {accent:'#ffd166',accent2:'#e6b800',ambient:'255,209,102'},
+                    orange: {accent:'#ff9248',accent2:'#ff6a24',ambient:'255,146,72'},
+                    pink: {accent:'#ff9ac2',accent2:'#ff6fa8',ambient:'255,154,194'}
+                };
+                const t = themeMap[set.theme] || themeMap.green;
+                document.documentElement.style.setProperty('--accent', set.accent || t.accent);
+                document.documentElement.style.setProperty('--accent2', t.accent2);
+                document.documentElement.style.setProperty('--accent-glow', (set.accent || t.accent) + '22');
+                document.documentElement.style.setProperty('--ambient-rgb', t.ambient);
+
+                // Accent override if user chooses a specific color
+                if(set.accent){ document.documentElement.style.setProperty('--accent', set.accent); }
+
+                // Toggles
+                if(set.blurEffects) document.body.classList.remove('no-blur'); else document.body.classList.add('no-blur');
+                if(set.animations) document.body.classList.remove('no-animations'); else document.body.classList.add('no-animations');
+                if(set.dynamicAlbum) document.body.classList.add('dynamic-album'); else document.body.classList.remove('dynamic-album');
+                if(set.glass) document.body.classList.remove('no-glass'); else document.body.classList.add('no-glass');
+
+                // Update UI controls
+                $all('[name="ap-mode"]').forEach(r=>r.checked=(r.value===set.mode));
+                $all('.ap-swatch[data-theme]').forEach(b=>b.classList.toggle('active', b.dataset.theme===set.theme));
+                $all('.ap-swatch[data-accent]').forEach(b=>b.classList.toggle('active', (b.dataset.accent||'').toLowerCase() === (set.accent||'').toLowerCase()));
+                $all('.ap-switch').forEach(el=>{ const key=el.dataset.key; const on = !!set[key]; el.classList.toggle('on', on); });
+
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(set));
+            }
+
+            function loadSettings(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaults; }catch(e){ return defaults; } }
+
+            // Open/close
+            window.openAppearance = function(){ const bp = $('#appearanceBackdrop'); const panel = $('#appearancePanel'); if(!bp||!panel) return; bp.classList.add('open'); panel.classList.add('open'); bp.setAttribute('aria-hidden','false'); panel.setAttribute('aria-hidden','false'); }
+            window.closeAppearance = function(){ const bp = $('#appearanceBackdrop'); const panel = $('#appearancePanel'); if(!bp||!panel) return; bp.classList.remove('open'); panel.classList.remove('open'); bp.setAttribute('aria-hidden','true'); panel.setAttribute('aria-hidden','true'); }
+
+            // Reset
+            window.resetAppearance = function(){ localStorage.removeItem(STORAGE_KEY); applySettings(defaults); }
+
+            // Wire up controls
+            document.addEventListener('click', (e)=>{
+                const t = e.target;
+                if(!t) return;
+                // swatches: themes
+                const themeBtn = t.closest('.ap-swatch[data-theme]');
+                if(themeBtn){ const current = loadSettings(); current.theme = themeBtn.dataset.theme; applySettings(current); return; }
+                const accentBtn = t.closest('.ap-swatch[data-accent]');
+                if(accentBtn){ const current = loadSettings(); current.accent = accentBtn.dataset.accent; applySettings(current); return; }
+                const radio = t.closest('label.ap-radio');
+                if(radio && radio.querySelector('input[name="ap-mode"]')){
+                    const val = radio.querySelector('input[name="ap-mode"]').value; const current=loadSettings(); current.mode=val; applySettings(current); return;
+                }
+                const sw = t.closest('.ap-switch');
+                if(sw){ const k = sw.dataset.key; const s = loadSettings(); s[k] = !s[k]; applySettings(s); return; }
+            }, true);
+
+            // Initialize on load
+            document.addEventListener('DOMContentLoaded', ()=>{
+                const s = loadSettings(); applySettings(s);
+            });
+        })();
         const splashEl = document.getElementById('splash');
         const splashMessageEl = document.getElementById('splashMessage');
         const splashBarFillEl = document.getElementById('splashBarFill');
