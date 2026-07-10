@@ -6077,6 +6077,7 @@
                 gap: 8px;
                 border-bottom: 1px solid var(--border);
                 height: 56px;
+                position: relative;
             }
             .sidebar-logo-block {
                 background: none;
@@ -6133,7 +6134,7 @@
                 display: none;
             }
             .sync-pill {
-                display: none
+                display: none;
             }
             /* -- Mobile Back Button -- */
             .mobile-back-btn {
@@ -6151,10 +6152,10 @@
                 transition: background .15s;
             }
             .mobile-back-btn.hidden {
-                display: none !important
+                display: none !important;
             }
             .mobile-back-btn:hover {
-                background: var(--surface)
+                background: var(--surface);
             }
             .fav-mobile-btn {
                 display: flex;
@@ -6170,7 +6171,18 @@
                 border-radius: 50%;
                 transition: background .15s;
             }
+            #mobileAuthArea {
+                position: absolute;
+                top: 50%;
+                right: 12px;
+                transform: translateY(-50%);
+                display: flex;
+                align-items: center;
+                z-index: 5;
+                pointer-events: none;
+            }
             .mobile-google-signin {
+                position: relative;
                 display: flex;
                 align-items: center;
                 gap: 6px;
@@ -6187,12 +6199,16 @@
                 transition: transform .15s, box-shadow .15s;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
                 white-space: nowrap;
+                pointer-events: auto;
             }
             .mobile-google-signin:active {
-                transform: scale(.96)
+                transform: scale(.96);
+            }
+            .sidebar {
+                position: relative;
             }
             .mobile-google-signin:hover {
-                box-shadow: 0 4px 16px rgba(0, 0, 0, .4)
+                box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
             }
             .mobile-google-signin .g-icon {
                 width: 22px;
@@ -6208,12 +6224,16 @@
                 width: 14px;
                 height: 14px;
             }
+            .mobile-google-signin {
+                pointer-events: auto;
+            }
             .mobile-user-avatar-btn {
                 display: flex;
                 align-items: center;
                 gap: 0;
                 background: none;
                 border: 2px solid var(--accent);
+
                 border-radius: 50%;
                 padding: 0;
                 cursor: pointer;
@@ -6887,6 +6907,13 @@
             }
         }
         
+        .appearance-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.48);backdrop-filter:blur(4px);z-index:120;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .22s ease,visibility .22s ease}
+        .appearance-backdrop.open{visibility:visible;opacity:1;pointer-events:auto}
+        .appearance-panel{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);width:min(520px,calc(100% - 40px));max-width:520px;max-height:min(88vh,680px);background:rgba(10,10,15,.95);color:var(--text);z-index:125;border-radius:20px;padding:20px;box-shadow:0 28px 80px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.08);opacity:0;visibility:hidden;pointer-events:none;transition:transform .28s cubic-bezier(.22,1,.36,1),opacity .22s ease,visibility .22s ease;overflow:auto;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+        .appearance-panel.open{transform:translate(-50%,-50%) scale(1);opacity:1;visibility:visible;pointer-events:auto}
+        .appearance-panel.desktop-modal{left:50%;top:50%;bottom:auto;right:auto;transform:translate(-50%,-50%) scale(.92);max-width:520px;width:min(520px,calc(100% - 40px));border-radius:20px;padding:20px;box-shadow:0 28px 80px rgba(0,0,0,.45);background:rgba(10,10,15,.95);border:1px solid rgba(255,255,255,.08);}
+        .appearance-panel.desktop-modal.open{transform:translate(-50%,-50%) scale(1);opacity:1}
+
         @media (max-width: 768px) {
             .queue-panel {
                 top: auto;
@@ -9017,7 +9044,7 @@
             color: var(--text);
             font-family: 'Circular Std', sans-serif;
         }
-        
+
         @media (max-width: 768px) {
             .eq-grid {
                 grid-template-columns: repeat(5, 1fr);
@@ -9032,12 +9059,6 @@
                 padding: 20px 14px;
             }
             /* Appearance panel styles - inserted for theme controls */
-            .appearance-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.48);backdrop-filter:blur(4px);z-index:120;display:none;opacity:0;transition:opacity .22s ease}
-            .appearance-backdrop.open{display:block;opacity:1}
-            .appearance-panel{position:fixed;left:0;right:0;bottom:0;background:var(--glass-bg);color:var(--text);z-index:125;border-top-left-radius:16px;border-top-right-radius:16px;max-height:86vh;padding:12px 12px 20px;box-shadow:0 -18px 40px rgba(0,0,0,.5);transform:translateY(100%);opacity:0;transition:transform .28s cubic-bezier(.22,1,.36,1),opacity .22s ease;overflow:auto}
-            .appearance-panel.open{transform:translateY(0);opacity:1}
-            .appearance-panel.desktop-modal{left:50%;top:50%;bottom:auto;right:auto;transform:translate(-50%,-50%) scale(.92);max-width:520px;width:min(520px,calc(100% - 40px));border-radius:20px;padding:20px;box-shadow:0 28px 80px rgba(0,0,0,.45);background:rgba(10,10,15,.95);border:1px solid rgba(255,255,255,.08);}
-            .appearance-panel.desktop-modal.open{transform:translate(-50%,-50%) scale(1);opacity:1}
             .appearance-panel .ap-head{display:flex;align-items:center;gap:12px;padding:8px 6px 12px}
             .appearance-panel .ap-title{font-weight:800;font-size:1.05rem}
             .appearance-panel .ap-close{margin-left:auto;background:none;border:none;color:var(--text);font-size:1.1rem;padding:8px;cursor:pointer}
@@ -9490,7 +9511,6 @@
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showStatsDashboard()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
-            <button class="mobile-drawer-link" onclick="closeMobileDrawer();openAppearance()"><i data-lucide="sun" aria-hidden="true"></i><span>Appearance</span></button>
         </div>
     </aside>
 
@@ -16983,6 +17003,7 @@
             if (fullPlayerOpen) closeFullPlayer();
             if (mobileDrawer?.classList.contains('open')) closeMobileDrawer();
             if (queuePanelOpen) closeQueuePanel();
+            if (typeof closeAppearance === 'function') closeAppearance();
         });
     </script>
 
