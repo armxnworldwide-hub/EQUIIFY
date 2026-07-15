@@ -1,4 +1,5 @@
 ﻿
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1456,8 +1457,8 @@
         .song-actions {
             display: flex;
             align-items: center;
-            gap: 4px;
-            opacity: 0;
+            gap: 6px;
+            opacity: 1;
             transition: opacity .15s;
         }
         
@@ -1465,25 +1466,44 @@
             opacity: 1
         }
         
-        .like-btn {
+        .like-btn,
+        .song-more-btn {
             background: none;
             border: none;
             font-size: 1rem;
             cursor: pointer;
-            padding: 5px;
+            padding: 6px;
             border-radius: 50%;
-            transition: transform .2s;
+            transition: transform .2s, background .2s, color .2s;
             line-height: 1;
             color: var(--text2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
         }
         
-        .like-btn:hover {
-            transform: scale(1.2);
-            color: var(--text)
+        .like-btn:hover,
+        .song-more-btn:hover {
+            transform: scale(1.04);
+            color: var(--text);
+            background: rgba(255, 255, 255, .08)
+        }
+        
+        .song-more-btn.active,
+        .song-more-btn.open {
+            color: var(--text);
+            background: rgba(255, 255, 255, .12)
         }
         
         .like-btn.liked {
             color: var(--accent)
+        }
+        
+        .song-more-btn .lucide {
+            width: 16px;
+            height: 16px;
         }
         
         .dl-btn {
@@ -4388,6 +4408,69 @@
             padding: 9px 14px;
             font-size: .78rem;
             color: var(--text2)
+        }
+        
+        .song-row-action-menu {
+            position: fixed;
+            z-index: 140;
+            min-width: 220px;
+            background: linear-gradient(180deg, rgba(28, 28, 28, .98), rgba(16, 16, 16, .98));
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 18px 40px rgba(0, 0, 0, .48);
+            backdrop-filter: blur(18px);
+            animation: songMenuIn .16s ease;
+        }
+        
+        @keyframes songMenuIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px) scale(.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        .song-row-menu-header {
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: var(--text2);
+            padding: 6px 10px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            margin-bottom: 4px;
+        }
+        
+        .song-row-menu-item {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 10px;
+            border-radius: 10px;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-family: 'Circular Std', 'Circular', 'Spotify Mix', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: .84rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background .12s ease, color .12s ease;
+        }
+        
+        .song-row-menu-item:hover {
+            background: rgba(255, 255, 255, .08);
+        }
+        
+        .song-row-menu-item .lucide {
+            width: 15px;
+            height: 15px;
+            color: var(--text2);
+            flex-shrink: 0;
         }
         
         .skeleton {
@@ -13133,7 +13216,8 @@
         }
 
         function downloadSongRowHTML(song, i) {
-            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playDlSong(${i})"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName)}</p></div></div><div class="song-actions" style="opacity:1"><span style="font-size:.6rem;color:var(--accent);background:var(--accent3);border:1px solid rgba(200,245,66,.18);padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px">${uiIcon('check')}<span>Saved</span></span><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button><button class="queue-btn" onclick="event.stopPropagation();removeCachedSong('${escA(song.file)}')" title="Remove">${uiIcon('x')}</button></div></div>`;
+            const liked = likedSongs.has(song.file);
+            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playDlSong(${i})"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName)}</p></div></div><div class="song-actions"><button class="like-btn${liked ? ' liked' : ''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}')" title="${liked ? 'Unlike' : 'Like'}">${liked ? uiIcon('heart') : uiIcon('heart-off')}</button><button class="song-more-btn" onclick="event.stopPropagation();showSongRowActionsMenu(event,'${escA(song.file)}')" title="More options">${uiIcon('more-horizontal')}</button></div></div>`;
         }
 
         function renderDownloadsList(autoScrollActive = false) {
@@ -13381,9 +13465,8 @@
         function playlistSongRowHTML(plId,song,i) {
             const playing = currentSong && currentSong.file === song.file && !audio.paused;
             const liked = likedSongs.has(song.file);
-            const dl = isDownloaded(song.file);
             const canDrag = currentPlaylistSortType === 'custom';
-            return `<div class="playlist-song-row${playing?' playing':''}" data-file="${escH(song.file)}" draggable="${canDrag ? 'true' : 'false'}" onclick="playFromPlaylist('${escA(plId)}',${i})"><div class="ps-num">${playlistIndexContent(i, playing)}</div><div class="ps-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="ps-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName||song.artist||'')}</p></div></div><div class="ps-actions"><button class="ps-icon-btn${liked?' liked':''}" title="${liked?'Unlike':'Like'}" onclick="event.stopPropagation();togglePlaylistLike('${escA(plId)}','${escA(song.file)}')">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="ps-icon-btn${dl?' downloaded':''}" title="${dl?'Remove download':'Download'}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')">${dl?uiIcon('check'):uiIcon('download')}</button><button class="ps-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="ps-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button><button class="ps-remove" onclick="event.stopPropagation();removeSongFromPlaylist('${escA(plId)}','${escA(song.file)}')">${uiIcon('x')}<span>Remove</span></button></div></div>`;
+            return `<div class="playlist-song-row${playing?' playing':''}" data-file="${escH(song.file)}" draggable="${canDrag ? 'true' : 'false'}" onclick="playFromPlaylist('${escA(plId)}',${i})"><div class="ps-num">${playlistIndexContent(i, playing)}</div><div class="ps-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="ps-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName||song.artist||'')}</p></div></div><div class="ps-actions"><button class="ps-icon-btn${liked?' liked':''}" title="${liked?'Unlike':'Like'}" onclick="event.stopPropagation();togglePlaylistLike('${escA(plId)}','${escA(song.file)}')">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="ps-icon-btn" title="More options" onclick="event.stopPropagation();showSongRowActionsMenu(event,'${escA(song.file)}')">${uiIcon('more-horizontal')}</button></div></div>`;
         }
 
         window.playFromPlaylist = (plId,i) => { const source=getPlaylistPlaybackSource(plId); if(!source[i])return; currentSongs=source.map(s=>({...s})); currentArtistKey=null; currentIndex=i; playSong(i,true); };
@@ -13415,6 +13498,121 @@
         function closeDropdown() { if(openDropdownEl){openDropdownEl.remove();openDropdownEl=null;} }
         document.addEventListener('click',e=>{ if(openDropdownEl&&!openDropdownEl.contains(e.target))closeDropdown(); });
         window.closeDropdown = closeDropdown;
+
+        function resolveSongForRow(fileId) {
+            const target = normalizeSongFile(fileId);
+            if (!target) return null;
+            const found = findSongInLibraryByFile(target);
+            if (found?.song) {
+                return {
+                    ...found.song,
+                    artistName: found.artistName || found.song.artistName || ''
+                };
+            }
+            return null;
+        }
+
+        function showSongRowActionsMenu(e, fileId, rowIndex = null) {
+            e.stopPropagation();
+            closeDropdown();
+            const song = resolveSongForRow(fileId) || (rowIndex !== null && rowIndex !== undefined ? currentSongs[rowIndex] : null);
+            if (!song) return;
+            const target = e.currentTarget || e.target;
+            const rect = target && typeof target.getBoundingClientRect === 'function' ? target.getBoundingClientRect() : { bottom: window.innerHeight / 2, right: window.innerWidth / 2, left: window.innerWidth / 2 };
+            const menu = document.createElement('div');
+            menu.className = 'song-row-action-menu';
+            const liked = likedSongs.has(song.file);
+            const downloaded = isDownloaded(song.file);
+            const top = Math.min(window.innerHeight - 320, Math.max(12, rect.bottom + 8));
+            const left = Math.min(window.innerWidth - 240, Math.max(12, rect.right - 205));
+            menu.style.top = `${top}px`;
+            menu.style.left = `${left}px`;
+            menu.innerHTML = `
+                <div class="song-row-menu-header">${escH(song.title || 'Song')}</div>
+                <button class="song-row-menu-item" data-action="queue">${uiIcon('list-plus')}<span>Add to Queue</span></button>
+                <button class="song-row-menu-item" data-action="playlist">${uiIcon('folder-plus')}<span>Add to Another Playlist</span></button>
+                <button class="song-row-menu-item" data-action="download">${uiIcon(downloaded ? 'check' : 'download')}<span>${downloaded ? 'Remove Download' : 'Download'}</span></button>
+                <button class="song-row-menu-item" data-action="share">${uiIcon('share-2')}<span>Share</span></button>
+                <button class="song-row-menu-item" data-action="details">${uiIcon('info')}<span>Song Details</span></button>
+                <button class="song-row-menu-item" data-action="like">${uiIcon(liked ? 'heart' : 'heart-off')}<span>${liked ? 'Remove from Liked Songs' : 'Add to Liked Songs'}</span></button>
+            `;
+            document.body.appendChild(menu);
+            renderLucideIcons(menu);
+            menu.querySelector('[data-action="queue"]').addEventListener('click', async (event) => {
+                event.stopPropagation();
+                closeDropdown();
+                addSongToQueueByFile(song.file, false);
+            });
+            menu.querySelector('[data-action="playlist"]').addEventListener('click', (event) => {
+                event.stopPropagation();
+                closeDropdown();
+                showAddToPlaylistMenu({
+                    stopPropagation() {},
+                    preventDefault() {},
+                    target: menu.querySelector('[data-action="playlist"]'),
+                    currentTarget: menu.querySelector('[data-action="playlist"]')
+                }, song.file, rowIndex);
+            });
+            menu.querySelector('[data-action="download"]').addEventListener('click', async (event) => {
+                event.stopPropagation();
+                closeDropdown();
+                const tempBtn = document.createElement('button');
+                await handleDlBtn(tempBtn, song.file);
+                refreshVisibleSongLists();
+            });
+            menu.querySelector('[data-action="share"]').addEventListener('click', async (event) => {
+                event.stopPropagation();
+                closeDropdown();
+                try {
+                    const shareText = `${song.title || 'Song'}${song.artistName ? ` — ${song.artistName}` : ''}`;
+                    if (navigator.share) {
+                        await navigator.share({
+                            title: song.title || 'Song',
+                            text: shareText,
+                            url: window.location.href
+                        });
+                    } else if (navigator.clipboard?.writeText) {
+                        await navigator.clipboard.writeText(shareText);
+                        showToast('Shared details copied');
+                    } else {
+                        showToast('Sharing not available');
+                    }
+                } catch (e) {
+                    showToast('Share cancelled');
+                }
+            });
+            menu.querySelector('[data-action="details"]').addEventListener('click', (event) => {
+                event.stopPropagation();
+                closeDropdown();
+                const details = document.createElement('div');
+                details.className = 'song-row-action-menu';
+                const detailTop = Math.min(window.innerHeight - 280, Math.max(20, window.innerHeight / 2 - 120));
+                const detailLeft = Math.min(window.innerWidth - 260, Math.max(20, window.innerWidth / 2 - 130));
+                details.style.top = `${detailTop}px`;
+                details.style.left = `${detailLeft}px`;
+                details.style.minWidth = '260px';
+                details.innerHTML = `
+                    <div class="song-row-menu-header">Song Details</div>
+                    <div style="padding:6px 8px 2px; display:flex; flex-direction:column; gap:8px; color:var(--text)">
+                        <div><div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Title</div><div style="font-size:.95rem;font-weight:700;margin-top:2px">${escH(song.title || 'Untitled')}</div></div>
+                        <div><div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Artist</div><div style="font-size:.9rem;margin-top:2px">${escH(song.artistName || '')}</div></div>
+                        <div><div style="font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px">File</div><div style="font-size:.74rem;margin-top:2px;color:var(--text2)">${escH(song.file || '')}</div></div>
+                    </div>
+                `;
+                document.body.appendChild(details);
+                renderLucideIcons(details);
+                openDropdownEl = details;
+            });
+            menu.querySelector('[data-action="like"]').addEventListener('click', (event) => {
+                event.stopPropagation();
+                closeDropdown();
+                toggleLike(song.file);
+                refreshVisibleSongLists();
+            });
+            openDropdownEl = menu;
+        }
+
+        window.showSongRowActionsMenu = showSongRowActionsMenu;
 
         // Desktop 'more' menu that includes Appearance
         window.showDesktopMenu = (e) => {
@@ -13560,7 +13758,7 @@
             renderArtistSongs(key, true);
         }
 
-        function songRowHTML(song,i,artistName) { const playing=currentSong&&currentSong.file===song.file&&!audio.paused; const liked=likedSongs.has(song.file); const dl=isDownloaded(song.file); const rowArtist=song.artistName||song.artist||artistName||''; return`<div class="song-row${playing?' playing':''}" id="row_${i}" data-file="${escH(song.file)}" onclick="playSong(${i},true)"><div class="song-num">${playing?'<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>':i+1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(rowArtist)}</p></div></div><div class="song-actions"><button class="like-btn${liked?' liked':''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}',${i})">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="dl-btn${dl?' downloaded':''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')" title="${dl?'Remove':'Download'}">${dl?uiIcon('check'):uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();showAddToPlaylistMenu(event,'${escA(song.file)}',${i})" title="Add to playlist">${uiIcon('folder-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addToQueue(${i})" title="Add to end">${uiIcon('plus')}</button></div></div>`; }
+        function songRowHTML(song,i,artistName) { const playing=currentSong&&currentSong.file===song.file&&!audio.paused; const liked=likedSongs.has(song.file); const rowArtist=song.artistName||song.artist||artistName||''; return`<div class="song-row${playing?' playing':''}" id="row_${i}" data-file="${escH(song.file)}" onclick="playSong(${i},true)"><div class="song-num">${playing?'<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>':i+1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(rowArtist)}</p></div></div><div class="song-actions"><button class="like-btn${liked?' liked':''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}',${i})" title="${liked?'Unlike':'Like'}">${liked?uiIcon('heart'):uiIcon('heart-off')}</button><button class="song-more-btn" onclick="event.stopPropagation();showSongRowActionsMenu(event,'${escA(song.file)}',${i})" title="More options">${uiIcon('more-horizontal')}</button></div></div>`; }
 
         window.handleDlBtn = async(btn,fileId) => { if(isDownloaded(fileId)){if(confirm('Remove from offline?')){await removeCachedSong(fileId);btn.classList.remove('downloaded');setElementIcon(btn,'download');}}else{let song=null;for(let k in artists){song=artists[k].songs.find(s=>s.file===fileId);if(song){song={...song,artistName:artists[k].name};break;}}if(song)addToDlQueue(song);} };
 
@@ -13739,7 +13937,7 @@
             }
         }
 
-        window.showAddToPlaylistMenu = (e,fileId,rowIdx) => { e.stopPropagation(); closeDropdown(); const song=currentSongs[rowIdx]; if(!song)return; const artistName=currentArtistKey?artists[currentArtistKey].name:''; window.__ctxSong=song; window.__ctxArtist=artistName; const ids=Object.keys(playlists); const dd=document.createElement('div'); dd.className='add-to-playlist-dropdown'; dd.style.position='fixed'; const rect=e.target.getBoundingClientRect(); dd.style.top=(rect.bottom+4)+'px'; dd.style.left=Math.max(10,rect.left-140)+'px'; if(!ids.length){dd.innerHTML=`<div class="no-playlists">No playlists yet.</div><button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>Create playlist</span></button>`;}else{dd.innerHTML=`<button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>New playlist</span></button>`+ids.map(id=>`<button onclick="addSongToPlaylistById(window.__ctxSong,window.__ctxArtist,'${escA(id)}');closeDropdown()">${escH(playlists[id].name)}</button>`).join('');}document.body.appendChild(dd);renderLucideIcons(dd);openDropdownEl=dd; };
+        window.showAddToPlaylistMenu = (e,fileId,rowIdx) => { e.stopPropagation(); closeDropdown(); const resolved = resolveSongForRow(fileId); const song = resolved || (Number.isInteger(rowIdx) && currentSongs[rowIdx] ? currentSongs[rowIdx] : null); if(!song)return; const artistName=song.artistName || (currentArtistKey?artists[currentArtistKey].name:''); window.__ctxSong=song; window.__ctxArtist=artistName; const ids=Object.keys(playlists); const dd=document.createElement('div'); dd.className='add-to-playlist-dropdown'; dd.style.position='fixed'; const target=e.currentTarget || e.target; const rect=target && typeof target.getBoundingClientRect==='function' ? target.getBoundingClientRect() : { bottom: window.innerHeight / 2, left: window.innerWidth / 2 }; dd.style.top=(rect.bottom+4)+'px'; dd.style.left=Math.max(10,rect.left-140)+'px'; if(!ids.length){dd.innerHTML=`<div class="no-playlists">No playlists yet.</div><button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>Create playlist</span></button>`;}else{dd.innerHTML=`<button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>New playlist</span></button>`+ids.map(id=>`<button onclick="addSongToPlaylistById(window.__ctxSong,window.__ctxArtist,'${escA(id)}');closeDropdown()">${escH(playlists[id].name)}</button>`).join('');}document.body.appendChild(dd);renderLucideIcons(dd);openDropdownEl=dd; };
 
       
         async function playSong(index, manualSelection = false) {
@@ -14537,7 +14735,16 @@
                 startY: 0,
                 lastX: 0,
                 tracking: false,
-                axis: ''
+                axis: '',
+                longPressTimer: null,
+                longPressTriggered: false
+            };
+
+            const clearPressTimer = () => {
+                if (state.longPressTimer) {
+                    clearTimeout(state.longPressTimer);
+                    state.longPressTimer = null;
+                }
             };
 
             const resolveRowSongFile = (rowEl) => {
@@ -14566,6 +14773,25 @@
                 state.lastX = state.startX;
                 state.tracking = true;
                 state.axis = '';
+                state.longPressTriggered = false;
+                clearPressTimer();
+                state.longPressTimer = window.setTimeout(() => {
+                    if (!state.row || !state.tracking) return;
+                    state.longPressTriggered = true;
+                    state.tracking = false;
+                    state.row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left');
+                    state.row.style.transform = '';
+                    const fileId = resolveRowSongFile(state.row);
+                    if (fileId) {
+                        showSongRowActionsMenu({
+                            stopPropagation() {},
+                            preventDefault() {},
+                            target: state.row,
+                            currentTarget: state.row
+                        }, fileId);
+                    }
+                    clearPressTimer();
+                }, 420);
             };
 
             const onMove = (e) => {
@@ -14577,6 +14803,7 @@
                     state.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
                 }
                 if (state.axis !== 'x') return;
+                clearPressTimer();
                 const shift = clampNumber(dx, -96, 96);
                 state.row.classList.add('swiping');
                 state.row.style.transform = `translateX(${shift}px)`;
@@ -14587,7 +14814,7 @@
             };
 
             const finish = () => {
-                if (!state.tracking || !state.row) return;
+                if (!state.row) return;
                 const row = state.row;
                 const delta = state.lastX - state.startX;
                 const fileId = resolveRowSongFile(row);
@@ -14596,16 +14823,14 @@
                 state.row = null;
                 state.tracking = false;
                 state.axis = '';
+                clearPressTimer();
                 if (!fileId) return;
+                if (state.longPressTriggered) return;
                 if (delta >= 88) {
                     window.addSongToQueueByFile(fileId, false);
                 } else if (delta <= -88) {
-                    const idx = queue.findIndex((song) => normalizeSongFile(song.file) === normalizeSongFile(fileId));
-                    if (idx >= 0) {
-                        window.removeFromQueue(idx);
-                    } else {
-                        showToast('Not in queue');
-                    }
+                    toggleLike(fileId);
+                    refreshVisibleSongLists();
                 }
             };
 
@@ -14687,11 +14912,11 @@
 
         function favSongRowHTML(song, i, compact = true) {
             const playing = currentSong && currentSong.file === song.file && !audio.paused;
-            const dl = isDownloaded(song.file);
+            const liked = likedSongs.has(song.file);
             if (!compact) {
-                return `<div class="song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="song-actions"><button class="like-btn liked" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="dl-btn${dl ? ' downloaded' : ''}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button></div></div>`;
+                return `<div class="song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="song-actions"><button class="like-btn${liked ? ' liked' : ''}" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')" title="${liked ? 'Unlike' : 'Like'}">${liked ? uiIcon('heart') : uiIcon('heart-off')}</button><button class="song-more-btn" onclick="event.stopPropagation();showSongRowActionsMenu(event,'${escA(song.file)}')" title="More options">${uiIcon('more-horizontal')}</button></div></div>`;
             }
-            return `<div class="fav-song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="fav-song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="fav-song-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="fav-song-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="fav-song-actions"><button class="fav-icon-btn liked" title="Remove from favorites" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${uiIcon('heart')}</button><button class="fav-icon-btn${dl ? ' downloaded' : ''}" title="${dl ? 'Remove download' : 'Download'}" onclick="event.stopPropagation();toggleFavDownload(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="fav-icon-btn" title="Play next" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)">${uiIcon('list-plus')}</button><button class="fav-icon-btn" title="Add to end" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)">${uiIcon('plus')}</button></div></div>`;
+            return `<div class="fav-song-row${playing ? ' playing' : ''}" data-liked-row="1" data-file="${escH(song.file)}" onclick="playLikedSong(${i})"><div class="fav-song-num">${playing ? '<div class="eq-bars"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>' : i + 1}</div><div class="fav-song-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="fav-song-text"><h4>${songTitleHTML(song)}</h4><p>${escH(song.artistName || song.artist || '')}</p></div></div><div class="fav-song-actions"><button class="fav-icon-btn${liked ? ' liked' : ''}" title="${liked ? 'Unlike' : 'Like'}" onclick="event.stopPropagation();toggleLikeFav('${escA(song.file)}')">${liked ? uiIcon('heart') : uiIcon('heart-off')}</button><button class="fav-icon-btn" title="More options" onclick="event.stopPropagation();showSongRowActionsMenu(event,'${escA(song.file)}')">${uiIcon('more-horizontal')}</button></div></div>`;
         }
 
         function updateFavoritesPlayingState(autoScrollActive = false) {
@@ -14927,8 +15152,7 @@
         function searchSongRowHTML(result, i, query) {
             const song = result.song;
             const liked = likedSongs.has(song.file);
-            const dl = isDownloaded(song.file);
-            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playSongByFile('${escA(song.file)}')"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${highlightedText(song.title, query)}</h4><p>${highlightedText(result.artistName, query)}${result.album ? ` • ${highlightedText(result.album, query)}` : ''}${result.genre ? ` • ${highlightedText(result.genre, query)}` : ''}</p></div></div><div class="song-actions" style="opacity:1"><button class="like-btn${liked ? ' liked' : ''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}')">${liked ? uiIcon('heart') : uiIcon('heart-off')}</button><button class="dl-btn${dl ? ' downloaded' : ''}" onclick="event.stopPropagation();handleDlBtn(this,'${escA(song.file)}')">${dl ? uiIcon('check') : uiIcon('download')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',true)" title="Play next">${uiIcon('list-plus')}</button><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}',false)" title="Add to end">${uiIcon('plus')}</button></div></div>`;
+            return `<div class="song-row" data-file="${escH(song.file)}" onclick="playSongByFile('${escA(song.file)}')"><div class="song-num">${i + 1}</div><div class="song-row-info"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="song-row-text"><h4>${highlightedText(song.title, query)}</h4><p>${highlightedText(result.artistName, query)}${result.album ? ` • ${highlightedText(result.album, query)}` : ''}${result.genre ? ` • ${highlightedText(result.genre, query)}` : ''}</p></div></div><div class="song-actions"><button class="like-btn${liked ? ' liked' : ''}" onclick="event.stopPropagation();toggleLike('${escA(song.file)}')" title="${liked ? 'Unlike' : 'Like'}">${liked ? uiIcon('heart') : uiIcon('heart-off')}</button><button class="song-more-btn" onclick="event.stopPropagation();showSongRowActionsMenu(event,'${escA(song.file)}')" title="More options">${uiIcon('more-horizontal')}</button></div></div>`;
         }
 
         function searchArtistCardHTML(result, query) {

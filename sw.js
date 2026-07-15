@@ -1,13 +1,21 @@
-const CACHE_NAME = 'falcon-offline-v3';
-const LEGACY_CACHE_NAMES = ['falcon-offline-v2'];
+const CACHE_NAME = 'falcon-pwa-v4';
+const LEGACY_CACHE_NAMES = ['falcon-offline-v3', 'falcon-offline-v2'];
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './sw.js', './images/falcon.jpeg'];
 const MEDIA_RE = /\/(songs|images)\//;
 
+async function precacheAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  await Promise.all(APP_SHELL.map((entry) => cache.add(new Request(entry, { cache: 'reload' })).catch(() => {})));
+}
+
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  event.waitUntil(precacheAppShell().then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((keys) => Promise.all(keys.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name)))).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('message', (event) => {
@@ -63,6 +71,39 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  if (request.mode === 'navigate' || request.destination === 'document') {
+    event.respondWith((async () => {
+      try {
+        const networkResponse = await fetch(request);
+        const cache = await caches.open(CACHE_NAME);
+        cache.put('./index.html', networkResponse.clone()).catch(() => {});
+        return networkResponse;
+      } catch (error) {
+        const cached = await caches.match('./index.html');
+        return cached || caches.match('./');
+      }
+    })());
+    return;
+  }
+
+  if (request.destination === 'style' || request.destination === 'script' || request.destination === 'manifest' || request.destination === 'image' || request.destination === 'font') {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
+      const cached = await cache.match(request, { ignoreSearch: true });
+      if (cached) return cached;
+      try {
+        const networkResponse = await fetch(request);
+        cache.put(request, networkResponse.clone()).catch(() => {});
+        return networkResponse;
+      } catch (error) {
+        return cache.match('./index.html');
+      }
+    })());
+    return;
+  }
+
   if (!MEDIA_RE.test(url.pathname)) return;
 
   event.respondWith((async () => {
