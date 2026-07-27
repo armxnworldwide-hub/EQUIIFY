@@ -3879,6 +3879,10 @@
             border-bottom: 1px solid var(--border);
             background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01));
         }
+
+        .home-surface {
+            display: contents;
+        }
         
         .continue-label {
             display: inline-flex;
@@ -3997,6 +4001,7 @@
             background: linear-gradient(100deg, rgba(3, 8, 15, .92) 5%, rgba(8, 12, 22, .7) 44%, rgba(10, 14, 24, .3) 100%);
         }
         
+        .featured-content,
         .featured-body {
             position: relative;
             z-index: 1;
@@ -13687,12 +13692,14 @@
             const likedPool = songPool.filter((song) => likedSongs.has(song.file));
             const recommendationSeed = likedPool.length ? likedPool : songPool;
             const recommendSongs = [...recommendationSeed].sort((a, b) => (b.plays || 0) - (a.plays || 0) || a.artistName.localeCompare(b.artistName)).slice(0, 6);
-            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
-            const featuredHTML = featuredSong ? `<section class="featured-hero"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
+            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip home-continue"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
+            const recentHTML = continueListening.length > 0 ? `<div class="premium-row home-recent-row"><div class="premium-row-title">Recently Played</div><div class="premium-row-sub">${Math.min(continueListening.length, 8)} Tracks</div></div><div class="recommend-grid home-recent-grid">${continueListening.slice(0, 6).map((song) => `<div class="recommend-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName || '')}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}</div>` : '';
+            const featuredHTML = featuredSong ? `<section class="featured-hero home-featured"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
 
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
-            <div class="main-topbar">
+            <div class="home-surface">
+            <div class="main-topbar home-search">
                 <div class="nav-arrows"><button class="nav-arrow-btn" title="Back">${uiIcon('chevron-left')}</button><button class="nav-arrow-btn" title="Forward">${uiIcon('chevron-right')}</button></div>
                 <div class="search-box">
                     <span class="search-icon">${uiIcon('search')}</span>
@@ -13707,27 +13714,28 @@
             </div>
             ${featuredHTML}
             ${continueHTML}
-            <div class="premium-row">
+            <div class="premium-row home-trending-row">
                 <div class="premium-row-title">Trending Now</div>
                 <div class="premium-row-sub">${trendingSongs.length} Tracks</div>
             </div>
-            <div class="trending-strip">
+            <div class="trending-strip home-trending">
                 ${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="trending-text"><div class="trending-title">${songTitleHTML(song)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}
             </div>
-            <div class="premium-row">
+            <div class="premium-row home-recommend-row">
                 <div class="premium-row-title">Recommended For You</div>
                 <div class="premium-row-sub">${likedPool.length ? 'Based on Favorites' : 'Fresh Picks'}</div>
             </div>
-            <div class="recommend-grid">
+            <div class="recommend-grid home-recommend">
                 ${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}
             </div>
-            <div class="section-header">
+            ${recentHTML}
+            <div class="section-header home-artists-row">
                 <div class="section-title">Artists</div>
                 <span style="font-family:'Circular Std','Circular','Spotify Mix','Nunito Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.62rem;color:var(--text2)">${keys.length} IN LIBRARY</span>
             </div>
-            <div class="artists-grid">
+            <div class="artists-grid home-artists">
                 ${keys.map((key) => { const artist = artists[key]; return `<div class="artist-card" onclick="openArtist('${key}')"><div class="artist-card-img-wrap"><img src="${artist.image}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${key}')">${uiIcon('play')}</button></div><div class="artist-card-name">${artist.name}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`; }).join('')}
-            </div>`;
+            </div></div>`;
             initSearchClear();
             renderLucideIcons(mainArea);
         }
