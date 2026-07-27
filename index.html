@@ -1128,6 +1128,16 @@
         .song-row {
             transition: transform .22s cubic-bezier(.2, .72, .2, 1), box-shadow .22s ease, border-color .22s ease, background .22s ease;
         }
+
+        .song-row.long-press-success,
+        .playlist-song-row.long-press-success,
+        .fav-song-row.long-press-success {
+            transform: scale(.98) !important;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .32), 0 0 0 1px var(--accent-glow), 0 0 22px var(--accent-glow) !important;
+            background: color-mix(in srgb, var(--accent) 10%, rgba(255, 255, 255, .04)) !important;
+            transition: transform .17s ease, box-shadow .17s ease, background .17s ease !important;
+            z-index: 3;
+        }
         
         .song-row.swiping {
             transition: none;
@@ -1143,7 +1153,7 @@
             box-shadow: 0 14px 30px rgba(0, 0, 0, .34), 0 0 0 1px rgba(255, 120, 120, .3);
             background: linear-gradient(120deg, rgba(255, 80, 80, .16), rgba(255, 255, 255, .02));
         }
-        
+
         .nav-btn,
         .topbar-icon-btn,
         .queue-btn,
@@ -14737,6 +14747,10 @@
             const area = document.getElementById('mainArea');
             if (!area || area.dataset.swipeBound === '1') return;
             area.dataset.swipeBound = '1';
+            const LONG_PRESS_DELAY = 500;
+            const LONG_PRESS_MOVE_LIMIT = 8;
+            const LONG_PRESS_FEEDBACK_MS = 170;
+            const isMobileTouch = () => window.matchMedia?.('(hover: none), (pointer: coarse)')?.matches || navigator.maxTouchPoints > 0;
             const state = {
                 row: null,
                 startX: 0,
@@ -14745,7 +14759,8 @@
                 tracking: false,
                 axis: '',
                 longPressTimer: null,
-                longPressTriggered: false
+                longPressTriggered: false,
+                suppressNextClick: false
             };
 
             const clearPressTimer = () => {
@@ -14753,6 +14768,21 @@
                     clearTimeout(state.longPressTimer);
                     state.longPressTimer = null;
                 }
+            };
+
+            const resetPressState = (resetRow = true) => {
+                if (state.row) {
+                    state.row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left', 'long-press-success');
+                    state.row.style.transform = '';
+                }
+                clearPressTimer();
+                if (resetRow) state.row = null;
+                state.tracking = false;
+                state.axis = '';
+            };
+
+            const cancelPendingLongPress = () => {
+                clearPressTimer();
             };
 
             const resolveRowSongFile = (rowEl) => {
@@ -14769,7 +14799,9 @@
             };
 
             const onStart = (e) => {
+                if (!isMobileTouch()) return;
                 if (!e.touches || e.touches.length !== 1) return;
+                if (openDropdownEl) return;
                 const target = e.target;
                 if (!(target instanceof Element)) return;
                 if (target.closest('button') || target.closest('a') || target.closest('input')) return;
@@ -14784,34 +14816,50 @@
                 state.longPressTriggered = false;
                 clearPressTimer();
                 state.longPressTimer = window.setTimeout(() => {
-                    if (!state.row || !state.tracking) return;
+                    if (!state.row || !state.tracking || openDropdownEl) {
+                        resetPressState();
+                        return;
+                    }
                     state.longPressTriggered = true;
+                    state.suppressNextClick = true;
                     state.tracking = false;
                     state.row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left');
                     state.row.style.transform = '';
                     const fileId = resolveRowSongFile(state.row);
                     if (fileId) {
+                        try {
+                            if (navigator.vibrate) navigator.vibrate(10);
+                        } catch (err) {}
+                        state.row.classList.add('long-press-success');
                         showSongRowActionsMenu({
                             stopPropagation() {},
                             preventDefault() {},
                             target: state.row,
                             currentTarget: state.row
                         }, fileId);
+                        window.setTimeout(() => {
+                            row.classList.remove('long-press-success');
+                        }, LONG_PRESS_FEEDBACK_MS);
                     }
                     clearPressTimer();
-                }, 420);
+                }, LONG_PRESS_DELAY);
             };
 
             const onMove = (e) => {
                 if (!state.tracking || !state.row || !e.touches || !e.touches[0]) return;
                 const dx = e.touches[0].clientX - state.startX;
                 const dy = e.touches[0].clientY - state.startY;
+                if (Math.abs(dx) > LONG_PRESS_MOVE_LIMIT || Math.abs(dy) > LONG_PRESS_MOVE_LIMIT) {
+                    cancelPendingLongPress();
+                }
                 if (!state.axis) {
                     if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
                     state.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
                 }
-                if (state.axis !== 'x') return;
-                clearPressTimer();
+                if (state.axis !== 'x') {
+                    resetPressState();
+                    return;
+                }
                 const shift = clampNumber(dx, -96, 96);
                 state.row.classList.add('swiping');
                 state.row.style.transform = `translateX(${shift}px)`;
@@ -14821,17 +14869,18 @@
                 if (e.cancelable) e.preventDefault();
             };
 
-            const finish = () => {
+            const finish = (e) => {
                 if (!state.row) return;
                 const row = state.row;
                 const delta = state.lastX - state.startX;
                 const fileId = resolveRowSongFile(row);
-                row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left');
+                row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left', 'long-press-success');
                 row.style.transform = '';
                 state.row = null;
                 state.tracking = false;
                 state.axis = '';
                 clearPressTimer();
+                if (e?.type === 'touchcancel') return;
                 if (!fileId) return;
                 if (state.longPressTriggered) return;
                 if (delta >= 88) {
@@ -14853,6 +14902,22 @@
             });
             area.addEventListener('touchcancel', finish, {
                 passive: true
+            });
+            area.addEventListener('click', (e) => {
+                if (!state.suppressNextClick) return;
+                state.suppressNextClick = false;
+                e.preventDefault();
+                e.stopPropagation();
+            }, true);
+            const onAnyScroll = () => {
+                if (state.longPressTimer || state.tracking) resetPressState();
+                if (isMobileTouch() && openDropdownEl?.classList?.contains('song-row-action-menu')) closeDropdown();
+            };
+            [window, document, area].forEach((scrollTarget) => {
+                scrollTarget.addEventListener('scroll', onAnyScroll, {
+                    passive: true,
+                    capture: true
+                });
             });
         }
 
