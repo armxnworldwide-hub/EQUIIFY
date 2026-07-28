@@ -214,19 +214,15 @@
         const splashEl = document.getElementById('splash');
         const splashMessageEl = document.getElementById('splashMessage');
         const splashBarFillEl = document.getElementById('splashBarFill');
-        const splashPercentEl = document.getElementById('splashPercent');
-        const splashHintEl = document.getElementById('splashHint');
         const splashMessages = [
             "Loading your music...",
             "Preparing your experience..."
         ];
-        const splashHints = ["Calibrating soundstage", "Warming up your library", "Preparing premium playback", "Optimizing your session"];
         let splashDone = false;
 
         function setSplashProgress(value) {
             const pct = Math.max(0, Math.min(100, Math.round(value)));
             if (splashBarFillEl) splashBarFillEl.style.width = pct + "%";
-            if (splashPercentEl) splashPercentEl.textContent = pct + "%";
         }
 
         function typeSplashMessage(text) {
@@ -264,7 +260,7 @@
                 document.body.classList.remove("loading");
                 document.body.classList.add("app-revealed");
                 if (splashEl) splashEl.style.display = "none";
-            }, 780);
+            }, 920);
         }
 
         function startSplashSequence() {
@@ -274,34 +270,16 @@
             }
             const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
             const chosenMessage = splashMessages[Math.floor(Math.random() * splashMessages.length)];
-            const chosenHint = splashHints[Math.floor(Math.random() * splashHints.length)];
-            if (splashHintEl) splashHintEl.textContent = chosenHint;
             typeSplashMessage(chosenMessage);
-            let hintTimer = null;
-            if (!reduceMotion && splashHintEl) {
-                let hintIndex = splashHints.indexOf(chosenHint);
-                hintTimer = setInterval(() => {
-                    hintIndex = (hintIndex + 1) % splashHints.length;
-                    splashHintEl.style.opacity = ".5";
-                    splashHintEl.textContent = splashHints[hintIndex];
-                    requestAnimationFrame(() => {
-                        splashHintEl.style.opacity = "";
-                    });
-                }, 950);
-            }
 
             const startTime = performance.now();
-            const minViewMs = reduceMotion ? 420 : 2100;
-            const progressDurationMs = reduceMotion ? 300 : 2350;
+            const minViewMs = reduceMotion ? 420 : 3300;
+            const progressDurationMs = reduceMotion ? 300 : 3400;
             let progressComplete = false;
             let pageReady = document.readyState === "complete";
 
             const maybeFinish = () => {
                 if (!progressComplete || !pageReady) return;
-                if (hintTimer) {
-                    clearInterval(hintTimer);
-                    hintTimer = null;
-                }
                 const elapsed = performance.now() - startTime;
                 const waitMs = Math.max(0, minViewMs - elapsed);
                 setTimeout(finishSplash, waitMs);
