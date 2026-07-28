@@ -9924,6 +9924,137 @@
                     gap: 6px;
                 }
             }
+
+            .main-topbar,
+            .player,
+            .queue-panel,
+            .lyrics-panel,
+            .playlist-page-header,
+            .fav-mobile-header,
+            .premium-dashboard-hero,
+            .audio-settings-hero {
+                border-color: rgba(255, 255, 255, .09);
+                box-shadow: 0 18px 46px rgba(0, 0, 0, .34), inset 0 1px 0 rgba(255, 255, 255, .055);
+            }
+
+            .main-topbar {
+                background: linear-gradient(180deg, rgba(18, 18, 17, .86), rgba(12, 12, 12, .7));
+                backdrop-filter: blur(22px) saturate(1.12);
+                -webkit-backdrop-filter: blur(22px) saturate(1.12);
+            }
+
+            .search-box {
+                border: 1px solid rgba(255, 255, 255, .075);
+                background: rgba(255, 255, 255, .055);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055);
+            }
+
+            .search-box:focus-within {
+                border-color: rgba(215, 183, 101, .34);
+                box-shadow: 0 0 0 3px rgba(215, 183, 101, .09), inset 0 1px 0 rgba(255, 255, 255, .07);
+            }
+
+            .song-row,
+            .playlist-song-row,
+            .fav-song-row {
+                border: 1px solid transparent;
+                will-change: background, transform;
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .song-row:hover,
+            .playlist-song-row:hover,
+            .fav-song-row:hover {
+                border-color: rgba(255, 255, 255, .075);
+                background: rgba(255, 255, 255, .055);
+            }
+
+            .song-row.playing,
+            .playlist-song-row.playing,
+            .fav-song-row.playing {
+                border-color: rgba(215, 183, 101, .26);
+                background: linear-gradient(90deg, rgba(215, 183, 101, .11), rgba(255, 255, 255, .025));
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055), 0 12px 26px rgba(0, 0, 0, .2);
+            }
+
+            .like-btn,
+            .song-more-btn,
+            .ps-icon-btn,
+            .fav-icon-btn,
+            .home-icon-action,
+            .queue-btn {
+                touch-action: manipulation;
+            }
+
+            .song-row-action-menu {
+                border-color: rgba(215, 183, 101, .18);
+                background: rgba(15, 15, 14, .96);
+                box-shadow: 0 24px 64px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .06);
+                backdrop-filter: blur(18px) saturate(1.08);
+                -webkit-backdrop-filter: blur(18px) saturate(1.08);
+            }
+
+            .song-row-menu-item {
+                border-radius: 10px;
+            }
+
+            .song-row-menu-item:hover {
+                background: rgba(215, 183, 101, .1);
+                color: var(--text);
+            }
+
+            @media (hover: none), (pointer: coarse) {
+                .song-row:hover,
+                .playlist-song-row:hover,
+                .fav-song-row:hover,
+                .home-track-card:hover,
+                .home-album-card:hover,
+                .home-mini-row:hover,
+                .home-shell .artist-card:hover {
+                    transform: none;
+                    box-shadow: inherit;
+                }
+
+                .song-row,
+                .playlist-song-row,
+                .fav-song-row {
+                    touch-action: pan-y;
+                }
+
+                .main,
+                .home-rail,
+                .home-album-grid,
+                .queue-panel,
+                .lyrics-panel-body,
+                .sort-song-list {
+                    -webkit-overflow-scrolling: touch;
+                    overscroll-behavior-y: contain;
+                }
+
+                .song-row:active,
+                .playlist-song-row:active,
+                .fav-song-row:active,
+                .home-track-card:active,
+                .home-mini-row:active,
+                .home-album-card:active {
+                    transform: scale(.992);
+                    transition-duration: .08s;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                .home-hero-art-frame::after,
+                .home-track-card,
+                .home-album-card,
+                .home-mini-row,
+                .home-shell .artist-card,
+                .song-row,
+                .playlist-song-row,
+                .fav-song-row {
+                    transition: none !important;
+                    animation: none !important;
+                }
+            }
                 /* Desktop more-button dropdown */
                 .desktop-menu-dropdown{position:fixed;z-index:140;background:var(--surface);border:1px solid rgba(255,255,255,.06);box-shadow:0 12px 30px rgba(0,0,0,.45);border-radius:10px;overflow:hidden}
                 .desktop-menu-dropdown button{display:block;padding:10px 14px;background:none;border:none;color:var(--text);width:100%;text-align:left;cursor:pointer}
@@ -15535,16 +15666,7 @@
                 startY: 0,
                 lastX: 0,
                 tracking: false,
-                axis: '',
-                longPressTimer: null,
-                longPressTriggered: false
-            };
-
-            const clearPressTimer = () => {
-                if (state.longPressTimer) {
-                    clearTimeout(state.longPressTimer);
-                    state.longPressTimer = null;
-                }
+                axis: ''
             };
 
             const resolveRowSongFile = (rowEl) => {
@@ -15573,25 +15695,6 @@
                 state.lastX = state.startX;
                 state.tracking = true;
                 state.axis = '';
-                state.longPressTriggered = false;
-                clearPressTimer();
-                state.longPressTimer = window.setTimeout(() => {
-                    if (!state.row || !state.tracking) return;
-                    state.longPressTriggered = true;
-                    state.tracking = false;
-                    state.row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left');
-                    state.row.style.transform = '';
-                    const fileId = resolveRowSongFile(state.row);
-                    if (fileId) {
-                        showSongRowActionsMenu({
-                            stopPropagation() {},
-                            preventDefault() {},
-                            target: state.row,
-                            currentTarget: state.row
-                        }, fileId);
-                    }
-                    clearPressTimer();
-                }, 420);
             };
 
             const onMove = (e) => {
@@ -15602,8 +15705,10 @@
                     if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
                     state.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
                 }
-                if (state.axis !== 'x') return;
-                clearPressTimer();
+                if (state.axis !== 'x') {
+                    state.tracking = false;
+                    return;
+                }
                 const shift = clampNumber(dx, -96, 96);
                 state.row.classList.add('swiping');
                 state.row.style.transform = `translateX(${shift}px)`;
@@ -15623,9 +15728,7 @@
                 state.row = null;
                 state.tracking = false;
                 state.axis = '';
-                clearPressTimer();
                 if (!fileId) return;
-                if (state.longPressTriggered) return;
                 if (delta >= 88) {
                     window.addSongToQueueByFile(fileId, false);
                 } else if (delta <= -88) {
@@ -15645,6 +15748,14 @@
             });
             area.addEventListener('touchcancel', finish, {
                 passive: true
+            });
+            area.addEventListener('contextmenu', (e) => {
+                const target = e.target;
+                if (!(target instanceof Element)) return;
+                const row = target.closest('.song-row, .playlist-song-row, .fav-song-row');
+                if (!row) return;
+                if (target.closest('.song-more-btn, .ps-icon-btn, .fav-icon-btn')) return;
+                e.preventDefault();
             });
         }
 
