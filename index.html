@@ -1128,7 +1128,7 @@
         .song-row {
             transition: transform .22s cubic-bezier(.2, .72, .2, 1), box-shadow .22s ease, border-color .22s ease, background .22s ease;
         }
-
+        
         .song-row.swiping {
             transition: none;
             z-index: 2;
@@ -1143,7 +1143,7 @@
             box-shadow: 0 14px 30px rgba(0, 0, 0, .34), 0 0 0 1px rgba(255, 120, 120, .3);
             background: linear-gradient(120deg, rgba(255, 80, 80, .16), rgba(255, 255, 255, .02));
         }
-
+        
         .nav-btn,
         .topbar-icon-btn,
         .queue-btn,
@@ -3879,10 +3879,6 @@
             border-bottom: 1px solid var(--border);
             background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01));
         }
-
-        .home-surface {
-            display: contents;
-        }
         
         .continue-label {
             display: inline-flex;
@@ -4001,7 +3997,6 @@
             background: linear-gradient(100deg, rgba(3, 8, 15, .92) 5%, rgba(8, 12, 22, .7) 44%, rgba(10, 14, 24, .3) 100%);
         }
         
-        .featured-content,
         .featured-body {
             position: relative;
             z-index: 1;
@@ -6698,14 +6693,6 @@
                 display: none !important;
                 opacity: 0 !important;
                 visibility: hidden !important;
-            }
-
-            .mini-player {
-                display: none !important;
-            }
-
-            .now-playing-poster {
-                display: none !important;
             }
             .queue-panel {
                 width: 100%;
@@ -11754,6 +11741,10 @@
                     title: "Hath Haula",
                     file: "Iqbal/Hath Haula.mp3",
                     poster: "images/hathhola.jpeg"
+                },{
+                     title: "Koor Koor",
+                    file: "Iqbal/Koor Koor.mp3",
+                    poster: "images/koor.jpeg"
                 }]
             },
             jassi: {
@@ -13692,14 +13683,12 @@
             const likedPool = songPool.filter((song) => likedSongs.has(song.file));
             const recommendationSeed = likedPool.length ? likedPool : songPool;
             const recommendSongs = [...recommendationSeed].sort((a, b) => (b.plays || 0) - (a.plays || 0) || a.artistName.localeCompare(b.artistName)).slice(0, 6);
-            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip home-continue"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
-            const recentHTML = continueListening.length > 0 ? `<div class="premium-row home-recent-row"><div class="premium-row-title">Recently Played</div><div class="premium-row-sub">${Math.min(continueListening.length, 8)} Tracks</div></div><div class="recommend-grid home-recent-grid">${continueListening.slice(0, 6).map((song) => `<div class="recommend-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName || '')}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}</div>` : '';
-            const featuredHTML = featuredSong ? `<section class="featured-hero home-featured"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
+            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
+            const featuredHTML = featuredSong ? `<section class="featured-hero"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
 
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
-            <div class="home-surface">
-            <div class="main-topbar home-search">
+            <div class="main-topbar">
                 <div class="nav-arrows"><button class="nav-arrow-btn" title="Back">${uiIcon('chevron-left')}</button><button class="nav-arrow-btn" title="Forward">${uiIcon('chevron-right')}</button></div>
                 <div class="search-box">
                     <span class="search-icon">${uiIcon('search')}</span>
@@ -13714,28 +13703,27 @@
             </div>
             ${featuredHTML}
             ${continueHTML}
-            <div class="premium-row home-trending-row">
+            <div class="premium-row">
                 <div class="premium-row-title">Trending Now</div>
                 <div class="premium-row-sub">${trendingSongs.length} Tracks</div>
             </div>
-            <div class="trending-strip home-trending">
+            <div class="trending-strip">
                 ${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="trending-text"><div class="trending-title">${songTitleHTML(song)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}
             </div>
-            <div class="premium-row home-recommend-row">
+            <div class="premium-row">
                 <div class="premium-row-title">Recommended For You</div>
                 <div class="premium-row-sub">${likedPool.length ? 'Based on Favorites' : 'Fresh Picks'}</div>
             </div>
-            <div class="recommend-grid home-recommend">
+            <div class="recommend-grid">
                 ${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}
             </div>
-            ${recentHTML}
-            <div class="section-header home-artists-row">
+            <div class="section-header">
                 <div class="section-title">Artists</div>
                 <span style="font-family:'Circular Std','Circular','Spotify Mix','Nunito Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.62rem;color:var(--text2)">${keys.length} IN LIBRARY</span>
             </div>
-            <div class="artists-grid home-artists">
+            <div class="artists-grid">
                 ${keys.map((key) => { const artist = artists[key]; return `<div class="artist-card" onclick="openArtist('${key}')"><div class="artist-card-img-wrap"><img src="${artist.image}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${key}')">${uiIcon('play')}</button></div><div class="artist-card-name">${artist.name}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`; }).join('')}
-            </div></div>`;
+            </div>`;
             initSearchClear();
             renderLucideIcons(mainArea);
         }
@@ -14753,7 +14741,6 @@
             const area = document.getElementById('mainArea');
             if (!area || area.dataset.swipeBound === '1') return;
             area.dataset.swipeBound = '1';
-            const isMobileTouch = () => window.matchMedia?.('(hover: none), (pointer: coarse)')?.matches || navigator.maxTouchPoints > 0;
             const state = {
                 row: null,
                 startX: 0,
@@ -14761,20 +14748,15 @@
                 lastX: 0,
                 tracking: false,
                 axis: '',
-                startAt: 0,
-                moved: false,
-                suppressNextClick: false
+                longPressTimer: null,
+                longPressTriggered: false
             };
 
-            const resetPressState = (resetRow = true) => {
-                if (state.row) {
-                    state.row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left');
-                    state.row.style.transform = '';
+            const clearPressTimer = () => {
+                if (state.longPressTimer) {
+                    clearTimeout(state.longPressTimer);
+                    state.longPressTimer = null;
                 }
-                if (resetRow) state.row = null;
-                state.tracking = false;
-                state.axis = '';
-                state.moved = false;
             };
 
             const resolveRowSongFile = (rowEl) => {
@@ -14791,9 +14773,7 @@
             };
 
             const onStart = (e) => {
-                if (!isMobileTouch()) return;
                 if (!e.touches || e.touches.length !== 1) return;
-                if (openDropdownEl) return;
                 const target = e.target;
                 if (!(target instanceof Element)) return;
                 if (target.closest('button') || target.closest('a') || target.closest('input')) return;
@@ -14805,23 +14785,37 @@
                 state.lastX = state.startX;
                 state.tracking = true;
                 state.axis = '';
-                state.startAt = performance.now();
-                state.moved = false;
+                state.longPressTriggered = false;
+                clearPressTimer();
+                state.longPressTimer = window.setTimeout(() => {
+                    if (!state.row || !state.tracking) return;
+                    state.longPressTriggered = true;
+                    state.tracking = false;
+                    state.row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left');
+                    state.row.style.transform = '';
+                    const fileId = resolveRowSongFile(state.row);
+                    if (fileId) {
+                        showSongRowActionsMenu({
+                            stopPropagation() {},
+                            preventDefault() {},
+                            target: state.row,
+                            currentTarget: state.row
+                        }, fileId);
+                    }
+                    clearPressTimer();
+                }, 420);
             };
 
             const onMove = (e) => {
                 if (!state.tracking || !state.row || !e.touches || !e.touches[0]) return;
                 const dx = e.touches[0].clientX - state.startX;
                 const dy = e.touches[0].clientY - state.startY;
-                if (Math.abs(dx) >= 8 || Math.abs(dy) >= 8) state.moved = true;
                 if (!state.axis) {
                     if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
                     state.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
                 }
-                if (state.axis !== 'x') {
-                    resetPressState();
-                    return;
-                }
+                if (state.axis !== 'x') return;
+                clearPressTimer();
                 const shift = clampNumber(dx, -96, 96);
                 state.row.classList.add('swiping');
                 state.row.style.transform = `translateX(${shift}px)`;
@@ -14831,24 +14825,19 @@
                 if (e.cancelable) e.preventDefault();
             };
 
-            const finish = (e) => {
+            const finish = () => {
                 if (!state.row) return;
                 const row = state.row;
                 const delta = state.lastX - state.startX;
                 const fileId = resolveRowSongFile(row);
-                const heldStill = !state.moved && performance.now() - state.startAt >= 500;
                 row.classList.remove('swiping', 'queue-peek-right', 'queue-peek-left');
                 row.style.transform = '';
                 state.row = null;
                 state.tracking = false;
                 state.axis = '';
-                state.moved = false;
-                if (heldStill) {
-                    state.suppressNextClick = true;
-                    return;
-                }
-                if (e?.type === 'touchcancel') return;
+                clearPressTimer();
                 if (!fileId) return;
+                if (state.longPressTriggered) return;
                 if (delta >= 88) {
                     window.addSongToQueueByFile(fileId, false);
                 } else if (delta <= -88) {
@@ -14868,29 +14857,6 @@
             });
             area.addEventListener('touchcancel', finish, {
                 passive: true
-            });
-            area.addEventListener('click', (e) => {
-                if (!state.suppressNextClick) return;
-                state.suppressNextClick = false;
-                e.preventDefault();
-                e.stopPropagation();
-            }, true);
-            const onAnyScroll = () => {
-                if (state.tracking) resetPressState();
-                if (isMobileTouch() && openDropdownEl?.classList?.contains('song-row-action-menu')) closeDropdown();
-            };
-            [window, document, area].forEach((scrollTarget) => {
-                scrollTarget.addEventListener('scroll', onAnyScroll, {
-                    passive: true,
-                    capture: true
-                });
-            });
-            area.addEventListener('contextmenu', (e) => {
-                if (!isMobileTouch()) return;
-                const target = e.target;
-                if (target instanceof Element && target.closest('.song-row, .playlist-song-row, .fav-song-row') && !target.closest('button')) {
-                    e.preventDefault();
-                }
             });
         }
 
