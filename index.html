@@ -31,10 +31,10 @@
             --surface2: #1f1f1f;
             --surface3: #282828;
             --surface4: #333333;
-            --accent: #c8f542;
-            --accent2: #a8d930;
-            --accent3: rgba(200, 245, 66, .08);
-            --accent-glow: rgba(200, 245, 66, .2);
+            --accent: #d7b765;
+            --accent2: #f0d98d;
+            --accent3: rgba(215, 183, 101, .1);
+            --accent-glow: rgba(215, 183, 101, .22);
             --text: #ffffff;
             --text2: #b3b3b3;
             --muted: #535353;
@@ -52,7 +52,7 @@
             --ambient-rgb: 200, 245, 66;
             --ambient-rgb-2: 78, 156, 255;
             --ambient-rgb-3: 164, 95, 255;
-            --theme-primary: #c8f542;
+            --theme-primary: #d7b765;
             --theme-secondary: #4e9cff;
             --theme-accent: #a45fff;
             --theme-bg: #0a0a0a;
@@ -61,6 +61,8 @@
             --glass-bg-strong: rgba(24, 24, 24, .78);
             --glass-border: rgba(255, 255, 255, .13);
             --glass-shadow: 0 22px 60px rgba(0, 0, 0, .42);
+            --focus-ring: 0 0 0 3px rgba(215, 183, 101, .18);
+            --ease-premium: cubic-bezier(.22, 1, .36, 1);
             --mobile-drawer-w: min(82vw, 360px);
         }
         
@@ -622,52 +624,42 @@
         }
         
         .sidebar-account-block {
-            background: rgba(255, 255, 255, .07);
-            border: 1px solid rgba(255, 255, 255, .1);
-            border-radius: 999px;
-            margin-top: 0;
-            flex-shrink: 0;
-            overflow: hidden;
+            margin-left: 4px;
+            flex: 0 0 auto;
+            position: relative;
+            display: flex;
+            align-items: center;
         }
 
         .desktop-header-search {
-            flex: 1 1 360px;
-            max-width: 480px;
-            min-width: 230px;
+            flex: 1 1 520px;
+            max-width: 620px;
+            min-width: min(360px, 28vw);
             margin-left: auto;
             margin-right: auto;
         }
 
         .desktop-header-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .desktop-library-btn,
-        .desktop-fav-btn,
-        .desktop-queue-btn {
-            border: 1px solid rgba(255, 255, 255, .1);
-            background: rgba(255, 255, 255, .06);
-            flex-shrink: 0;
-        }
-
-        .desktop-library-btn {
-            border-radius: 999px;
+            display: none;
         }
 
         .sidebar-account-block .google-btn {
-            min-height: 40px;
-            padding: 7px 12px 7px 8px;
-            border-radius: inherit;
+            min-height: 44px;
+            padding: 7px 13px 7px 8px;
+            border-radius: 999px;
             white-space: nowrap;
+            background: rgba(255, 255, 255, .055);
+            border: 1px solid rgba(255, 255, 255, .1);
         }
 
-        .sidebar-account-block .google-btn-icon,
-        .sidebar-account-block .user-avatar {
-            width: 28px;
-            height: 28px;
+        .sidebar-account-block .google-btn:hover {
+            background: rgba(215, 183, 101, .1);
+            border-color: rgba(215, 183, 101, .26);
+        }
+
+        .sidebar-account-block .google-btn-icon {
+            width: 30px;
+            height: 30px;
         }
 
         .sidebar-account-block .google-btn-icon svg {
@@ -675,23 +667,60 @@
             height: 15px;
         }
 
-        .sidebar-account-block .google-btn-label,
-        .sidebar-account-block .user-bar-email {
+        .sidebar-account-block .google-btn-label {
             display: none;
         }
 
-        .sidebar-account-block .user-bar {
-            min-height: 40px;
-            padding: 6px 8px;
+        .profile-avatar-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(215, 183, 101, .54);
+            padding: 2px;
+            background:
+                linear-gradient(135deg, rgba(215, 183, 101, .22), rgba(255, 255, 255, .06)),
+                rgba(10, 10, 10, .82);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .38), 0 0 18px rgba(215, 183, 101, .14);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform .2s var(--ease-premium), border-color .2s ease, box-shadow .2s ease;
         }
 
-        .sidebar-account-block .user-bar-info {
-            max-width: 118px;
+        .profile-avatar-btn:hover {
+            transform: translateY(-1px) scale(1.035);
+            border-color: rgba(240, 217, 141, .9);
+            box-shadow: 0 16px 34px rgba(0, 0, 0, .44), 0 0 24px rgba(215, 183, 101, .22);
         }
 
-        .sidebar-account-block .signout-btn {
-            padding: 5px 8px;
-            font-size: .66rem;
+        .profile-avatar-btn img,
+        .profile-avatar-fallback {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .profile-avatar-fallback {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #120f08;
+            background: linear-gradient(135deg, #f4dda0, #b78c35);
+            font-weight: 950;
+            font-size: .88rem;
+        }
+
+        .user-bar {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-bar-info,
+        .signout-btn {
+            display: none;
         }
         
         .google-btn {
@@ -856,12 +885,10 @@
         @media (min-width: 769px) {
             .desktop-header-search { visibility: visible !important; }
             .main-topbar .search-box { display: none !important; }
-            /* Push account block to far right and show avatar-only visual */
             .sidebar-account-block { margin-left: auto; }
             .sidebar-account-block .google-btn-text { display: none; }
             .sidebar-account-block .google-btn-icon { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; }
-            /* If the user avatar exists, show it fixed to top-right */
-            #userAvatarMain { display: inline-block; width: 40px; height: 40px; border-radius: 50%; object-fit: cover; position: fixed; right: 18px; top: calc(var(--safe-top) + 16px); z-index: 60; box-shadow: 0 10px 22px rgba(0,0,0,.36); }
+            #userAvatarMain { display: inline-block; width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
         }
         
         .nav-arrows {
@@ -9184,9 +9211,9 @@
 
             .home-deck {
                 display: grid;
-                grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
+                grid-template-columns: minmax(0, 1.26fr) minmax(280px, .74fr);
                 gap: 18px;
-                min-height: 312px;
+                min-height: 278px;
             }
 
             .home-hero-card,
@@ -9205,11 +9232,11 @@
             .home-hero-card {
                 position: relative;
                 overflow: hidden;
-                min-height: 312px;
+                min-height: 278px;
                 border-radius: 24px;
-                padding: clamp(20px, 2.6vw, 34px);
+                padding: clamp(18px, 2.3vw, 30px);
                 display: grid;
-                grid-template-columns: minmax(0, 1fr) clamp(150px, 22vw, 236px);
+                grid-template-columns: minmax(0, 1fr) clamp(138px, 18vw, 198px);
                 gap: clamp(18px, 3vw, 36px);
                 align-items: center;
             }
@@ -9251,11 +9278,11 @@
 
             .home-hero-title {
                 margin: 12px 0 10px;
-                font-size: clamp(2rem, 4.3vw, 4.15rem);
-                line-height: .96;
+                font-size: clamp(1.8rem, 3.55vw, 3.35rem);
+                line-height: 1;
                 font-weight: 950;
                 letter-spacing: 0;
-                max-width: 9.8ch;
+                max-width: 10.8ch;
             }
 
             .home-hero-sub {
@@ -9332,7 +9359,7 @@
             .home-hero-art {
                 justify-self: end;
                 width: 100%;
-                max-width: 236px;
+                max-width: 198px;
             }
 
             .home-hero-art-frame {
@@ -9375,10 +9402,10 @@
 
             .home-side-stack {
                 border-radius: 24px;
-                padding: 16px;
+                padding: 14px;
                 display: grid;
                 grid-template-rows: auto 1fr;
-                gap: 14px;
+                gap: 12px;
                 min-width: 0;
             }
 
@@ -9473,6 +9500,81 @@
 
             .home-section-headline {
                 margin-bottom: 12px;
+            }
+
+            .home-quick-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .home-quick-card {
+                min-height: 78px;
+                border: 1px solid rgba(255, 255, 255, .085);
+                border-radius: 18px;
+                padding: 13px;
+                display: grid;
+                grid-template-columns: 38px minmax(0, 1fr);
+                align-items: center;
+                gap: 12px;
+                cursor: pointer;
+                color: var(--text);
+                font-family: 'Circular Std', 'Circular', 'Spotify Mix', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                text-align: left;
+                background:
+                    linear-gradient(135deg, rgba(215, 183, 101, .085), transparent 42%),
+                    rgba(255, 255, 255, .035);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045);
+                transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+            }
+
+            .home-quick-card:hover {
+                transform: translateY(-2px);
+                border-color: rgba(215, 183, 101, .28);
+                background:
+                    linear-gradient(135deg, rgba(215, 183, 101, .13), transparent 48%),
+                    rgba(255, 255, 255, .052);
+                box-shadow: 0 18px 34px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .06);
+            }
+
+            .home-quick-icon {
+                width: 38px;
+                height: 38px;
+                border-radius: 13px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: #14100a;
+                background: linear-gradient(135deg, #f0d98d, #b28938);
+                box-shadow: 0 10px 22px rgba(215, 183, 101, .2);
+            }
+
+            .home-quick-icon .lucide {
+                width: 18px;
+                height: 18px;
+            }
+
+            .home-quick-card>span:last-child {
+                min-width: 0;
+            }
+
+            .home-quick-title {
+                display: block;
+                font-size: .82rem;
+                font-weight: 900;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .home-quick-meta {
+                display: block;
+                margin-top: 4px;
+                color: var(--text2);
+                font-size: .64rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .home-discovery-grid {
@@ -9700,6 +9802,10 @@
                 .home-album-grid {
                     grid-template-columns: repeat(4, minmax(0, 1fr));
                 }
+
+                .home-quick-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
             }
 
             @media (max-width: 768px) {
@@ -9804,6 +9910,7 @@
                 }
 
                 .home-discovery-grid,
+                .home-quick-grid,
                 .home-album-grid {
                     display: flex;
                     gap: 9px;
@@ -9820,6 +9927,14 @@
                     scroll-snap-align: start;
                     grid-template-columns: 48px minmax(0, 1fr);
                     gap: 9px;
+                }
+
+                .home-quick-card {
+                    min-width: 176px;
+                    min-height: 70px;
+                    padding: 11px;
+                    border-radius: 16px;
+                    scroll-snap-align: start;
                 }
 
                 .home-track-art {
@@ -10055,10 +10170,676 @@
                     animation: none !important;
                 }
             }
-                /* Desktop more-button dropdown */
-                .desktop-menu-dropdown{position:fixed;z-index:140;background:var(--surface);border:1px solid rgba(255,255,255,.06);box-shadow:0 12px 30px rgba(0,0,0,.45);border-radius:10px;overflow:hidden}
-                .desktop-menu-dropdown button{display:block;padding:10px 14px;background:none;border:none;color:var(--text);width:100%;text-align:left;cursor:pointer}
-                .desktop-menu-dropdown button:hover{background:rgba(255,255,255,.03)}
+
+            .nav-btn,
+            .topbar-icon-btn,
+            .topbar-menu-btn,
+            .desktop-library-btn,
+            .desktop-fav-btn,
+            .desktop-queue-btn,
+            .google-btn,
+            .signout-btn,
+            .btn,
+            .home-play-primary,
+            .home-action-ghost,
+            .home-quick-card,
+            .home-icon-action,
+            .play-btn,
+            .ctrl-btn,
+            .queue-btn-player,
+            .dl-queue-btn,
+            .playlist-play-btn,
+            .playlist-shuffle-btn,
+            .create-playlist-btn,
+            .playlist-card,
+            .artist-card,
+            .song-row,
+            .playlist-song-row,
+            .fav-song-row,
+            .sort-trigger,
+            .fav-sort-trigger,
+            .modal-cancel,
+            .modal-confirm,
+            .mfp-ctrl-btn,
+            .mfp-prev-btn,
+            .mfp-next-btn,
+            .mfp-action-btn,
+            .mfp-play-btn {
+                transition-duration: .2s;
+                transition-timing-function: var(--ease-premium);
+            }
+
+            button:focus-visible,
+            input:focus-visible,
+            [role="button"]:focus-visible,
+            .song-row:focus-visible,
+            .playlist-song-row:focus-visible,
+            .fav-song-row:focus-visible,
+            .artist-card:focus-visible,
+            .playlist-card:focus-visible {
+                outline: none;
+                box-shadow: var(--focus-ring), 0 14px 34px rgba(0, 0, 0, .34) !important;
+                border-color: rgba(215, 183, 101, .42) !important;
+            }
+
+            .main {
+                background:
+                    linear-gradient(180deg, rgba(215, 183, 101, .025), transparent 220px),
+                    radial-gradient(circle at 72% 4%, rgba(215, 183, 101, .065), transparent 30%),
+                    var(--bg2);
+                overscroll-behavior-y: contain;
+            }
+
+            @media (min-width: 1440px) {
+                .home-shell,
+                .premium-dashboard,
+                .audio-settings-shell,
+                .playlists-wrap,
+                .songs-section,
+                .playlist-song-list,
+                .fav-mobile-shell {
+                    max-width: 1480px;
+                    margin-left: auto;
+                    margin-right: auto;
+                    width: 100%;
+                }
+            }
+
+            .sidebar {
+                border-bottom-color: rgba(215, 183, 101, .14);
+            }
+
+            .nav-btn {
+                min-height: 38px;
+            }
+
+            .nav-btn.active {
+                background: linear-gradient(135deg, rgba(215, 183, 101, .18), rgba(255, 255, 255, .06));
+                box-shadow: inset 0 0 0 1px rgba(215, 183, 101, .22);
+            }
+
+            .logo-word .logo-a,
+            .logo-word .logo-x {
+                color: var(--accent);
+                text-shadow: 0 0 16px rgba(215, 183, 101, .48);
+            }
+
+            .logo-icon {
+                background: linear-gradient(140deg, rgba(215, 183, 101, .34), rgba(215, 183, 101, .1));
+                border-color: rgba(215, 183, 101, .42);
+                box-shadow: 0 10px 24px rgba(0, 0, 0, .35), 0 0 18px rgba(215, 183, 101, .2);
+            }
+
+            .player {
+                background:
+                    linear-gradient(180deg, rgba(30, 27, 20, .74), rgba(8, 8, 8, .9)),
+                    rgba(0, 0, 0, .86);
+                border-top-color: rgba(215, 183, 101, .16);
+            }
+
+            .player-poster {
+                border-radius: 12px;
+                box-shadow: 0 12px 28px rgba(0, 0, 0, .42), 0 0 0 1px rgba(255, 255, 255, .08);
+            }
+
+            .play-btn,
+            .playlist-play-btn,
+            #fullscreenPlayer .mfp-play-btn {
+                background: linear-gradient(135deg, #f4dda0, #b78c35);
+                color: #120f08;
+                box-shadow: 0 14px 34px rgba(215, 183, 101, .24), inset 0 1px 0 rgba(255, 255, 255, .32);
+            }
+
+            .play-btn:hover,
+            .playlist-play-btn:hover,
+            #fullscreenPlayer .mfp-play-btn:hover {
+                background: linear-gradient(135deg, #ffe9ad, #c9983c);
+                transform: translateY(-1px) scale(1.04);
+            }
+
+            .progress-track,
+            #fullscreenPlayer .mfp-progress-track,
+            input[type=range] {
+                background: rgba(255, 255, 255, .13);
+            }
+
+            .progress-fill,
+            #fullscreenPlayer .mfp-progress-fill,
+            .mini-progress-fill,
+            .dp-progress-bar {
+                background: linear-gradient(90deg, #f4dda0, #b78c35);
+                box-shadow: 0 0 18px rgba(215, 183, 101, .28);
+            }
+
+            .progress-fill::after {
+                background: #f6e2a8;
+                box-shadow: 0 0 0 3px rgba(215, 183, 101, .2);
+            }
+
+            .ctrl-btn.on,
+            .queue-btn-player.active,
+            .lyrics-toggle-btn.active,
+            .player-like.liked,
+            .player-dl-btn.downloaded,
+            .like-btn.liked,
+            .ps-icon-btn.liked,
+            .fav-icon-btn.liked {
+                color: var(--accent);
+            }
+
+            .artist-hero,
+            .playlist-page-header,
+            .fav-mobile-header {
+                border-radius: 0 0 24px 24px;
+                border-bottom-color: rgba(215, 183, 101, .14);
+                background:
+                    linear-gradient(180deg, rgba(215, 183, 101, .13), rgba(255, 255, 255, .025) 58%, transparent),
+                    rgba(255, 255, 255, .015);
+            }
+
+            .artist-hero-img,
+            .playlist-cover-collage,
+            .fav-mobile-cover {
+                box-shadow: 0 22px 54px rgba(0, 0, 0, .52), 0 0 0 1px rgba(255, 255, 255, .1);
+            }
+
+            .playlist-card,
+            .artist-card,
+            .home-track-card,
+            .home-album-card,
+            .home-mini-row,
+            .home-quick-card,
+            .create-playlist-btn {
+                contain: layout paint;
+            }
+
+            .playlist-card-cover,
+            .artist-card-img-wrap img,
+            .home-album-card img,
+            .home-track-art img {
+                background: linear-gradient(135deg, rgba(215, 183, 101, .12), rgba(255, 255, 255, .04));
+            }
+
+            .modal,
+            .appearance-panel,
+            .queue-panel,
+            .download-panel,
+            .lyrics-panel,
+            .sort-sheet-card,
+            .playlist-sort-sheet-card,
+            .song-row-action-menu,
+            .add-to-playlist-dropdown {
+                border-color: rgba(215, 183, 101, .16) !important;
+                background: linear-gradient(180deg, rgba(23, 22, 19, .96), rgba(10, 10, 10, .96)) !important;
+                box-shadow: 0 28px 80px rgba(0, 0, 0, .52), inset 0 1px 0 rgba(255, 255, 255, .06) !important;
+            }
+
+            .modal-input {
+                background: rgba(255, 255, 255, .06);
+                border-color: rgba(255, 255, 255, .08);
+            }
+
+            .modal-input:focus {
+                border-color: rgba(215, 183, 101, .45);
+                box-shadow: var(--focus-ring);
+            }
+
+            .modal-confirm,
+            .btn-accent {
+                background: linear-gradient(135deg, #f4dda0, #b78c35);
+                color: #120f08;
+            }
+
+            .empty-state {
+                color: rgba(255, 255, 255, .58);
+            }
+
+            .empty-state .emoji {
+                color: var(--accent);
+                opacity: .72;
+            }
+
+            @media (max-width: 768px) {
+                .mobile-nav {
+                    border-top-color: rgba(215, 183, 101, .14);
+                    box-shadow: 0 -18px 46px rgba(0, 0, 0, .46), inset 0 1px 0 rgba(255, 255, 255, .06);
+                }
+
+                .mnav-btn {
+                    min-height: 48px;
+                    touch-action: manipulation;
+                }
+
+                .mnav-btn.active {
+                    color: var(--accent);
+                    background: rgba(215, 183, 101, .12);
+                    box-shadow: inset 0 0 0 1px rgba(215, 183, 101, .22);
+                }
+
+                .song-row,
+                .playlist-song-row,
+                .fav-song-row {
+                    min-height: 60px;
+                    border-radius: 14px;
+                }
+
+                .song-actions,
+                .ps-actions,
+                .fav-song-actions {
+                    opacity: 1;
+                }
+
+                .like-btn,
+                .song-more-btn,
+                .ps-icon-btn,
+                .fav-icon-btn {
+                    width: 36px;
+                    height: 36px;
+                }
+
+                .player {
+                    border-radius: 18px 18px 0 0;
+                }
+
+                .queue-panel,
+                .download-panel,
+                .lyrics-panel {
+                    will-change: transform;
+                }
+            }
+                /* Desktop premium header */
+                @media (min-width: 769px) {
+                    body {
+                        grid-template-rows: 76px 1fr var(--player-h);
+                    }
+
+                    .sidebar {
+                        height: 76px;
+                        min-height: 76px;
+                        padding: 10px 18px;
+                        gap: clamp(10px, 1.15vw, 18px);
+                        background:
+                            linear-gradient(180deg, rgba(16, 15, 13, .92), rgba(7, 7, 7, .78)),
+                            radial-gradient(circle at 18% 0%, rgba(215, 183, 101, .16), transparent 34%);
+                        border-bottom: 1px solid rgba(215, 183, 101, .14);
+                        box-shadow: 0 18px 44px rgba(0, 0, 0, .34), inset 0 -1px 0 rgba(255, 255, 255, .035);
+                        backdrop-filter: blur(24px) saturate(140%);
+                        -webkit-backdrop-filter: blur(24px) saturate(140%);
+                    }
+
+                    .sidebar-logo-block {
+                        width: clamp(156px, 15vw, 206px);
+                        min-width: 156px;
+                        padding: 0;
+                        margin: 0;
+                        gap: 10px;
+                    }
+
+                    .logo {
+                        gap: 10px;
+                    }
+
+                    .logo-icon {
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 12px;
+                        box-shadow: 0 10px 24px rgba(0, 0, 0, .36), 0 0 20px rgba(215, 183, 101, .16);
+                    }
+
+                    .logo-icon img {
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 10px;
+                    }
+
+                    .logo-word {
+                        font-size: 1.04rem;
+                        letter-spacing: .08rem;
+                    }
+
+                    .logo-sub,
+                    .sync-pill {
+                        display: none;
+                    }
+
+                    .sidebar-nav-block {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        padding: 5px;
+                        border-radius: 999px;
+                        background: rgba(255, 255, 255, .045);
+                        border: 1px solid rgba(255, 255, 255, .075);
+                        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05), 0 12px 28px rgba(0, 0, 0, .18);
+                    }
+
+                    .nav-btn {
+                        min-height: 38px;
+                        width: auto;
+                        padding: 0 13px;
+                        gap: 8px;
+                        border-radius: 999px;
+                        color: rgba(255, 255, 255, .67);
+                        font-size: .78rem;
+                        font-weight: 850;
+                        letter-spacing: 0;
+                        transition: transform .18s var(--ease-premium), color .18s ease, background .18s ease, box-shadow .18s ease;
+                    }
+
+                    .nav-btn .nav-icon-wrap,
+                    .nav-btn svg {
+                        width: 16px;
+                        height: 16px;
+                    }
+
+                    .nav-btn:hover {
+                        color: #fff;
+                        background: rgba(255, 255, 255, .07);
+                        transform: translateY(-1px);
+                    }
+
+                    .nav-btn.active {
+                        color: #fff;
+                        background: linear-gradient(135deg, rgba(215, 183, 101, .22), rgba(255, 255, 255, .07));
+                        box-shadow: inset 0 0 0 1px rgba(215, 183, 101, .24), 0 10px 22px rgba(0, 0, 0, .24);
+                    }
+
+                    .desktop-header-search {
+                        flex: 1 1 640px;
+                        max-width: 700px;
+                        min-width: 300px;
+                        height: 46px;
+                        margin: 0 clamp(8px, 1.6vw, 28px);
+                    }
+
+                    .desktop-header-search input {
+                        height: 46px;
+                        border-radius: 999px;
+                        padding: 0 46px 0 48px;
+                        background: linear-gradient(180deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, .045));
+                        border: 1px solid rgba(255, 255, 255, .1);
+                        color: var(--text);
+                        font-size: .93rem;
+                        font-weight: 650;
+                        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 14px 30px rgba(0, 0, 0, .25);
+                    }
+
+                    .desktop-header-search input::placeholder {
+                        color: rgba(255, 255, 255, .42);
+                        font-weight: 600;
+                    }
+
+                    .desktop-header-search input:focus {
+                        background: rgba(18, 18, 16, .94);
+                        border-color: rgba(215, 183, 101, .5);
+                        box-shadow: var(--focus-ring), inset 0 1px 0 rgba(255, 255, 255, .08), 0 18px 40px rgba(0, 0, 0, .34);
+                    }
+
+                    .desktop-header-search .search-icon {
+                        left: 18px;
+                        color: rgba(240, 217, 141, .9);
+                    }
+
+                    .desktop-header-search .search-clear {
+                        right: 13px;
+                        width: 26px;
+                        height: 26px;
+                        border-radius: 50%;
+                    }
+
+                    .desktop-header-actions {
+                        display: none !important;
+                    }
+
+                    .sidebar-account-block {
+                        margin-left: 0;
+                        background: transparent;
+                        border: 0;
+                        box-shadow: none;
+                        overflow: visible;
+                        flex: 0 0 auto;
+                    }
+
+                    .sidebar-account-block .google-btn {
+                        width: 44px;
+                        height: 44px;
+                        min-height: 44px;
+                        padding: 0;
+                        border-radius: 50%;
+                        justify-content: center;
+                        background: rgba(255, 255, 255, .055);
+                        border: 1px solid rgba(215, 183, 101, .26);
+                        box-shadow: 0 12px 28px rgba(0, 0, 0, .26);
+                    }
+
+                    .sidebar-account-block .google-btn:hover {
+                        background: rgba(215, 183, 101, .11);
+                        border-color: rgba(240, 217, 141, .55);
+                        transform: translateY(-1px);
+                    }
+
+                    .sidebar-account-block .google-btn-icon {
+                        width: 32px;
+                        height: 32px;
+                    }
+
+                    .sidebar-account-block .google-btn-text,
+                    .sidebar-account-block .google-btn-label,
+                    .user-bar-info,
+                    .sidebar-account-block .signout-btn {
+                        display: none !important;
+                    }
+
+                    .user-bar {
+                        gap: 0;
+                        padding: 0;
+                    }
+
+                    .profile-avatar-btn {
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 50%;
+                        border: 1px solid rgba(215, 183, 101, .58);
+                        padding: 2px;
+                        background:
+                            linear-gradient(135deg, rgba(215, 183, 101, .2), rgba(255, 255, 255, .06)),
+                            rgba(10, 10, 10, .82);
+                        box-shadow: 0 12px 28px rgba(0, 0, 0, .38), 0 0 18px rgba(215, 183, 101, .14);
+                        cursor: pointer;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: transform .2s var(--ease-premium), border-color .2s ease, box-shadow .2s ease;
+                    }
+
+                    .profile-avatar-btn:hover,
+                    .profile-avatar-btn[aria-expanded="true"] {
+                        transform: translateY(-1px) scale(1.035);
+                        border-color: rgba(240, 217, 141, .9);
+                        box-shadow: 0 16px 34px rgba(0, 0, 0, .44), 0 0 24px rgba(215, 183, 101, .22);
+                    }
+
+                    .profile-avatar-btn #userAvatarMain {
+                        position: static !important;
+                        width: 38px !important;
+                        height: 38px !important;
+                        border: 0;
+                        border-radius: 50%;
+                        object-fit: cover;
+                        box-shadow: none;
+                    }
+
+                    .profile-avatar-fallback {
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 50%;
+                        display: none;
+                        align-items: center;
+                        justify-content: center;
+                        color: #120f08;
+                        background: linear-gradient(135deg, #f4dda0, #b78c35);
+                        font-size: .84rem;
+                        font-weight: 950;
+                    }
+                }
+
+                @media (min-width: 921px) and (max-width: 1180px) {
+                    .sidebar-logo-block {
+                        width: 52px;
+                        min-width: 52px;
+                    }
+
+                    .logo-wordmark {
+                        display: none;
+                    }
+
+                    .desktop-header-search {
+                        min-width: 240px;
+                        margin: 0 8px;
+                    }
+
+                    .nav-btn {
+                        padding: 0 10px;
+                        font-size: .72rem;
+                    }
+                }
+
+                @media (min-width: 769px) and (max-width: 920px) {
+                    .sidebar-logo-block {
+                        width: 48px;
+                        min-width: 48px;
+                    }
+
+                    .logo-wordmark {
+                        display: none;
+                    }
+
+                    .sidebar-nav-block {
+                        gap: 3px;
+                        padding: 4px;
+                    }
+
+                    .nav-btn {
+                        width: 40px;
+                        min-width: 40px;
+                        padding: 0;
+                        justify-content: center;
+                        font-size: 0;
+                    }
+
+                    .desktop-header-search {
+                        flex-basis: 260px;
+                        min-width: 190px;
+                        margin: 0 6px;
+                    }
+                }
+
+                .desktop-menu-dropdown,
+                .desktop-profile-dropdown {
+                    position: fixed;
+                    z-index: 140;
+                    width: 260px;
+                    padding: 8px;
+                    border-radius: 18px;
+                    background:
+                        linear-gradient(180deg, rgba(25, 24, 22, .96), rgba(10, 10, 10, .94)),
+                        rgba(12, 12, 12, .92);
+                    border: 1px solid rgba(215, 183, 101, .18);
+                    box-shadow: 0 24px 60px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .055);
+                    backdrop-filter: blur(22px) saturate(135%);
+                    -webkit-backdrop-filter: blur(22px) saturate(135%);
+                    overflow: hidden;
+                    animation: menuFloatIn .16s var(--ease-premium);
+                }
+
+                @keyframes menuFloatIn {
+                    from { opacity: 0; transform: translateY(-6px) scale(.98); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+
+                .desktop-profile-head {
+                    display: grid;
+                    grid-template-columns: 42px 1fr;
+                    gap: 10px;
+                    align-items: center;
+                    padding: 8px 8px 10px;
+                }
+
+                .desktop-profile-head img {
+                    width: 42px;
+                    height: 42px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: 1px solid rgba(215, 183, 101, .42);
+                }
+
+                .desktop-profile-name,
+                .desktop-profile-email {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .desktop-profile-name {
+                    color: var(--text);
+                    font-size: .9rem;
+                    font-weight: 850;
+                }
+
+                .desktop-profile-email {
+                    margin-top: 2px;
+                    color: rgba(255, 255, 255, .52);
+                    font-size: .72rem;
+                    font-weight: 650;
+                }
+
+                .desktop-profile-divider {
+                    height: 1px;
+                    margin: 5px 6px;
+                    background: rgba(255, 255, 255, .08);
+                }
+
+                .desktop-menu-dropdown button,
+                .desktop-profile-menu-item {
+                    width: 100%;
+                    min-height: 40px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 0 11px;
+                    border: 0;
+                    border-radius: 11px;
+                    background: transparent;
+                    color: rgba(255, 255, 255, .76);
+                    font-family: inherit;
+                    font-size: .84rem;
+                    font-weight: 750;
+                    text-align: left;
+                    cursor: pointer;
+                    transition: color .16s ease, background .16s ease, transform .16s var(--ease-premium);
+                }
+
+                .desktop-profile-menu-item svg {
+                    width: 17px;
+                    height: 17px;
+                    color: rgba(240, 217, 141, .78);
+                    flex: 0 0 auto;
+                }
+
+                .desktop-menu-dropdown button:hover,
+                .desktop-profile-menu-item:hover {
+                    color: #fff;
+                    background: rgba(255, 255, 255, .07);
+                    transform: translateX(2px);
+                }
+
+                .desktop-profile-menu-item.danger {
+                    color: rgba(255, 180, 180, .9);
+                }
+
+                .desktop-profile-menu-item.danger svg {
+                    color: rgba(255, 128, 128, .95);
+                }
             </style>
 </head>
 
@@ -10154,45 +10935,30 @@
         <input class="library-drawer-toggle" type="checkbox" id="libraryDrawerToggle" aria-hidden="true">
 
         <div class="sidebar-nav-block">
-            <button class="nav-btn active" id="navHome" onclick="loadArtists()">
-                <span class="nav-icon-wrap"><i data-lucide="disc-3" aria-hidden="true"></i></span> Artists
+            <button class="nav-btn active" id="navHome" onclick="loadArtists()" title="Home" aria-label="Home">
+                <span class="nav-icon-wrap"><i data-lucide="house" aria-hidden="true"></i></span> Home
             </button>
-            <button class="nav-btn" id="navFav" onclick="showLikedSongs()">
+            <button class="nav-btn" id="navFav" onclick="showLikedSongs()" title="Favorites" aria-label="Favorites">
                 <span class="nav-icon-wrap"><i data-lucide="heart" aria-hidden="true"></i></span> Favorites
             </button>
-            <button class="nav-btn" id="navDownloads" onclick="showDownloads()">
+            <button class="nav-btn" id="navDownloads" onclick="showDownloads()" title="Downloads" aria-label="Downloads">
                 <span class="nav-icon-wrap"><i data-lucide="download" aria-hidden="true"></i></span> Downloads
             </button>
-            <button class="nav-btn" id="navPlaylists" onclick="showPlaylists()">
+            <button class="nav-btn" id="navPlaylists" onclick="showPlaylists()" title="Playlists" aria-label="Playlists">
                 <span class="nav-icon-wrap"><i data-lucide="list-music" aria-hidden="true"></i></span> Playlists
             </button>
-            <button class="nav-btn" id="navStats" onclick="renderStatsPage()">
+            <button class="nav-btn" id="navStats" onclick="renderStatsPage()" title="Stats" aria-label="Stats">
                 <span class="nav-icon-wrap"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i></span> Stats
             </button>
-            <button class="nav-btn" id="navAudio" onclick="renderAudioPage()">
+            <button class="nav-btn" id="navAudio" onclick="renderAudioPage()" title="Audio" aria-label="Audio">
                 <span class="nav-icon-wrap"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span> Audio
             </button>
         </div>
 
         <div class="search-box desktop-header-search">
             <span class="search-icon"><i data-lucide="search" aria-hidden="true"></i></span>
-            <input type="text" placeholder="Search songs, artists, albums, playlists..." aria-label="Search">
-            <button class="search-clear" type="button" aria-label="Clear search"><i data-lucide="x" aria-hidden="true"></i></button>
-        </div>
-
-        <div class="desktop-header-actions">
-            <label class="topbar-icon-btn desktop-library-btn" for="libraryDrawerToggle" title="Library" aria-label="Open library">
-                <i data-lucide="library" aria-hidden="true"></i>
-            </label>
-            <button class="topbar-icon-btn desktop-fav-btn" onclick="showLikedSongs()" title="Favorites" aria-label="Favorites">
-                <i data-lucide="heart" aria-hidden="true"></i>
-            </button>
-            <button class="topbar-icon-btn desktop-queue-btn" onclick="toggleQueuePanel()" title="Queue" aria-label="Queue">
-                <i data-lucide="list-music" aria-hidden="true"></i>
-            </button>
-            <button class="topbar-icon-btn desktop-more-btn" onclick="showDesktopMenu(event)" title="More" aria-label="More">
-                <i data-lucide="more-vertical" aria-hidden="true"></i>
-            </button>
+            <input type="text" id="desktopSearchBar" placeholder="Search songs, artists, albums, playlists..." aria-label="Search" oninput="desktopHeaderSearch()">
+            <button class="search-clear" id="desktopSearchClear" type="button" aria-label="Clear search" onclick="clearDesktopSearch()"><i data-lucide="x" aria-hidden="true"></i></button>
         </div>
 
 
@@ -10222,12 +10988,14 @@
   </div>
 </button>
             <div class="user-bar" id="userBar" style="display:none;">
-                <img id="userAvatarMain" class="user-avatar" src="" alt="User">
+                <button class="profile-avatar-btn" type="button" onclick="showDesktopProfileMenu(event)" aria-label="Open profile menu" aria-haspopup="menu" aria-expanded="false">
+                    <img id="userAvatarMain" class="user-avatar" src="" alt="User">
+                    <span class="profile-avatar-fallback" aria-hidden="true">FX</span>
+                </button>
                 <div class="user-bar-info">
                     <div id="userDisplayNameMain" class="user-bar-name"></div>
                     <div id="userEmailMain" class="user-bar-email"></div>
                 </div>
-                <button class="signout-btn" onclick="signOut()">Sign out</button>
             </div>
 
 
@@ -14401,7 +15169,10 @@
         window.addSongToPlaylistById = addSongToPlaylistById;
 
         let openDropdownEl = null;
-        function closeDropdown() { if(openDropdownEl){openDropdownEl.remove();openDropdownEl=null;} }
+        function closeDropdown() {
+            document.querySelectorAll('.profile-avatar-btn[aria-expanded="true"]').forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+            if(openDropdownEl){openDropdownEl.remove();openDropdownEl=null;}
+        }
         document.addEventListener('click',e=>{ if(openDropdownEl&&!openDropdownEl.contains(e.target))closeDropdown(); });
         window.closeDropdown = closeDropdown;
 
@@ -14520,24 +15291,63 @@
 
         window.showSongRowActionsMenu = showSongRowActionsMenu;
 
-        // Desktop 'more' menu that includes Appearance
-        window.showDesktopMenu = (e) => {
-            e.stopPropagation(); closeDropdown();
-            const btn = e.currentTarget || e.target;
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (event) => {
+            event.preventDefault();
+            deferredInstallPrompt = event;
+        });
+
+        window.installFalconXApp = async () => {
+            closeDropdown();
+            if (!deferredInstallPrompt) {
+                showToast('Use your browser menu to install FalconX');
+                return;
+            }
+            deferredInstallPrompt.prompt();
+            try {
+                await deferredInstallPrompt.userChoice;
+            } catch (err) {}
+            deferredInstallPrompt = null;
+        };
+
+        window.showDesktopProfileMenu = (e) => {
+            e.stopPropagation();
+            closeDropdown();
+            const btn = e.currentTarget || e.target.closest?.('.profile-avatar-btn') || e.target;
             const rect = btn.getBoundingClientRect();
+            const name = document.getElementById('userDisplayNameMain')?.textContent || 'FalconX Listener';
+            const email = document.getElementById('userEmailMain')?.textContent || 'Premium account';
+            const avatar = document.getElementById('userAvatarMain')?.src || 'images/falcon.jpeg';
             const dd = document.createElement('div');
-            dd.className = 'desktop-menu-dropdown';
-            dd.style.top = (rect.bottom + 8) + 'px';
-            dd.style.left = Math.max(8, rect.right - 160) + 'px';
+            dd.className = 'desktop-profile-dropdown';
+            dd.setAttribute('role', 'menu');
+            dd.style.top = `${rect.bottom + 10}px`;
+            dd.style.left = `${Math.min(window.innerWidth - 272, Math.max(12, rect.right - 260))}px`;
             dd.innerHTML = `
-                <button onclick="openAppearance();closeDropdown()">Appearance</button>
-                <button onclick="closeDropdown();showDownloads()">Downloads</button>
-                <button onclick="closeDropdown();showPlaylists()">Playlists</button>
+                <div class="desktop-profile-head">
+                    <img src="${escH(avatar)}" alt="">
+                    <div>
+                        <div class="desktop-profile-name">${escH(name)}</div>
+                        <div class="desktop-profile-email">${escH(email)}</div>
+                    </div>
+                </div>
+                <div class="desktop-profile-divider"></div>
+                <button class="desktop-profile-menu-item" role="menuitem" onclick="closeDropdown();showToast('Profile settings coming soon')"><i data-lucide="user" aria-hidden="true"></i><span>Profile</span></button>
+                <button class="desktop-profile-menu-item" role="menuitem" onclick="closeDropdown();showLikedSongs()"><i data-lucide="heart" aria-hidden="true"></i><span>Liked Songs</span></button>
+                <button class="desktop-profile-menu-item" role="menuitem" onclick="closeDropdown();showPlaylists()"><i data-lucide="list-music" aria-hidden="true"></i><span>Playlists</span></button>
+                <button class="desktop-profile-menu-item" role="menuitem" onclick="closeDropdown();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
+                <button class="desktop-profile-menu-item" role="menuitem" onclick="closeDropdown();openAppearance()"><i data-lucide="palette" aria-hidden="true"></i><span>Appearance</span></button>
+                <button class="desktop-profile-menu-item" role="menuitem" onclick="installFalconXApp()"><i data-lucide="monitor-down" aria-hidden="true"></i><span>Install FalconX App</span></button>
+                <div class="desktop-profile-divider"></div>
+                <button class="desktop-profile-menu-item danger" role="menuitem" onclick="closeDropdown();signOut()"><i data-lucide="log-out" aria-hidden="true"></i><span>Sign Out</span></button>
             `;
             document.body.appendChild(dd);
             renderLucideIcons(dd);
+            btn.setAttribute('aria-expanded', 'true');
             openDropdownEl = dd;
         };
+
+        window.showDesktopMenu = window.showDesktopProfileMenu;
 
         function buildSidebar() { const sb=document.getElementById('sidebarArtists'); sb.innerHTML=''; for(let key in artists){ const a=artists[key]; sb.innerHTML+=`<div class="artist-item" id="sb_${key}" onclick="openArtist('${key}')"><img src="${a.image}" onerror="this.style.background='#282828'"><span class="artist-item-name">${a.name}</span></div>`; } }
 
@@ -14597,6 +15407,7 @@
             const miniRowHTML = (song, useHistory = false, icon = 'play') => `<div class="home-mini-row" onclick="${useHistory ? historyClick(song) : playClick(song)}"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="home-text"><div class="home-title">${songTitleHTML(song)}</div><div class="home-meta">${escH(song.artistName || '')}</div></div><button class="home-icon-action" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon(icon)}</button></div>`;
             const trackCardHTML = (song, i) => `<div class="home-track-card" onclick="${playClick(song)}"><div class="home-track-art"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><span class="home-rank">${i + 1}</span></div><div class="home-text"><div class="home-title">${songTitleHTML(song)}</div><div class="home-meta">${escH(song.artistName)} • ${song.plays || song.playCount || 0} plays</div></div></div>`;
             const albumCardHTML = (album) => `<div class="home-album-card" onclick="${playClick(album.songs[0])}"><img src="${escH(album.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="home-album-title">${escH(album.album)}</div><div class="home-album-meta">${escH(album.artistName)} • ${album.songs.length} track${album.songs.length !== 1 ? 's' : ''}</div></div>`;
+            const quickHTML = `<section class="home-section"><div class="home-quick-grid home-rail"><button class="home-quick-card" onclick="showLikedSongs()"><span class="home-quick-icon">${uiIcon('heart')}</span><span><span class="home-quick-title">Favorites</span><span class="home-quick-meta">${likedSongs.size} saved tracks</span></span></button><button class="home-quick-card" onclick="showPlaylists()"><span class="home-quick-icon">${uiIcon('list-music')}</span><span><span class="home-quick-title">Playlists</span><span class="home-quick-meta">${Object.keys(playlists || {}).length} collections</span></span></button><button class="home-quick-card" onclick="showDownloads()"><span class="home-quick-icon">${uiIcon('download')}</span><span><span class="home-quick-title">Downloads</span><span class="home-quick-meta">${downloadedFiles.size} offline tracks</span></span></button><button class="home-quick-card" onclick="showAudioSettings()"><span class="home-quick-icon">${uiIcon('sliders-horizontal')}</span><span><span class="home-quick-title">Audio Suite</span><span class="home-quick-meta">Tune your sound</span></span></button></div></section>`;
             const heroHTML = featuredSong ? `<section class="home-section home-deck"><div class="home-hero-card" style="--home-accent:rgba(215,183,101,.24)"><div class="home-hero-copy"><div class="home-eyebrow">${uiIcon('sparkles')}<span>FalconX Prime Signal</span></div><h2 class="home-hero-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="home-hero-sub">${heroSubtitle}</p><div class="home-hero-actions"><button class="home-play-primary" onclick="${playClick(featuredSong)}">${uiIcon('play')}<span>Play Now</span></button><button class="home-action-ghost" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="home-hero-art"><div class="home-hero-art-frame"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'" loading="lazy"></div><div class="home-hero-caption"><span>Soundstage</span><span>${libraryTrackCount} tracks</span></div></div></div><aside class="home-side-stack"><div class="home-side-head"><div><div class="home-section-kicker">${uiIcon(recentSongs.length ? 'history' : 'radio')}<span>${recentSongs.length ? 'Resume Flow' : 'Start Here'}</span></div><div class="home-section-title">${recentSongs.length ? 'Continue Listening' : 'Fresh Queue'}</div></div><div class="home-section-meta">${onDeckSongs.length} Picks</div></div><div class="home-queue-list home-rail">${onDeckSongs.map((song) => miniRowHTML(song, !!recentSongs.length, recentSongs.length ? 'plus' : 'list-plus')).join('')}</div></aside></section>` : '';
 
             const mainArea = document.getElementById('mainArea');
@@ -14616,6 +15427,7 @@
             </div>
             <div class="home-shell">
                 ${heroHTML}
+                ${quickHTML}
                 <section class="home-section">
                     <div class="home-section-headline"><div><div class="home-section-kicker">${uiIcon('flame')}<span>Discovery</span></div><div class="home-section-title">Trending in FalconX</div></div><div class="home-section-meta">${trendingSongs.length} Tracks</div></div>
                     <div class="home-discovery-grid home-rail">
@@ -14649,7 +15461,49 @@
 
         function initSearchClear() { const inp=document.getElementById('searchBar'); const clr=document.getElementById('searchClear'); if(!inp||!clr)return; inp.addEventListener('input',()=>clr.classList.toggle('visible',inp.value.length>0)); }
 
-        window.clearSearch = () => { const inp=document.getElementById('searchBar'); if(inp){inp.value='';document.getElementById('searchClear')?.classList.remove('visible');loadArtists();} };
+        function syncDesktopSearchValue(value = '') {
+            const desktopInp = document.getElementById('desktopSearchBar');
+            const desktopClr = document.getElementById('desktopSearchClear');
+            if (desktopInp && desktopInp.value !== value) desktopInp.value = value;
+            if (desktopClr) desktopClr.classList.toggle('visible', String(value).trim().length > 0);
+        }
+
+        window.clearSearch = () => {
+            const inp=document.getElementById('searchBar');
+            if(inp) inp.value='';
+            document.getElementById('searchClear')?.classList.remove('visible');
+            syncDesktopSearchValue('');
+            loadArtists();
+        };
+
+        window.desktopHeaderSearch = () => {
+            const desktopInp = document.getElementById('desktopSearchBar');
+            if (!desktopInp) return;
+            const rawQuery = desktopInp.value || '';
+            syncDesktopSearchValue(rawQuery);
+            let pageSearch = document.getElementById('searchBar');
+            if (!pageSearch) {
+                loadArtists();
+                pageSearch = document.getElementById('searchBar');
+            }
+            if (pageSearch) pageSearch.value = rawQuery;
+            if (normalizeSearchText(rawQuery)) globalSearch();
+            else loadArtists();
+            syncDesktopSearchValue(rawQuery);
+            const refreshedDesktopInp = document.getElementById('desktopSearchBar');
+            if (refreshedDesktopInp && document.activeElement !== refreshedDesktopInp) {
+                refreshedDesktopInp.focus();
+                refreshedDesktopInp.setSelectionRange(refreshedDesktopInp.value.length, refreshedDesktopInp.value.length);
+            }
+        };
+
+        window.clearDesktopSearch = () => {
+            syncDesktopSearchValue('');
+            const pageSearch = document.getElementById('searchBar');
+            if (pageSearch) pageSearch.value = '';
+            document.getElementById('searchClear')?.classList.remove('visible');
+            loadArtists();
+        };
 
         
         function getSortedArtistSongs(key, type = currentArtistSortType) {
@@ -16093,11 +16947,12 @@
 
         
         function globalSearch() {
-            const searchEl = document.getElementById('searchBar'); if(!searchEl)return;
+            const searchEl = document.getElementById('searchBar') || document.getElementById('desktopSearchBar'); if(!searchEl)return;
             const rawQuery = searchEl.value || '';
             const q = normalizeSearchText(rawQuery);
             const clr = document.getElementById('searchClear'); if(clr)clr.classList.toggle('visible',q.length>0);
-            if(!q){loadArtists();return;}
+            syncDesktopSearchValue(rawQuery);
+            if(!q){syncDesktopSearchValue('');loadArtists();return;}
             setMobileBack(false);
             const index = getSearchIndex();
             const songResults = rankedSearchResults(index.songs, q).slice(0, SEARCH_RESULT_LIMITS.songs);
@@ -16117,6 +16972,7 @@
                 (!total ? `<div class="empty-state"><div class="emoji">${uiIcon('search')}</div><p>No results found</p></div>` : '<div style="height:20px"></div>');
             renderLucideIcons(mainArea);
             const newInp = document.getElementById('searchBar'); if(newInp){newInp.focus();newInp.setSelectionRange(newInp.value.length,newInp.value.length);} initSearchClear();
+            syncDesktopSearchValue(rawQuery);
         }
 
         function openArtistAndPlay(key,index) { const file=artists[key]?.songs?.[index]?.file || ''; currentArtistKey=key; openArtist(key); const sortedIndex=currentSongs.findIndex((song)=>song.file===file); playSong(sortedIndex>=0?sortedIndex:0,true); }
