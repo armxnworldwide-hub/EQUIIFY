@@ -212,43 +212,12 @@
             });
         })();
         const splashEl = document.getElementById('splash');
-        const splashMessageEl = document.getElementById('splashMessage');
         const splashBarFillEl = document.getElementById('splashBarFill');
-        const splashMessages = [
-            "Loading your music...",
-            "Preparing your experience..."
-        ];
         let splashDone = false;
 
         function setSplashProgress(value) {
             const pct = Math.max(0, Math.min(100, Math.round(value)));
             if (splashBarFillEl) splashBarFillEl.style.width = pct + "%";
-        }
-
-        function typeSplashMessage(text) {
-            if (!splashMessageEl) return;
-            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            if (reduceMotion) {
-                splashMessageEl.textContent = text;
-                splashMessageEl.classList.remove("typing");
-                return;
-            }
-            splashMessageEl.textContent = "";
-            splashMessageEl.classList.add("typing");
-            const chars = Array.from(text);
-            const total = chars.length;
-            let index = 0;
-            const stepMs = Math.max(18, Math.floor(820 / Math.max(total, 1)));
-            const tick = () => {
-                index += 1;
-                splashMessageEl.textContent = chars.slice(0, index).join("");
-                if (index < total) {
-                    setTimeout(tick, stepMs);
-                } else {
-                    setTimeout(() => splashMessageEl.classList.remove("typing"), 360);
-                }
-            };
-            tick();
         }
 
         function finishSplash() {
@@ -269,8 +238,6 @@
                 return;
             }
             const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            const chosenMessage = splashMessages[Math.floor(Math.random() * splashMessages.length)];
-            typeSplashMessage(chosenMessage);
 
             const startTime = performance.now();
             const minViewMs = reduceMotion ? 420 : 3300;

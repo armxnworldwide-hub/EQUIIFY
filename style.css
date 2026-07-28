@@ -5614,9 +5614,9 @@
             margin-top: 18px;
             display: grid;
             justify-items: center;
-            gap: 5px;
+            gap: 7px;
             color: rgba(255, 255, 255, .58);
-            font-size: .74rem;
+            font-size: .68rem;
             line-height: 1.12;
             opacity: 0;
             transform: translate3d(0, 8px, 0);
@@ -5625,15 +5625,30 @@
         }
 
         .splash-made strong {
-            color: rgba(255, 255, 255, .72);
-            font-size: .68rem;
-            font-weight: 850;
-            letter-spacing: .12rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, .64);
+            font-size: .66rem;
+            font-weight: 800;
+            letter-spacing: .03rem;
+            text-transform: lowercase;
         }
 
         .splash-heart {
             color: #d7b765;
             text-shadow: 0 0 12px rgba(215, 183, 101, .45);
+        }
+
+        .splash-insta {
+            width: 13px;
+            height: 13px;
+            fill: none;
+            stroke: rgba(215, 183, 101, .78);
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 7px rgba(215, 183, 101, .18));
         }
 
         .splash-status,
@@ -5846,12 +5861,17 @@
 
             .splash-made {
                 margin-top: 16px;
-                font-size: .68rem;
+                font-size: .62rem;
             }
 
             .splash-made strong {
-                font-size: .62rem;
-                letter-spacing: .1rem;
+                font-size: .6rem;
+                letter-spacing: .025rem;
+            }
+
+            .splash-insta {
+                width: 12px;
+                height: 12px;
             }
 
             .splash-progress-wrap {
