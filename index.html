@@ -9161,6 +9161,768 @@
             .no-blur .app-header,.no-blur .sidebar,.no-blur .featured-hero{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
             .no-animations *{transition:none!important;animation:none!important}
             .dynamic-album .artist-card img{box-shadow:0 10px 28px rgba(var(--ambient-rgb),.18)}
+        }
+
+            .home-shell {
+                --gold: #d7b765;
+                --gold-soft: rgba(215, 183, 101, .18);
+                --home-gutter: clamp(18px, 2.4vw, 32px);
+                --home-gap: 20px;
+                padding: 18px var(--home-gutter) 36px;
+                display: grid;
+                gap: var(--home-gap);
+                overflow-x: hidden;
+                background:
+                    radial-gradient(circle at 12% 2%, rgba(215, 183, 101, .12), transparent 30%),
+                    radial-gradient(circle at 84% 10%, rgba(255, 255, 255, .06), transparent 28%),
+                    linear-gradient(180deg, rgba(255, 255, 255, .012), rgba(0, 0, 0, 0));
+            }
+
+            .home-section {
+                min-width: 0;
+            }
+
+            .home-deck {
+                display: grid;
+                grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
+                gap: 18px;
+                min-height: 312px;
+            }
+
+            .home-hero-card,
+            .home-side-stack,
+            .home-glass-panel,
+            .home-track-card,
+            .home-album-card,
+            .home-shell .artist-card {
+                border: 1px solid rgba(255, 255, 255, .095);
+                background: linear-gradient(150deg, rgba(28, 28, 27, .82), rgba(12, 12, 12, .9));
+                box-shadow: 0 20px 46px rgba(0, 0, 0, .34), inset 0 1px 0 rgba(255, 255, 255, .055);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+            }
+
+            .home-hero-card {
+                position: relative;
+                overflow: hidden;
+                min-height: 312px;
+                border-radius: 24px;
+                padding: clamp(20px, 2.6vw, 34px);
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) clamp(150px, 22vw, 236px);
+                gap: clamp(18px, 3vw, 36px);
+                align-items: center;
+            }
+
+            .home-hero-card::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background:
+                    radial-gradient(circle at 74% 32%, var(--home-accent, rgba(215, 183, 101, .22)), transparent 30%),
+                    linear-gradient(100deg, rgba(0, 0, 0, .28), transparent 52%);
+                pointer-events: none;
+            }
+
+            .home-hero-copy,
+            .home-hero-art {
+                position: relative;
+                z-index: 1;
+                min-width: 0;
+            }
+
+            .home-eyebrow,
+            .home-section-kicker {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--gold);
+                font-size: .66rem;
+                font-weight: 900;
+                letter-spacing: .18em;
+                text-transform: uppercase;
+            }
+
+            .home-eyebrow .lucide,
+            .home-section-kicker .lucide {
+                width: 14px;
+                height: 14px;
+            }
+
+            .home-hero-title {
+                margin: 12px 0 10px;
+                font-size: clamp(2rem, 4.3vw, 4.15rem);
+                line-height: .96;
+                font-weight: 950;
+                letter-spacing: 0;
+                max-width: 9.8ch;
+            }
+
+            .home-hero-sub {
+                max-width: 56ch;
+                color: rgba(255, 255, 255, .72);
+                font-size: .94rem;
+                line-height: 1.55;
+            }
+
+            .home-hero-actions {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin-top: 20px;
+            }
+
+            .home-play-primary,
+            .home-action-ghost,
+            .home-icon-action {
+                border: 0;
+                font-family: 'Circular Std', 'Circular', 'Spotify Mix', 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+            }
+
+            .home-play-primary {
+                min-height: 40px;
+                padding: 0 18px;
+                gap: 8px;
+                border-radius: 999px;
+                color: #120f08;
+                background: linear-gradient(135deg, #f3d98b, #b88d34);
+                font-size: .82rem;
+                font-weight: 900;
+                box-shadow: 0 12px 26px rgba(215, 183, 101, .24);
+            }
+
+            .home-action-ghost {
+                min-height: 40px;
+                padding: 0 16px;
+                gap: 8px;
+                border-radius: 999px;
+                color: var(--text);
+                background: rgba(255, 255, 255, .045);
+                border: 1px solid rgba(255, 255, 255, .13);
+                font-size: .8rem;
+                font-weight: 800;
+            }
+
+            .home-icon-action {
+                width: 36px;
+                height: 36px;
+                border-radius: 12px;
+                color: var(--text);
+                background: rgba(255, 255, 255, .045);
+                border: 1px solid rgba(255, 255, 255, .1);
+            }
+
+            .home-play-primary:hover,
+            .home-action-ghost:hover,
+            .home-icon-action:hover,
+            .home-track-card:hover,
+            .home-album-card:hover,
+            .home-shell .artist-card:hover {
+                transform: translateY(-3px);
+                border-color: rgba(215, 183, 101, .34);
+                box-shadow: 0 24px 48px rgba(0, 0, 0, .42), 0 0 24px rgba(215, 183, 101, .1);
+            }
+
+            .home-hero-art {
+                justify-self: end;
+                width: 100%;
+                max-width: 236px;
+            }
+
+            .home-hero-art-frame {
+                position: relative;
+                aspect-ratio: 1;
+                border-radius: 22px;
+                padding: 8px;
+                background: linear-gradient(145deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .035));
+                box-shadow: 0 26px 50px rgba(0, 0, 0, .52);
+            }
+
+            .home-hero-art-frame::after {
+                content: '';
+                position: absolute;
+                inset: 13%;
+                border: 1px solid rgba(215, 183, 101, .26);
+                border-radius: 50%;
+                animation: homePulse 4.8s ease-in-out infinite;
+                pointer-events: none;
+            }
+
+            .home-hero-art img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 17px;
+                display: block;
+            }
+
+            .home-hero-caption {
+                margin-top: 12px;
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                color: rgba(255, 255, 255, .64);
+                font-size: .68rem;
+                letter-spacing: .12em;
+                text-transform: uppercase;
+            }
+
+            .home-side-stack {
+                border-radius: 24px;
+                padding: 16px;
+                display: grid;
+                grid-template-rows: auto 1fr;
+                gap: 14px;
+                min-width: 0;
+            }
+
+            .home-side-head,
+            .home-section-headline {
+                display: flex;
+                justify-content: space-between;
+                align-items: end;
+                gap: 14px;
+                min-width: 0;
+            }
+
+            .home-section-title {
+                font-size: clamp(1.05rem, 1.5vw, 1.26rem);
+                font-weight: 900;
+                letter-spacing: 0;
+            }
+
+            .home-section-meta {
+                color: var(--text2);
+                font-size: .62rem;
+                font-weight: 800;
+                letter-spacing: .14em;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+
+            .home-queue-list {
+                display: grid;
+                gap: 8px;
+                align-content: start;
+            }
+
+            .home-mini-row {
+                min-width: 0;
+                border-radius: 15px;
+                padding: 8px;
+                display: grid;
+                grid-template-columns: 48px minmax(0, 1fr) auto;
+                align-items: center;
+                gap: 10px;
+                cursor: pointer;
+                background: rgba(255, 255, 255, .045);
+                border: 1px solid rgba(255, 255, 255, .07);
+                transition: transform .18s ease, background .18s ease, border-color .18s ease;
+            }
+
+            .home-mini-row:hover {
+                transform: translateX(3px);
+                background: rgba(215, 183, 101, .08);
+                border-color: rgba(215, 183, 101, .22);
+            }
+
+            .home-mini-row img,
+            .home-track-card img,
+            .home-mosaic-tile img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                background: var(--surface3);
+            }
+
+            .home-mini-row img {
+                width: 48px;
+                height: 48px;
+                border-radius: 12px;
+            }
+
+            .home-text {
+                min-width: 0;
+            }
+
+            .home-title {
+                font-size: .82rem;
+                font-weight: 850;
+                line-height: 1.2;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .home-meta {
+                margin-top: 3px;
+                color: var(--text2);
+                font-size: .66rem;
+                line-height: 1.2;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .home-section-headline {
+                margin-bottom: 12px;
+            }
+
+            .home-discovery-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 12px;
+            }
+
+            .home-track-card {
+                min-width: 0;
+                cursor: pointer;
+                border-radius: 18px;
+                padding: 12px;
+                display: grid;
+                grid-template-columns: 58px minmax(0, 1fr);
+                align-items: center;
+                gap: 12px;
+                transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+            }
+
+            .home-track-art {
+                position: relative;
+                width: 58px;
+                height: 58px;
+                flex-shrink: 0;
+            }
+
+            .home-track-art img {
+                border-radius: 14px;
+                box-shadow: 0 10px 22px rgba(0, 0, 0, .34);
+            }
+
+            .home-rank {
+                position: absolute;
+                left: -7px;
+                top: -7px;
+                min-width: 24px;
+                height: 24px;
+                border-radius: 999px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: #151008;
+                background: linear-gradient(135deg, #f1d98b, #a77e2e);
+                font-size: .66rem;
+                font-weight: 950;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, .38);
+            }
+
+            .home-bento {
+                display: grid;
+                grid-template-columns: minmax(280px, .9fr) minmax(0, 1.1fr);
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .home-mosaic {
+                border-radius: 22px;
+                overflow: hidden;
+                min-height: 292px;
+                display: grid;
+                grid-template-columns: 1.2fr .8fr;
+                grid-template-rows: repeat(2, 1fr);
+                gap: 1px;
+                background: rgba(255, 255, 255, .08);
+                border: 1px solid rgba(255, 255, 255, .08);
+            }
+
+            .home-mosaic-tile {
+                position: relative;
+                min-width: 0;
+                min-height: 0;
+                cursor: pointer;
+                overflow: hidden;
+            }
+
+            .home-mosaic-tile:first-child {
+                grid-row: 1 / 3;
+            }
+
+            .home-mosaic-tile img {
+                transition: transform .35s ease, filter .35s ease;
+            }
+
+            .home-mosaic-tile:hover img {
+                transform: scale(1.05);
+                filter: saturate(1.08);
+            }
+
+            .home-mosaic-label {
+                position: absolute;
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                padding-top: 42px;
+                background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .78));
+                color: #fff;
+                font-weight: 900;
+                font-size: .82rem;
+                text-shadow: 0 8px 18px rgba(0, 0, 0, .7);
+            }
+
+            .home-rec-list {
+                display: grid;
+                gap: 10px;
+                align-content: start;
+            }
+
+            .home-album-grid {
+                display: grid;
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+                gap: 14px;
+            }
+
+            .home-album-card {
+                border-radius: 18px;
+                padding: 11px;
+                cursor: pointer;
+                min-width: 0;
+                transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+            }
+
+            .home-album-card img {
+                width: 100%;
+                aspect-ratio: 1;
+                object-fit: cover;
+                display: block;
+                border-radius: 14px;
+                background: var(--surface3);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, .34);
+            }
+
+            .home-album-title {
+                margin-top: 10px;
+                font-size: .82rem;
+                font-weight: 900;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .home-album-meta {
+                margin-top: 4px;
+                font-size: .66rem;
+                color: var(--text2);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .home-shell .artists-grid {
+                padding: 0;
+                grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+                gap: 14px;
+            }
+
+            .home-shell .artist-card {
+                border-radius: 18px;
+                padding: 12px;
+                transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+            }
+
+            .home-shell .artist-card img {
+                border-radius: 38%;
+            }
+
+            .home-shell .artist-card-name {
+                font-size: .82rem;
+                letter-spacing: 0;
+            }
+
+            .home-shell .artist-card-count {
+                font-size: .66rem;
+            }
+
+            .home-empty-note {
+                min-height: 128px;
+                border-radius: 18px;
+                display: grid;
+                place-items: center;
+                color: var(--text2);
+                border: 1px dashed rgba(255, 255, 255, .13);
+                background: rgba(255, 255, 255, .025);
+            }
+
+            .home-rail,
+            .home-album-grid {
+                scrollbar-width: none;
+            }
+
+            .home-rail::-webkit-scrollbar,
+            .home-album-grid::-webkit-scrollbar {
+                display: none;
+            }
+
+            @keyframes homePulse {
+                0%, 100% {
+                    transform: scale(.96);
+                    opacity: .3;
+                }
+                50% {
+                    transform: scale(1.08);
+                    opacity: .64;
+                }
+            }
+
+            @media (max-width: 1180px) {
+                .home-deck,
+                .home-bento {
+                    grid-template-columns: 1fr;
+                }
+
+                .home-side-stack {
+                    min-height: 0;
+                }
+
+                .home-queue-list {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+
+                .home-discovery-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+
+                .home-album-grid {
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                }
+            }
+
+            @media (max-width: 768px) {
+                .home-shell {
+                    --home-gutter: 10px;
+                    --home-gap: 16px;
+                    padding: 10px var(--home-gutter) 18px;
+                }
+
+                .home-deck {
+                    min-height: 0;
+                    gap: 12px;
+                }
+
+                .home-hero-card {
+                    min-height: 178px;
+                    border-radius: 20px;
+                    padding: 15px;
+                    grid-template-columns: minmax(0, 1fr) 94px;
+                    gap: 12px;
+                }
+
+                .home-eyebrow,
+                .home-section-kicker {
+                    font-size: .54rem;
+                    letter-spacing: .13em;
+                }
+
+                .home-hero-title {
+                    margin: 8px 0 7px;
+                    font-size: clamp(1.28rem, 8vw, 1.72rem);
+                    max-width: 11ch;
+                    line-height: 1;
+                }
+
+                .home-hero-sub {
+                    font-size: .68rem;
+                    line-height: 1.34;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .home-hero-actions {
+                    gap: 7px;
+                    margin-top: 11px;
+                }
+
+                .home-play-primary,
+                .home-action-ghost {
+                    min-height: 32px;
+                    padding: 0 11px;
+                    font-size: .68rem;
+                }
+
+                .home-hero-art {
+                    max-width: 94px;
+                }
+
+                .home-hero-art-frame {
+                    border-radius: 16px;
+                    padding: 5px;
+                }
+
+                .home-hero-art img {
+                    border-radius: 12px;
+                }
+
+                .home-hero-caption {
+                    display: none;
+                }
+
+                .home-side-stack {
+                    border-radius: 20px;
+                    padding: 12px;
+                }
+
+                .home-queue-list {
+                    display: flex;
+                    gap: 8px;
+                    overflow-x: auto;
+                    scroll-snap-type: x proximity;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .home-mini-row {
+                    min-width: min(76vw, 254px);
+                    scroll-snap-align: start;
+                }
+
+                .home-section-headline {
+                    margin-bottom: 9px;
+                }
+
+                .home-section-title {
+                    font-size: .98rem;
+                }
+
+                .home-section-meta {
+                    font-size: .55rem;
+                }
+
+                .home-discovery-grid,
+                .home-album-grid {
+                    display: flex;
+                    gap: 9px;
+                    overflow-x: auto;
+                    scroll-snap-type: x proximity;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .home-track-card {
+                    min-width: min(80vw, 260px);
+                    min-height: 72px;
+                    padding: 9px;
+                    border-radius: 15px;
+                    scroll-snap-align: start;
+                    grid-template-columns: 48px minmax(0, 1fr);
+                    gap: 9px;
+                }
+
+                .home-track-art {
+                    width: 48px;
+                    height: 48px;
+                }
+
+                .home-track-art img {
+                    border-radius: 12px;
+                }
+
+                .home-bento {
+                    gap: 12px;
+                }
+
+                .home-mosaic {
+                    min-height: 208px;
+                    border-radius: 18px;
+                }
+
+                .home-rec-list {
+                    display: flex;
+                    gap: 8px;
+                    overflow-x: auto;
+                    scroll-snap-type: x proximity;
+                    -webkit-overflow-scrolling: touch;
+                }
+
+                .home-rec-list .home-mini-row {
+                    min-width: min(76vw, 254px);
+                }
+
+                .home-album-card {
+                    min-width: 126px;
+                    border-radius: 15px;
+                    padding: 9px;
+                    scroll-snap-align: start;
+                }
+
+                .home-album-card img {
+                    border-radius: 12px;
+                }
+
+                .home-album-title {
+                    margin-top: 8px;
+                    font-size: .72rem;
+                }
+
+                .home-album-meta {
+                    font-size: .58rem;
+                }
+
+                .home-shell .artists-grid {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                    gap: 7px;
+                }
+
+                .home-shell .artist-card {
+                    padding: 8px;
+                    border-radius: 14px;
+                }
+
+                .home-shell .artist-card-name {
+                    font-size: .68rem;
+                }
+
+                .home-shell .artist-card-count {
+                    font-size: .56rem;
+                }
+            }
+
+            @media (max-width: 420px) {
+                .home-shell {
+                    --home-gutter: 8px;
+                    --home-gap: 14px;
+                }
+
+                .home-hero-card {
+                    grid-template-columns: minmax(0, 1fr) 82px;
+                    min-height: 164px;
+                    padding: 13px;
+                }
+
+                .home-hero-art {
+                    max-width: 82px;
+                }
+
+                .home-action-ghost span {
+                    display: none;
+                }
+
+                .home-action-ghost {
+                    width: 32px;
+                    padding: 0;
+                }
+
+                .home-mosaic {
+                    min-height: 186px;
+                }
+
+                .home-shell .artists-grid {
+                    gap: 6px;
+                }
+            }
                 /* Desktop more-button dropdown */
                 .desktop-menu-dropdown{position:fixed;z-index:140;background:var(--surface);border:1px solid rgba(255,255,255,.06);box-shadow:0 12px 30px rgba(0,0,0,.45);border-radius:10px;overflow:hidden}
                 .desktop-menu-dropdown button{display:block;padding:10px 14px;background:none;border:none;color:var(--text);width:100%;text-align:left;cursor:pointer}
@@ -13683,8 +14445,20 @@
             const likedPool = songPool.filter((song) => likedSongs.has(song.file));
             const recommendationSeed = likedPool.length ? likedPool : songPool;
             const recommendSongs = [...recommendationSeed].sort((a, b) => (b.plays || 0) - (a.plays || 0) || a.artistName.localeCompare(b.artistName)).slice(0, 6);
-            const continueHTML = continueListening.length > 0 ? `<div class="continue-strip"><div class="continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 18).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></div>` : '';
-            const featuredHTML = featuredSong ? `<section class="featured-hero"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
+            const albumGroups = [...songPool.reduce((map, song) => {
+                const album = deriveSongAlbum(song, song.artistName);
+                const id = `${album}|${song.artistName}`;
+                if (!map.has(id)) map.set(id, { album, artistName: song.artistName, poster: song.poster, songs: [], plays: 0 });
+                const group = map.get(id);
+                group.songs.push(song);
+                group.plays += song.plays || song.playCount || 0;
+                return map;
+            }, new Map()).values()].sort((a, b) => b.songs.length - a.songs.length || b.plays - a.plays || a.album.localeCompare(b.album)).slice(0, 6);
+            const recentSongs = continueListening.slice(0, 6);
+            const continueHTML = continueListening.length > 0 ? `<section class="home-section home-continue continue-strip"><div class="home-section-head continue-label">${uiIcon('play')}<span>Continue Listening</span></div><div class="continue-scroll">${continueListening.slice(0, 12).map((song) => `<div class="continue-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'" loading="lazy"><div class="continue-card-info"><div class="continue-card-title">${songTitleHTML(song)}</div><div class="continue-card-artist">${escH(song.artistName || '')}</div></div></div>`).join('')}</div></section>` : '';
+            const featuredHTML = featuredSong ? `<section class="home-section home-featured featured-hero"><div class="featured-content"><div class="featured-kicker">Featured Soundstage</div><h2 class="featured-title">${songTitleHTML(featuredSong, 'Now Playing')}</h2><p class="featured-sub">${escH(featuredSong.artistName || 'FalconX Curated')} • Immersive playback with live synced lyrics and cinematic ambience.</p><div class="featured-actions"><button class="btn btn-white" onclick="playSongByFile('${escA(featuredSong.file)}')">${uiIcon('play')}<span>Play</span></button><button class="btn btn-outline" onclick="addSongToQueueByFile('${escA(featuredSong.file)}', true)">${uiIcon('list-plus')}<span>Play Next</span></button></div></div><div class="featured-cover"><img src="${escH(featuredSong.poster || '')}" alt="${escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'"></div></section>` : '';
+            const recentHTML = recentSongs.length ? `<section class="home-section home-recent"><div class="premium-row"><div class="premium-row-title">Recently Played</div><div class="premium-row-sub">${recentSongs.length} Tracks</div></div><div class="home-song-grid compact">${recentSongs.map((song) => `<div class="recommend-card" onclick="playFromHistory('${escA(song.file)}','${escA(song.artistKey || '')}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName || '')}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}</div></section>` : '';
+            const albumsHTML = albumGroups.length ? `<section class="home-section home-albums"><div class="premium-row"><div class="premium-row-title">Popular Albums</div><div class="premium-row-sub">${albumGroups.length} Picks</div></div><div class="home-album-grid">${albumGroups.map((album) => `<div class="home-album-card" onclick="playSongByFile('${escA(album.songs[0].file)}')"><img src="${escH(album.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="home-album-title">${escH(album.album)}</div><div class="home-album-meta">${escH(album.artistName)} • ${album.songs.length} track${album.songs.length !== 1 ? 's' : ''}</div></div>`).join('')}</div></section>` : '';
 
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
@@ -13701,28 +14475,38 @@
                     <button class="topbar-icon-btn" onclick="showPlaylists()" title="Playlists">${uiIcon('list-music')}</button>
                 </div>
             </div>
-            ${featuredHTML}
-            ${continueHTML}
-            <div class="premium-row">
-                <div class="premium-row-title">Trending Now</div>
-                <div class="premium-row-sub">${trendingSongs.length} Tracks</div>
-            </div>
-            <div class="trending-strip">
-                ${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="trending-text"><div class="trending-title">${songTitleHTML(song)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}
-            </div>
-            <div class="premium-row">
-                <div class="premium-row-title">Recommended For You</div>
-                <div class="premium-row-sub">${likedPool.length ? 'Based on Favorites' : 'Fresh Picks'}</div>
-            </div>
-            <div class="recommend-grid">
-                ${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}
-            </div>
-            <div class="section-header">
-                <div class="section-title">Artists</div>
-                <span style="font-family:'Circular Std','Circular','Spotify Mix','Nunito Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.62rem;color:var(--text2)">${keys.length} IN LIBRARY</span>
-            </div>
-            <div class="artists-grid">
-                ${keys.map((key) => { const artist = artists[key]; return `<div class="artist-card" onclick="openArtist('${key}')"><div class="artist-card-img-wrap"><img src="${artist.image}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${key}')">${uiIcon('play')}</button></div><div class="artist-card-name">${artist.name}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`; }).join('')}
+            <div class="home-shell">
+                ${featuredHTML}
+                ${continueHTML}
+                <section class="home-section home-trending">
+                    <div class="premium-row">
+                        <div class="premium-row-title">Trending Now</div>
+                        <div class="premium-row-sub">${trendingSongs.length} Tracks</div>
+                    </div>
+                    <div class="trending-strip">
+                        ${trendingSongs.map((song, i) => `<div class="trending-card" onclick="playSongByFile('${escA(song.file)}')"><div class="trending-rank">${i + 1}</div><img class="trending-cover" src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="trending-text"><div class="trending-title">${songTitleHTML(song)}</div><div class="trending-meta">${escH(song.artistName)}</div></div></div>`).join('')}
+                    </div>
+                </section>
+                <section class="home-section home-recommended">
+                    <div class="premium-row">
+                        <div class="premium-row-title">Recommended For You</div>
+                        <div class="premium-row-sub">${likedPool.length ? 'Based on Favorites' : 'Fresh Picks'}</div>
+                    </div>
+                    <div class="recommend-grid">
+                        ${recommendSongs.map((song) => `<div class="recommend-card" onclick="playSongByFile('${escA(song.file)}')"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="recommend-text"><div class="recommend-title">${songTitleHTML(song)}</div><div class="recommend-meta">${escH(song.artistName)}</div></div><button class="queue-btn" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('plus')}</button></div>`).join('')}
+                    </div>
+                </section>
+                ${recentHTML}
+                ${albumsHTML}
+                <section class="home-section home-artists">
+                    <div class="section-header">
+                        <div class="section-title">Artists</div>
+                        <span style="font-family:'Circular Std','Circular','Spotify Mix','Nunito Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:.62rem;color:var(--text2)">${keys.length} IN LIBRARY</span>
+                    </div>
+                    <div class="artists-grid">
+                        ${keys.map((key) => { const artist = artists[key]; return `<div class="artist-card" onclick="openArtist('${key}')"><div class="artist-card-img-wrap"><img src="${artist.image}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${key}')">${uiIcon('play')}</button></div><div class="artist-card-name">${artist.name}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`; }).join('')}
+                    </div>
+                </section>
             </div>`;
             initSearchClear();
             renderLucideIcons(mainArea);
@@ -17276,4 +18060,4 @@
         </button>
     </nav>
 </body>
-</html>        
+</html>
