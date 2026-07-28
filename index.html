@@ -10840,6 +10840,542 @@
                 .desktop-profile-menu-item.danger svg {
                     color: rgba(255, 128, 128, .95);
                 }
+
+                /* Production polish layer: shared spacing, depth, and motion */
+                :root {
+                    --radius-card: 16px;
+                    --radius-panel: 20px;
+                    --radius-control: 12px;
+                    --row-h: 58px;
+                    --motion-fast: 180ms;
+                    --motion-med: 220ms;
+                    --surface-raised: linear-gradient(155deg, rgba(31, 30, 28, .84), rgba(12, 12, 12, .9));
+                    --surface-raised-hover: linear-gradient(155deg, rgba(39, 37, 33, .9), rgba(16, 16, 16, .94));
+                    --border-soft: rgba(255, 255, 255, .085);
+                    --border-gold: rgba(215, 183, 101, .26);
+                    --shadow-card: 0 16px 34px rgba(0, 0, 0, .32), inset 0 1px 0 rgba(255, 255, 255, .05);
+                    --shadow-card-hover: 0 22px 44px rgba(0, 0, 0, .4), 0 0 22px rgba(215, 183, 101, .08);
+                }
+
+                .main {
+                    background:
+                        radial-gradient(circle at 18% 0%, rgba(215, 183, 101, .07), transparent 28%),
+                        linear-gradient(180deg, rgba(255, 255, 255, .012), transparent 180px),
+                        #0b0b0b;
+                }
+
+                .section-title,
+                .home-section-title,
+                .playlist-page-title,
+                .premium-dashboard-title,
+                .audio-settings-title {
+                    letter-spacing: 0;
+                    text-wrap: balance;
+                }
+
+                .search-box,
+                .sort-trigger,
+                .playlist-sort-trigger,
+                .create-playlist-btn,
+                .queue-btn-player,
+                .home-action-ghost {
+                    border-color: var(--border-soft);
+                    background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .035));
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .055);
+                }
+
+                .search-box input {
+                    font-weight: 650;
+                    letter-spacing: 0;
+                }
+
+                .artist-card,
+                .playlist-card,
+                .home-track-card,
+                .home-album-card,
+                .home-mini-row,
+                .home-quick-card,
+                .as-card,
+                .stat-card,
+                .chart-card,
+                .recent-item,
+                .stats-row {
+                    border-color: var(--border-soft);
+                    background: var(--surface-raised);
+                    box-shadow: var(--shadow-card);
+                }
+
+                .artist-card,
+                .playlist-card,
+                .home-track-card,
+                .home-album-card,
+                .home-quick-card {
+                    border-radius: var(--radius-card);
+                }
+
+                .artist-card:hover,
+                .playlist-card:hover,
+                .home-track-card:hover,
+                .home-album-card:hover,
+                .home-quick-card:hover,
+                .as-card:hover,
+                .recent-item:hover {
+                    transform: translateY(-2px);
+                    border-color: var(--border-gold);
+                    background: var(--surface-raised-hover);
+                    box-shadow: var(--shadow-card-hover);
+                }
+
+                .artist-card-img-wrap,
+                .playlist-card-cover,
+                .home-track-art,
+                .home-album-card img,
+                .home-mini-row img,
+                .song-row-info img,
+                .ps-info img,
+                .fav-song-info img,
+                .recent-item img {
+                    border-radius: 12px;
+                    box-shadow: 0 10px 22px rgba(0, 0, 0, .3), inset 0 0 0 1px rgba(255, 255, 255, .06);
+                }
+
+                .artist-card img {
+                    border-radius: 14px;
+                }
+
+                .card-play-btn,
+                .playlist-card-play,
+                .home-play-primary,
+                .play-btn,
+                .playlist-play-btn,
+                .modal-confirm,
+                .btn-accent {
+                    background: linear-gradient(135deg, #f6dfa0, #b88a31);
+                    color: #120f08;
+                    box-shadow: 0 14px 30px rgba(215, 183, 101, .22), inset 0 1px 0 rgba(255, 255, 255, .36);
+                }
+
+                .card-play-btn:hover,
+                .playlist-card-play:hover,
+                .home-play-primary:hover,
+                .play-btn:hover,
+                .playlist-play-btn:hover {
+                    background: linear-gradient(135deg, #ffe9ad, #c29338);
+                    box-shadow: 0 18px 38px rgba(215, 183, 101, .28), inset 0 1px 0 rgba(255, 255, 255, .42);
+                }
+
+                .song-row,
+                .playlist-song-row,
+                .fav-song-row {
+                    min-height: var(--row-h);
+                    border-radius: 13px;
+                    padding-top: 7px;
+                    padding-bottom: 7px;
+                    background: transparent;
+                    transition:
+                        background var(--motion-fast) var(--ease-premium),
+                        border-color var(--motion-fast) ease,
+                        box-shadow var(--motion-fast) ease,
+                        transform var(--motion-fast) var(--ease-premium);
+                }
+
+                .song-row:hover,
+                .playlist-song-row:hover,
+                .fav-song-row:hover {
+                    background: rgba(255, 255, 255, .052);
+                    border-color: rgba(255, 255, 255, .09);
+                    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .045);
+                }
+
+                .song-row.playing,
+                .playlist-song-row.playing,
+                .fav-song-row.playing {
+                    background: linear-gradient(90deg, rgba(215, 183, 101, .13), rgba(255, 255, 255, .026));
+                    border-color: var(--border-gold);
+                }
+
+                .song-num,
+                .ps-num,
+                .fav-song-num {
+                    color: rgba(255, 255, 255, .5);
+                    font-weight: 800;
+                }
+
+                .song-row-text h4,
+                .ps-text h4,
+                .fav-song-text h4,
+                .home-title,
+                .playlist-card-name,
+                .artist-card-name,
+                .home-album-title {
+                    font-weight: 850;
+                    letter-spacing: 0;
+                }
+
+                .like-btn,
+                .song-more-btn,
+                .ps-icon-btn,
+                .fav-icon-btn,
+                .ctrl-btn,
+                .player-like,
+                .player-dl-btn,
+                .topbar-icon-btn,
+                .topbar-menu-btn,
+                .mfp-ctrl-btn,
+                .mfp-action-btn {
+                    border-radius: 50%;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .like-btn,
+                .song-more-btn,
+                .ps-icon-btn,
+                .fav-icon-btn {
+                    width: 34px;
+                    height: 34px;
+                    background: rgba(255, 255, 255, .035);
+                    border-color: rgba(255, 255, 255, .1);
+                }
+
+                .like-btn:hover,
+                .song-more-btn:hover,
+                .ps-icon-btn:hover,
+                .fav-icon-btn:hover,
+                .ctrl-btn:hover,
+                .player-like:hover,
+                .player-dl-btn:hover {
+                    background: rgba(255, 255, 255, .075);
+                    color: #fff;
+                }
+
+                .player {
+                    grid-template-columns: minmax(230px, 1fr) minmax(360px, 1.18fr) minmax(230px, 1fr);
+                    padding: 0 clamp(16px, 2.2vw, 26px);
+                    gap: 16px;
+                    background:
+                        linear-gradient(180deg, rgba(27, 25, 21, .86), rgba(6, 6, 6, .92)),
+                        rgba(0, 0, 0, .88);
+                    border-top-color: rgba(215, 183, 101, .16);
+                }
+
+                .player-song {
+                    gap: 13px;
+                    padding: 0;
+                }
+
+                .player-poster {
+                    width: 58px;
+                    height: 58px;
+                    border-radius: 13px;
+                }
+
+                .player-song-title {
+                    max-width: min(28vw, 240px);
+                    font-size: .88rem;
+                    font-weight: 850;
+                }
+
+                .player-song-artist {
+                    font-size: .73rem;
+                    line-height: 1.25;
+                }
+
+                .player-center {
+                    gap: 7px;
+                }
+
+                .player-controls {
+                    gap: 10px;
+                }
+
+                .ctrl-btn {
+                    width: 36px;
+                    height: 36px;
+                    background: rgba(255, 255, 255, .035);
+                }
+
+                .play-btn {
+                    width: 46px;
+                    height: 46px;
+                }
+
+                .player-progress {
+                    max-width: 560px;
+                }
+
+                .progress-track,
+                input[type=range] {
+                    height: 5px;
+                    background: rgba(255, 255, 255, .12);
+                }
+
+                .progress-track:hover,
+                input[type=range]:hover {
+                    height: 7px;
+                }
+
+                .queue-btn-player {
+                    min-height: 34px;
+                    padding: 0 12px;
+                    border-radius: 999px;
+                    font-weight: 800;
+                }
+
+                .home-shell {
+                    --home-gap: 18px;
+                    padding-top: 16px;
+                }
+
+                .home-deck {
+                    min-height: 248px;
+                    gap: 16px;
+                }
+
+                .home-hero-card {
+                    min-height: 248px;
+                    border-radius: var(--radius-panel);
+                    padding: clamp(18px, 2vw, 26px);
+                    grid-template-columns: minmax(0, 1fr) clamp(130px, 16vw, 176px);
+                }
+
+                .home-hero-title {
+                    font-size: clamp(1.68rem, 3.1vw, 2.9rem);
+                    max-width: 12ch;
+                }
+
+                .home-hero-sub {
+                    max-width: 58ch;
+                    color: rgba(255, 255, 255, .68);
+                }
+
+                .home-hero-art {
+                    max-width: 176px;
+                }
+
+                .home-hero-art-frame {
+                    border-radius: 18px;
+                    padding: 7px;
+                }
+
+                .home-hero-art img {
+                    border-radius: 14px;
+                }
+
+                .home-side-stack,
+                .home-glass-panel,
+                .home-mosaic {
+                    border-radius: var(--radius-panel);
+                }
+
+                .home-mini-row {
+                    min-height: 60px;
+                }
+
+                .home-track-card {
+                    min-height: 84px;
+                    padding: 10px;
+                    grid-template-columns: 54px minmax(0, 1fr);
+                    gap: 10px;
+                }
+
+                .home-track-art {
+                    width: 54px;
+                    height: 54px;
+                }
+
+                .home-album-card,
+                .home-shell .artist-card,
+                .playlist-card {
+                    padding: 12px;
+                }
+
+                .home-section-headline {
+                    margin-bottom: 11px;
+                }
+
+                @media (min-width: 769px) {
+                    .desktop-header-search {
+                        max-width: 720px;
+                        height: 44px;
+                    }
+
+                    .desktop-header-search input {
+                        height: 44px;
+                        font-size: .9rem;
+                    }
+
+                    .sidebar-nav-block {
+                        gap: 3px;
+                    }
+
+                    .nav-btn {
+                        min-height: 36px;
+                    }
+                }
+
+                @media (min-width: 1280px) {
+                    .artists-grid,
+                    .playlist-grid {
+                        gap: 18px;
+                    }
+
+                    .songs-section,
+                    .playlist-song-list {
+                        padding-left: 28px;
+                        padding-right: 28px;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    :root {
+                        --row-h: 60px;
+                        --radius-card: 15px;
+                    }
+
+                    body {
+                        grid-template-rows: 64px 1fr var(--player-h);
+                    }
+
+                    .sidebar {
+                        min-height: 64px;
+                        height: 64px;
+                        padding: max(8px, var(--safe-top)) 12px 8px;
+                        gap: 10px;
+                        background: rgba(10, 10, 10, .86);
+                    }
+
+                    .main {
+                        scroll-padding-bottom: calc(var(--player-h) + 72px);
+                    }
+
+                    .home-shell {
+                        --home-gutter: 10px;
+                        --home-gap: 14px;
+                        padding-top: 8px;
+                    }
+
+                    .home-deck {
+                        gap: 10px;
+                    }
+
+                    .home-hero-card {
+                        min-height: 148px;
+                        padding: 12px;
+                        border-radius: 18px;
+                        grid-template-columns: minmax(0, 1fr) 76px;
+                    }
+
+                    .home-hero-title {
+                        font-size: clamp(1.18rem, 7.2vw, 1.56rem);
+                    }
+
+                    .home-hero-sub {
+                        font-size: .66rem;
+                        line-height: 1.3;
+                    }
+
+                    .home-play-primary,
+                    .home-action-ghost {
+                        min-height: 31px;
+                        padding-inline: 10px;
+                    }
+
+                    .home-hero-art {
+                        max-width: 76px;
+                    }
+
+                    .home-side-stack {
+                        padding: 10px;
+                    }
+
+                    .home-track-card,
+                    .home-mini-row,
+                    .home-quick-card {
+                        min-height: 66px;
+                    }
+
+                    .home-track-card {
+                        min-width: min(78vw, 244px);
+                        grid-template-columns: 46px minmax(0, 1fr);
+                    }
+
+                    .home-track-art {
+                        width: 46px;
+                        height: 46px;
+                    }
+
+                    .home-album-card {
+                        min-width: 118px;
+                    }
+
+                    .song-row,
+                    .playlist-song-row,
+                    .fav-song-row {
+                        padding-left: 10px;
+                        padding-right: 10px;
+                        border-radius: 14px;
+                    }
+
+                    .song-row-info img,
+                    .ps-info img,
+                    .fav-song-info img {
+                        width: 44px;
+                        height: 44px;
+                    }
+
+                    .player {
+                        min-height: var(--player-h);
+                        padding: 8px 10px calc(8px + var(--safe-bottom));
+                        border-radius: 18px 18px 0 0;
+                    }
+
+                    .player-poster {
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 12px;
+                    }
+
+                    .play-btn {
+                        width: 44px;
+                        height: 44px;
+                    }
+
+                    .ctrl-btn,
+                    .topbar-icon-btn,
+                    .topbar-menu-btn,
+                    .like-btn,
+                    .song-more-btn,
+                    .ps-icon-btn,
+                    .fav-icon-btn {
+                        min-width: 38px;
+                        min-height: 38px;
+                    }
+
+                    .mobile-nav {
+                        padding: 7px 8px calc(7px + var(--safe-bottom));
+                        background: rgba(8, 8, 8, .9);
+                        backdrop-filter: blur(22px) saturate(1.18);
+                        -webkit-backdrop-filter: blur(22px) saturate(1.18);
+                    }
+
+                    .mnav-btn {
+                        border-radius: 14px;
+                    }
+                }
+
+                @media (hover: none), (pointer: coarse) {
+                    .artist-card:hover,
+                    .playlist-card:hover,
+                    .home-track-card:hover,
+                    .home-album-card:hover,
+                    .home-quick-card:hover,
+                    .as-card:hover,
+                    .recent-item:hover {
+                        transform: none;
+                    }
+                }
             </style>
 </head>
 
