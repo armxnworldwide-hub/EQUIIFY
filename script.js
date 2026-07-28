@@ -217,18 +217,10 @@
         const splashPercentEl = document.getElementById('splashPercent');
         const splashHintEl = document.getElementById('splashHint');
         const splashMessages = [
-            "Initializing FalconX",
-            "Loading Your Vibes",
-            "Preparing Premium Audio",
-            "Syncing Your Universe",
-            "Welcome Back",
-            "Entering FalconX",
-            "Loading Your Sound",
-            "Building Your Experience",
-            "Feel The Music",
-            "Your Music Awaits"
+            "Loading your music...",
+            "Preparing your experience..."
         ];
-        const splashHints = ["Calibrating soundstage", "Warming up your library", "Aligning premium playback", "Optimizing immersive audio"];
+        const splashHints = ["Calibrating soundstage", "Warming up your library", "Preparing premium playback", "Optimizing your session"];
         let splashDone = false;
 
         function setSplashProgress(value) {
