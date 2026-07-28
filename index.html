@@ -12466,9 +12466,9 @@
                         width: 100%;
                         min-height: 48px;
                         display: grid;
-                        grid-template-columns: 48px minmax(0, 1fr) auto;
+                        grid-template-columns: 48px minmax(0, 1fr) max-content;
                         align-items: center;
-                        gap: 10px;
+                        column-gap: 11px;
                         padding: 0;
                         overflow: hidden;
                     }
@@ -12482,22 +12482,40 @@
 
                     .player-song-main {
                         min-width: 0;
+                        width: 100%;
+                        max-width: 100%;
                         display: grid;
                         grid-template-rows: minmax(0, auto) minmax(0, auto);
                         align-content: center;
+                        justify-items: start;
+                        text-align: left;
                         gap: 3px;
                         padding-right: 0;
+                        overflow: hidden;
                     }
 
                     .player-title-line {
                         min-width: 0;
                         width: 100%;
+                        max-width: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-start;
+                        text-align: left;
+                        overflow: hidden;
                     }
 
                     .player-song-title {
+                        min-width: 0;
+                        max-width: 100%;
+                        display: block;
                         font-size: .86rem;
                         font-weight: 850;
                         line-height: 1.15;
+                        text-align: left;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
                     }
 
                     .player-song-artist {
@@ -12507,6 +12525,7 @@
                         font-size: .68rem;
                         line-height: 1.15;
                         color: rgba(255, 255, 255, .6);
+                        text-align: left;
                         white-space: nowrap;
                         overflow: hidden;
                         text-overflow: ellipsis;
@@ -12520,6 +12539,7 @@
                         justify-content: flex-end;
                         gap: 8px;
                         margin-left: 0;
+                        min-width: max-content;
                         flex-shrink: 0;
                     }
 
@@ -12585,7 +12605,7 @@
                     .player-song {
                         grid-template-columns: 44px minmax(0, 1fr) auto;
                         min-height: 44px;
-                        gap: 9px;
+                        column-gap: 10px;
                     }
 
                     .player-poster {
