@@ -12395,6 +12395,11 @@
                 }
 
                 @media (max-width: 768px) {
+                    :root {
+                        --mobile-player-h: 166px;
+                        --player-h: var(--mobile-player-h);
+                    }
+
                     .player .player-center {
                         width: 100%;
                         display: flex;
@@ -12444,9 +12449,155 @@
                         min-width: 34px;
                         font-size: .58rem;
                     }
+
+                    .player {
+                        height: var(--mobile-player-h);
+                        min-height: var(--mobile-player-h);
+                        padding: 10px 14px 12px;
+                        display: grid;
+                        grid-template-columns: minmax(0, 1fr);
+                        grid-template-rows: 48px auto;
+                        align-content: stretch;
+                        gap: 12px;
+                        overflow: hidden;
+                    }
+
+                    .player-song {
+                        width: 100%;
+                        min-height: 48px;
+                        display: grid;
+                        grid-template-columns: 48px minmax(0, 1fr) auto;
+                        align-items: center;
+                        gap: 10px;
+                        padding: 0;
+                        overflow: hidden;
+                    }
+
+                    .player-poster {
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 10px;
+                        box-shadow: 0 10px 24px rgba(0, 0, 0, .38);
+                    }
+
+                    .player-song-main {
+                        min-width: 0;
+                        display: grid;
+                        grid-template-rows: minmax(0, auto) minmax(0, auto);
+                        align-content: center;
+                        gap: 3px;
+                        padding-right: 0;
+                    }
+
+                    .player-title-line {
+                        min-width: 0;
+                        width: 100%;
+                    }
+
+                    .player-song-title {
+                        font-size: .86rem;
+                        font-weight: 850;
+                        line-height: 1.15;
+                    }
+
+                    .player-song-artist {
+                        display: block;
+                        width: 100%;
+                        max-width: 100%;
+                        font-size: .68rem;
+                        line-height: 1.15;
+                        color: rgba(255, 255, 255, .6);
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    .player-mobile-actions {
+                        position: static;
+                        height: auto;
+                        display: flex;
+                        align-items: center;
+                        justify-content: flex-end;
+                        gap: 8px;
+                        margin-left: 0;
+                        flex-shrink: 0;
+                    }
+
+                    .player-like,
+                    .player-dl-btn {
+                        width: 36px;
+                        height: 36px;
+                        min-width: 36px;
+                        min-height: 36px;
+                        padding: 0;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, .045);
+                        border: 1px solid rgba(255, 255, 255, .1);
+                    }
+
+                    .player .player-center {
+                        grid-row: 2;
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: stretch;
+                        justify-content: start;
+                        gap: 12px;
+                        padding: 0;
+                        min-height: 0;
+                    }
+
+                    .player .player-controls {
+                        position: static;
+                        width: 100%;
+                        height: auto;
+                        display: grid;
+                        grid-template-columns: repeat(7, minmax(30px, 1fr));
+                        align-items: center;
+                        justify-items: center;
+                        gap: 5px;
+                        padding: 0 1px;
+                    }
+
+                    .player .player-progress {
+                        position: static;
+                        width: 100%;
+                        display: grid;
+                        grid-template-columns: 34px minmax(0, 1fr) 34px;
+                        align-items: center;
+                        column-gap: 10px;
+                        margin: 0;
+                        padding: 0 4px 1px;
+                    }
                 }
 
                 @media (max-width: 390px) {
+                    :root {
+                        --mobile-player-h: 158px;
+                        --player-h: var(--mobile-player-h);
+                    }
+
+                    .player {
+                        padding: 9px 12px 11px;
+                        gap: 10px;
+                    }
+
+                    .player-song {
+                        grid-template-columns: 44px minmax(0, 1fr) auto;
+                        min-height: 44px;
+                        gap: 9px;
+                    }
+
+                    .player-poster {
+                        width: 44px;
+                        height: 44px;
+                        border-radius: 9px;
+                    }
+
+                    .player-mobile-actions {
+                        gap: 6px;
+                    }
+
                     .player .player-controls {
                         grid-template-columns: repeat(7, minmax(28px, 1fr));
                         gap: 3px;
