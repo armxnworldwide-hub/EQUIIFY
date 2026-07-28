@@ -11788,7 +11788,7 @@
                 }
 
                 .hx-home .artists-grid {
-                    grid-template-columns: repeat(8, minmax(0, 1fr));
+                    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
                     gap: 14px;
                 }
 
@@ -12630,5 +12630,26 @@
                         width: 30px;
                         min-width: 30px;
                         font-size: .56rem;
+                    }
+                }
+
+                /* Keep Home Popular Artists from being visually capped to one 8-card row. */
+                @media (min-width: 769px) {
+                    .hx-home .home-artists {
+                        overflow: visible;
+                        max-height: none;
+                    }
+
+                    .hx-home .home-artists .artists-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+                        grid-auto-rows: auto;
+                        overflow: visible;
+                        max-height: none;
+                        padding: 0;
+                    }
+
+                    .hx-home .home-artists .artist-card {
+                        min-width: 0;
                     }
                 }

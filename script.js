@@ -2702,7 +2702,7 @@
             for (const key in artists) {
                 const artist = artists[key];
                 const song = artist.songs.find((entry) => getSongFileKey(entry) === target);
-                if (song) return { artistKey: key, artistName: artist.name, song };
+                if (song) return { artistKey: key, artistName: getArtistDisplayNameByKey(key, artist.name), song };
             }
             return null;
         }
@@ -3855,8 +3855,8 @@
             for (let key in artists) artists[key].songs.forEach(s => {
                 if (isDownloaded(s.file)) dlSongs.push({
                     ...s,
-                    artistName: artists[key].name,
-                    artist: artists[key].name,
+                    artistName: getArtistDisplayNameByKey(key, artists[key].name),
+                    artist: getArtistDisplayNameByKey(key, artists[key].name),
                     artistKey: key,
                     addedAt: downloadedSongMeta[s.file] || 0,
                     downloaded: true,
@@ -4327,21 +4327,52 @@
 
         window.showDesktopMenu = window.showDesktopProfileMenu;
 
-        function buildSidebar() { const sb=document.getElementById('sidebarArtists'); sb.innerHTML=''; for(let key in artists){ const a=artists[key]; sb.innerHTML+=`<div class="artist-item" id="sb_${key}" onclick="openArtist('${key}')"><img src="${a.image}" onerror="this.style.background='#282828'"><span class="artist-item-name">${a.name}</span></div>`; } }
+        function getSongFolderArtistName(song) {
+            const folder = String(song?.file || '').replace(/\\/g, '/').split('/')[0]?.trim();
+            return folder || '';
+        }
+
+        function getArtistCatalogEntry(key) {
+            const artist = artists[key];
+            if (!artist || !Array.isArray(artist.songs) || !artist.songs.length) return null;
+            const folderCounts = new Map();
+            artist.songs.forEach((song) => {
+                const folder = getSongFolderArtistName(song);
+                if (folder) folderCounts.set(folder, (folderCounts.get(folder) || 0) + 1);
+            });
+            const folderName = [...folderCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0] || '';
+            const name = (folderName || String(artist.name || '').trim() || key).trim();
+            return {
+                key,
+                name,
+                originalName: String(artist.name || '').trim(),
+                image: artist.image,
+                songs: artist.songs
+            };
+        }
+
+        function getArtistCatalogEntries() {
+            return Object.keys(artists).map((key) => getArtistCatalogEntry(key)).filter(Boolean);
+        }
+
+        function getArtistDisplayNameByKey(key, fallback = '') {
+            return getArtistCatalogEntry(key)?.name || String(fallback || artists[key]?.name || '').trim();
+        }
+
+        function buildSidebar() { const sb=document.getElementById('sidebarArtists'); sb.innerHTML=''; getArtistCatalogEntries().forEach((entry) => { sb.innerHTML+=`<div class="artist-item" id="sb_${entry.key}" onclick="openArtist('${escA(entry.key)}')"><img src="${escH(entry.image)}" onerror="this.style.background='#282828'"><span class="artist-item-name">${escH(entry.name)}</span></div>`; }); }
 
      
         function buildLibrarySongPool() {
             const pool = [];
-            Object.keys(artists).forEach((key) => {
-                const artist = artists[key];
-                artist.songs.forEach((song, idx) => {
+            getArtistCatalogEntries().forEach((entry) => {
+                entry.songs.forEach((song, idx) => {
                     const normalized = normalizeSongForSorting({
                         ...song,
-                        artistKey: key,
-                        artistName: artist.name,
-                        artist: artist.name,
+                        artistKey: entry.key,
+                        artistName: entry.name,
+                        artist: entry.name,
                         __baseIndex: idx
-                    }, idx, { scope: 'library', artistName: artist.name, artistKey: key });
+                    }, idx, { scope: 'library', artistName: entry.name, artistKey: entry.key });
                     pool.push({
                         ...normalized,
                         index: idx,
@@ -4355,11 +4386,13 @@
         function loadArtists() {
             setNavActive('navHome');
             setMobileBack(false);
-            const keys = Object.keys(artists);
+            const artistEntries = getArtistCatalogEntries();
+            const keys = artistEntries.map((entry) => entry.key);
+            const artistEntryByKey = Object.fromEntries(artistEntries.map((entry) => [entry.key, entry]));
             const songPool = buildLibrarySongPool();
             const featuredSong = currentSong ? ({
                 ...currentSong,
-                artistName: currentArtistKey && artists[currentArtistKey] ? artists[currentArtistKey].name : (currentSong.artistName || playerArtist.textContent || '')
+                artistName: currentArtistKey && artistEntryByKey[currentArtistKey] ? artistEntryByKey[currentArtistKey].name : (currentSong.artistName || playerArtist.textContent || '')
             }) : (continueListening[0] || songPool[0] || null);
             const trendingSongs = [...songPool].sort((a, b) => (b.plays || 0) - (a.plays || 0) || a.title.localeCompare(b.title)).slice(0, 10);
             const likedPool = songPool.filter((song) => likedSongs.has(song.file));
@@ -4379,7 +4412,7 @@
             const leadSongs = [featuredSong, ...trendingSongs, ...recommendSongs].filter(Boolean);
             const stationSongs = leadSongs.filter((song, index, arr) => arr.findIndex((item) => item.file === song.file) === index).slice(0, 4);
             const recListSongs = recommendSongs.length ? recommendSongs : trendingSongs.slice(0, 6);
-            const uniqueArtists = keys.slice(0, 8);
+            const uniqueArtists = keys;
             const libraryTrackCount = songPool.length;
             const totalPlays = songPool.reduce((sum, song) => sum + (song.plays || song.playCount || 0), 0);
             const heroSubtitle = featuredSong ? `${escH(featuredSong.artistName || 'FalconX Curated')} sets the tone for a cinematic black-and-gold listening session.` : 'A cinematic launchpad for new music, favorites, and deep cuts.';
@@ -4389,7 +4422,7 @@
             const trendCardHTML = (song, i) => `<div class="hx-trend-card" onclick="${playClick(song)}"><div class="hx-trend-rank">${String(i + 1).padStart(2, '0')}</div><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="home-text"><div class="home-title">${songTitleHTML(song)}</div><div class="home-meta">${escH(song.artistName)} - ${song.plays || song.playCount || 0} plays</div></div><button class="home-icon-action" onclick="event.stopPropagation();addSongToQueueByFile('${escA(song.file)}', false)" title="Add to queue">${uiIcon('list-plus')}</button></div>`;
             const recCardHTML = (song, i) => `<div class="hx-rec-card" onclick="${playClick(song)}"><div class="hx-rec-art"><img src="${escH(song.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();${playClick(song)}">${uiIcon('play')}</button></div><div class="home-title">${songTitleHTML(song)}</div><div class="home-meta">${escH(song.artistName || '')}${i === 0 ? ' - Prime pick' : ''}</div></div>`;
             const albumCardHTML = (album) => `<div class="home-album-card hx-album-card" onclick="${playClick(album.songs[0])}"><img src="${escH(album.poster)}" onerror="this.style.background='var(--surface3)'" loading="lazy"><div class="home-album-title">${escH(album.album)}</div><div class="home-album-meta">${escH(album.artistName)} - ${album.songs.length} track${album.songs.length !== 1 ? 's' : ''}</div></div>`;
-            const artistCardHTML = (key) => { const artist = artists[key]; return `<div class="artist-card hx-artist-card" onclick="openArtist('${escA(key)}')"><div class="artist-card-img-wrap"><img src="${escH(artist.image)}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${escA(key)}')">${uiIcon('play')}</button></div><div class="artist-card-name">${escH(artist.name)}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`; };
+            const artistCardHTML = (key) => { const artist = artistEntryByKey[key]; return `<div class="artist-card hx-artist-card" onclick="openArtist('${escA(key)}')"><div class="artist-card-img-wrap"><img src="${escH(artist.image)}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${escA(key)}')">${uiIcon('play')}</button></div><div class="artist-card-name">${escH(artist.name)}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`; };
             const moodTilesHTML = [
                 { icon: 'heart', title: 'Gold Favorites', meta: `${likedSongs.size} saved tracks`, action: 'showLikedSongs()' },
                 { icon: 'list-music', title: 'Private Playlists', meta: `${Object.keys(playlists || {}).length} collections`, action: 'showPlaylists()' },
@@ -4468,6 +4501,10 @@
             </div>`;
             initSearchClear();
             renderLucideIcons(mainArea);
+            const totalUniqueArtists = artistEntries.length;
+            const renderedArtistCards = mainArea.querySelectorAll('.home-artists .artist-card').length;
+            console.log("Unique artists:", totalUniqueArtists);
+            console.log("Rendered artist cards:", renderedArtistCards);
         }
 
         function initSearchClear() { const inp=document.getElementById('searchBar'); const clr=document.getElementById('searchClear'); if(!inp||!clr)return; inp.addEventListener('input',()=>clr.classList.toggle('visible',inp.value.length>0)); }
@@ -4518,7 +4555,7 @@
 
         
         function getSortedArtistSongs(key, type = currentArtistSortType) {
-            const artist = artists[key];
+            const artist = getArtistCatalogEntry(key);
             if (!artist) return [];
             const base = artist.songs.map((song, index) => ({
                 ...song,
@@ -4534,7 +4571,9 @@
         }
 
         function openArtist(key) {
-            currentArtistKey = key; const a = artists[key]; currentSongs = getSortedArtistSongs(key);
+            const a = getArtistCatalogEntry(key);
+            if (!a) return;
+            currentArtistKey = key; currentSongs = getSortedArtistSongs(key);
             setSidebarActive(key); setMobileBack(true);
             const mainArea = document.getElementById('mainArea');
             mainArea.innerHTML = `
@@ -4580,9 +4619,11 @@
             if (!key) return;
             const list = document.getElementById('songsList');
             if (!list) return;
+            const artist = getArtistCatalogEntry(key);
+            if (!artist) return;
             currentSongs = getSortedArtistSongs(key, currentArtistSortType);
             currentArtistKey = key;
-            renderSortedList(list, currentSongs.map((song, i) => songRowHTML(song, i, artists[key].name)).join(''), '.song-row', () => {
+            renderSortedList(list, currentSongs.map((song, i) => songRowHTML(song, i, artist.name)).join(''), '.song-row', () => {
                 renderLucideIcons(list);
                 updateSortUI('artist', currentArtistSortType);
                 updateArtistPlayingState(autoScrollActive);
@@ -4733,7 +4774,7 @@
             }
         }
 
-        window.showAddToPlaylistMenu = (e,fileId,rowIdx) => { e.stopPropagation(); closeDropdown(); const resolved = resolveSongForRow(fileId); const song = resolved || (Number.isInteger(rowIdx) && currentSongs[rowIdx] ? currentSongs[rowIdx] : null); if(!song)return; const artistName=song.artistName || (currentArtistKey?artists[currentArtistKey].name:''); window.__ctxSong=song; window.__ctxArtist=artistName; const ids=Object.keys(playlists); const dd=document.createElement('div'); dd.className='add-to-playlist-dropdown'; dd.style.position='fixed'; const target=e.currentTarget || e.target; const rect=target && typeof target.getBoundingClientRect==='function' ? target.getBoundingClientRect() : { bottom: window.innerHeight / 2, left: window.innerWidth / 2 }; dd.style.top=(rect.bottom+4)+'px'; dd.style.left=Math.max(10,rect.left-140)+'px'; if(!ids.length){dd.innerHTML=`<div class="no-playlists">No playlists yet.</div><button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>Create playlist</span></button>`;}else{dd.innerHTML=`<button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>New playlist</span></button>`+ids.map(id=>`<button onclick="addSongToPlaylistById(window.__ctxSong,window.__ctxArtist,'${escA(id)}');closeDropdown()">${escH(playlists[id].name)}</button>`).join('');}document.body.appendChild(dd);renderLucideIcons(dd);openDropdownEl=dd; };
+        window.showAddToPlaylistMenu = (e,fileId,rowIdx) => { e.stopPropagation(); closeDropdown(); const resolved = resolveSongForRow(fileId); const song = resolved || (Number.isInteger(rowIdx) && currentSongs[rowIdx] ? currentSongs[rowIdx] : null); if(!song)return; const artistName=song.artistName || (currentArtistKey?getArtistDisplayNameByKey(currentArtistKey):''); window.__ctxSong=song; window.__ctxArtist=artistName; const ids=Object.keys(playlists); const dd=document.createElement('div'); dd.className='add-to-playlist-dropdown'; dd.style.position='fixed'; const target=e.currentTarget || e.target; const rect=target && typeof target.getBoundingClientRect==='function' ? target.getBoundingClientRect() : { bottom: window.innerHeight / 2, left: window.innerWidth / 2 }; dd.style.top=(rect.bottom+4)+'px'; dd.style.left=Math.max(10,rect.left-140)+'px'; if(!ids.length){dd.innerHTML=`<div class="no-playlists">No playlists yet.</div><button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>Create playlist</span></button>`;}else{dd.innerHTML=`<button onclick="closeDropdown();openCreatePlaylistModal()">${uiIcon('plus')}<span>New playlist</span></button>`+ids.map(id=>`<button onclick="addSongToPlaylistById(window.__ctxSong,window.__ctxArtist,'${escA(id)}');closeDropdown()">${escH(playlists[id].name)}</button>`).join('');}document.body.appendChild(dd);renderLucideIcons(dd);openDropdownEl=dd; };
 
       
         async function playSong(index, manualSelection = false) {
@@ -4808,7 +4849,7 @@
             posterEl.src = song.poster;
             playerTitle.textContent = song.title;
             const artistKey = currentArtistKey || Object.keys(artists).find((k) => artists[k].songs === currentSongs);
-            const artistName = artistKey ? artists[artistKey].name : (song.artistName || '');
+            const artistName = artistKey ? getArtistDisplayNameByKey(artistKey) : (song.artistName || '');
             playerArtist.textContent = artistName;
             syncExplicitBadges(song);
             updatePlayerLikeBtn(song.file);
@@ -5183,7 +5224,7 @@
             const song = currentSongs[index];
             if (!song) return;
             const artistKey = currentArtistKey || Object.keys(artists).find((k) => artists[k].songs === currentSongs);
-            const artistName = artistKey ? artists[artistKey].name : '';
+            const artistName = artistKey ? getArtistDisplayNameByKey(artistKey) : '';
             enqueueSong({
                 ...song,
                 artistName
@@ -5311,7 +5352,7 @@
                 if (nextList.length > 0) {
                     html += `<div class="qp-section" style="margin-top:7px">Recommended Next</div>`;
                     nextList.forEach((song, i) => {
-                        html += `<div class="qp-item" onclick="playSong(${currentIndex + 1 + i},true)"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${songTitleHTML(song)}</div><div class="qp-item-artist">${escH(currentArtistKey && artists[currentArtistKey] ? artists[currentArtistKey].name : '')}</div></div></div>`;
+                        html += `<div class="qp-item" onclick="playSong(${currentIndex + 1 + i},true)"><img src="${escH(song.poster)}" onerror="this.style.background='#282828'"><div class="qp-item-info"><div class="qp-item-title">${songTitleHTML(song)}</div><div class="qp-item-artist">${escH(currentArtistKey ? getArtistDisplayNameByKey(currentArtistKey) : '')}</div></div></div>`;
                     });
                 }
             }
@@ -5921,9 +5962,9 @@
             const artistResults = [];
             const albumMap = new Map();
             const genreMap = new Map();
-            Object.keys(artists).forEach((key) => {
-                const artist = artists[key];
-                artistResults.push({ type: 'artist', key, name: artist.name, image: artist.image, songCount: artist.songs.length, fields: [artist.name] });
+            getArtistCatalogEntries().forEach((artist) => {
+                const key = artist.key;
+                artistResults.push({ type: 'artist', key, name: artist.name, image: artist.image, songCount: artist.songs.length, fields: [artist.name, artist.originalName].filter(Boolean) });
                 artist.songs.forEach((song, index) => {
                     const album = deriveSongAlbum(song, artist.name);
                     const genre = String(song.genre || '').trim();
@@ -6327,7 +6368,7 @@
 
         function getSongIdentity(song) {
             const title = String(song?.title || '').trim();
-            const artistName = String(song?.artistName || (currentArtistKey && artists[currentArtistKey] ? artists[currentArtistKey].name : playerArtist.textContent) || '').trim();
+            const artistName = String(song?.artistName || (currentArtistKey ? getArtistDisplayNameByKey(currentArtistKey) : playerArtist.textContent) || '').trim();
             const file = normalizeSongFile(song?.file || '');
             return {
                 title,
@@ -7387,7 +7428,7 @@
         function updateFullPlayerUI(forceLyricsRefresh = false) {
             if (!currentSong || !fullscreenPlayer) return;
             const songPoster = currentSong.poster || '';
-            const songArtist = currentArtistKey ? artists[currentArtistKey].name : (currentSong.artistName || playerArtist.textContent || 'Unknown Artist');
+            const songArtist = currentArtistKey ? getArtistDisplayNameByKey(currentArtistKey) : (currentSong.artistName || playerArtist.textContent || 'Unknown Artist');
             const songTitle = currentSong.title || 'Unknown';
             if (fsPoster) fsPoster.src = songPoster;
             if (fsPosterGlow) fsPosterGlow.src = songPoster;
@@ -7932,7 +7973,7 @@
             const mainArea = document.getElementById('mainArea');
             const songPool = buildLibrarySongPool();
             const totalSongs = songPool.length;
-            const totalArtists = Object.keys(artists).length;
+            const totalArtists = getArtistCatalogEntries().length;
             const favCount = likedSongs.size;
             const mostPlayed = [...songPool].filter(s => s.playCount > 0).sort((a, b) => b.playCount - a.playCount).slice(0, 5);
             let totalSec = 0; Object.entries(songPlayCounts).forEach(([file, count]) => { const duration = songDurationMeta[file] || 210; totalSec += duration * count; });
