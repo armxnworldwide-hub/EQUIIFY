@@ -2629,8 +2629,16 @@
         function initSearchClear() {
             const inp = document.getElementById('searchBar');
             const clr = document.getElementById('searchClear');
-            if (!inp || !clr) return;
-            inp.addEventListener('input', () => clr.classList.toggle('visible', inp.value.length > 0));
+            if (inp && clr && inp.dataset.searchClearBound !== '1') {
+                inp.dataset.searchClearBound = '1';
+                inp.addEventListener('input', () => clr.classList.toggle('visible', inp.value.length > 0));
+            }
+            const desktopInp = document.getElementById('desktopSearchBar');
+            const desktopClr = document.getElementById('desktopSearchClear');
+            if (desktopInp && desktopClr && desktopInp.dataset.searchClearBound !== '1') {
+                desktopInp.dataset.searchClearBound = '1';
+                desktopInp.addEventListener('input', () => desktopClr.classList.toggle('visible', desktopInp.value.length > 0));
+            }
         }
 
         function refreshVisibleSongLists() {
@@ -4029,8 +4037,39 @@
         }
 
         
-        function globalSearch() {
-            const searchEl = document.getElementById('searchBar') || document.getElementById('desktopSearchBar'); if(!searchEl)return;
+        function syncDesktopSearchValue(value) {
+            const desktop = document.getElementById('desktopSearchBar');
+            if (desktop && desktop.value !== value) desktop.value = value;
+            const desktopClear = document.getElementById('desktopSearchClear');
+            if (desktopClear) desktopClear.classList.toggle('visible', String(value || '').length > 0);
+        }
+
+        function desktopHeaderSearch() {
+            const desktop = document.getElementById('desktopSearchBar');
+            const mobile = document.getElementById('searchBar');
+            if (desktop && mobile) mobile.value = desktop.value || '';
+            globalSearch(desktop);
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchBar');
+            if (input) input.value = '';
+            syncDesktopSearchValue('');
+            loadArtists();
+        }
+
+        function clearDesktopSearch() {
+            const desktop = document.getElementById('desktopSearchBar');
+            const input = document.getElementById('searchBar');
+            if (desktop) desktop.value = '';
+            if (input) input.value = '';
+            syncDesktopSearchValue('');
+            loadArtists();
+        }
+
+        function globalSearch(sourceEl = null) {
+            const activeEl = document.activeElement;
+            const searchEl = sourceEl || (activeEl?.matches?.('#searchBar,#desktopSearchBar') ? activeEl : null) || document.getElementById('searchBar') || document.getElementById('desktopSearchBar'); if(!searchEl)return;
             const rawQuery = searchEl.value || '';
             const q = normalizeSearchText(rawQuery);
             const clr = document.getElementById('searchClear'); if(clr)clr.classList.toggle('visible',q.length>0);
@@ -4055,7 +4094,11 @@
                 (!total ? `<div class="empty-state"><div class="emoji">${uiIcon('search')}</div><p>No results found</p></div>` : '<div style="height:20px"></div>');
             renderLucideIcons(mainArea);
             scheduleNewBadgeExpiryRefresh(mainArea);
-            const newInp = document.getElementById('searchBar'); if(newInp){newInp.focus();newInp.setSelectionRange(newInp.value.length,newInp.value.length);} initSearchClear();
+            const keepDesktopFocus = searchEl.id === 'desktopSearchBar' && document.body.contains(searchEl);
+            const newInp = document.getElementById('searchBar');
+            const focusInp = keepDesktopFocus ? searchEl : newInp;
+            if(focusInp){focusInp.focus();focusInp.setSelectionRange(focusInp.value.length,focusInp.value.length);}
+            initSearchClear();
             syncDesktopSearchValue(rawQuery);
         }
 
@@ -6038,13 +6081,14 @@
 
         window.playSong = playSong; window.next = next; window.previous = previous; window.togglePlay = togglePlay; window.toggleShuffle = toggleShuffle; window.toggleRepeat = toggleRepeat; window.toggleMute = toggleMute;
         window.toggleQueuePanel = toggleQueuePanel; window.addToQueue = addToQueue; window.openArtist = openArtist; window.loadArtists = loadArtists; window.showLikedSongs = showLikedSongs; window.showDownloads = showDownloads; window.showPlaylists = showPlaylists; window.refreshLikedDisplay = refreshLikedDisplay;
-        window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch; window.toggleEqPanel = () => renderAudioPage(); window.setEqMode = (mode) => applyAudioPreset(mode.charAt(0).toUpperCase() + mode.slice(1));
+        window.playArtist = playArtist; window.shuffleArtist = shuffleArtist; window.toggleLike = toggleLike; window.globalSearch = globalSearch; window.desktopHeaderSearch = desktopHeaderSearch; window.clearSearch = clearSearch; window.clearDesktopSearch = clearDesktopSearch; window.toggleEqPanel = () => renderAudioPage(); window.setEqMode = (mode) => applyAudioPreset(mode.charAt(0).toUpperCase() + mode.slice(1));
         window.renderStatsPage = renderStatsPage; window.renderAudioPage = renderAudioPage; window.setVizMode = setVizMode; window.updateEffect = updateEffect; window.updateEQBand = updateEQBand; window.applyAudioPreset = applyAudioPreset; window.resetEQ = resetEQ; window.updatePreamp = updatePreamp; window.updatePan = updatePan; window.updateCompressor = updateCompressor; window.saveCustomPreset = saveCustomPreset; window.setCrossfadeSeconds = setCrossfadeSeconds;
 
         // -- INIT --
         initLucideSystem();
         buildSidebar();
         loadArtists();
+        initSearchClear();
         loadPlaybackMemory();
         syncLyricsPanelShell();
         if (lyricsPanelOpen) loadLyricsPanel(currentSong);
