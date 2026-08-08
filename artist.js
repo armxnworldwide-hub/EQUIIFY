@@ -1067,6 +1067,10 @@
                     file: "Karan Aujla/5 7.mp3",
                     poster: "images/5 7.jpeg"
                 }, {
+                    title: "Low Fade",
+                    file: "Karan Aujla/Low Fade.mp3",
+                    poster: "images/Low Fade.jpeg"
+                }, {
                     title: "Guilty",
                     file: "Karan Aujla/Guilty.mp3",
                     poster: "images/Guilty.jpeg"
