@@ -4292,6 +4292,39 @@
         .btn-white:hover {
             background: #e0e0e0
         }
+
+        .fav-download-all {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+        .fav-download-all .lucide {
+            width: 16px;
+            height: 16px;
+        }
+        .fav-download-all.is-busy .lucide {
+            animation: fav-download-spin 1s linear infinite;
+        }
+        @keyframes fav-download-spin {
+            to { transform: rotate(360deg); }
+        }
+        .fav-download-all:disabled {
+            cursor: default;
+            opacity: .72;
+        }
+        .fav-mobile-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin: 12px 0 8px;
+        }
+
+        @media (max-width: 480px) {
+            .fav-mobile-actions .fav-download-all {
+                width: 100%;
+            }
+        }
         
         .modal-overlay {
             position: fixed;

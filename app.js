@@ -1404,9 +1404,15 @@
             showToast(dlPaused ? 'Downloads paused' : 'Downloads resumed');
         };
 
-        async function addToDlQueue(song) {
+        async function addToDlQueue(song, options = {}) {
+            const showFeedback = options.toast !== false;
+            const openPanel = options.openPanel !== false;
+            if (!song || typeof song.file !== 'string' || !song.file.trim()) {
+                if (showFeedback) showToast('Song download is unavailable');
+                return;
+            }
             if (isDownloaded(song.file)) {
-                showToast('Already downloaded');
+                if (showFeedback) showToast('Already downloaded');
                 return;
             }
             const cached = await matchOfflineCache(song.file);
@@ -1420,11 +1426,11 @@
                 saveDownloaded();
                 refreshVisibleSongLists();
                 updatePlayerDlBtn();
-                showToast('Already downloaded');
+                if (showFeedback) showToast('Already downloaded');
                 return;
             }
             if (dlQueue.some(i => i.song.file === song.file)) {
-                showToast('Already in queue');
+                if (showFeedback) showToast('Already in queue');
                 return;
             }
             const id = 'dl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5);
@@ -1446,7 +1452,7 @@
             renderDpItem(item);
             updateDpStats();
             updateDownloadStorageStats();
-            dpanel().classList.add('open');
+            if (openPanel) dpanel().classList.add('open');
             if (!dlBusy && !dlPaused) processQueue();
             return id;
         }
@@ -3766,6 +3772,59 @@
             return applySorting('liked', getLikedSongsBase(), type);
         }
 
+        let likedDownloadAllBusy = false;
+
+        function likedDownloadAllButtonHTML(liked) {
+            if (!liked.length) return '';
+            const valid = liked.filter((song) => typeof song.file === 'string' && song.file.trim());
+            const allDownloaded = valid.length > 0 && valid.every((song) => isDownloaded(song.file));
+            const pending = valid.filter((song) => !isDownloaded(song.file) && dlQueue.some((item) => item.song?.file === song.file)).length;
+            const remaining = valid.filter((song) => !isDownloaded(song.file) && !dlQueue.some((item) => item.song?.file === song.file)).length;
+            const busy = likedDownloadAllBusy || (pending > 0 && remaining === 0);
+            const label = allDownloaded ? 'All Downloaded' : busy ? 'Downloading…' : 'Download All';
+            const icon = allDownloaded ? 'check' : busy ? 'loader-circle' : 'download';
+            return `<button class="btn btn-outline fav-download-all${busy ? ' is-busy' : ''}" onclick="downloadAllLikedSongs(this)"${allDownloaded || busy ? ' disabled' : ''} aria-label="${label}">${uiIcon(icon)}<span>${label}</span></button>`;
+        }
+
+        window.downloadAllLikedSongs = async (button) => {
+            if (likedDownloadAllBusy) return;
+            const liked = getLikedSongsBase();
+            if (!liked.length) {
+                showToast('No liked songs to download');
+                return;
+            }
+            const unique = [...new Map(liked.filter((song) => typeof song.file === 'string' && song.file.trim()).map((song) => [song.file, song])).values()];
+            const remaining = unique.filter((song) => !isDownloaded(song.file) && !dlQueue.some((item) => item.song?.file === song.file));
+            if (!remaining.length) {
+                showToast(unique.length && unique.every((song) => isDownloaded(song.file)) ? 'All liked songs are already downloaded' : 'All liked songs are already downloaded or queued');
+                refreshLikedDisplay();
+                return;
+            }
+            likedDownloadAllBusy = true;
+            if (button) {
+                button.disabled = true;
+                button.classList.add('is-busy');
+                button.innerHTML = `${uiIcon('loader-circle')}<span>Downloading…</span>`;
+                renderLucideIcons(button);
+            }
+            let added = 0;
+            try {
+                for (const song of remaining) {
+                    const id = await addToDlQueue(song, { toast: false, openPanel: false });
+                    if (id) added++;
+                }
+                if (added) {
+                    dpanel().classList.add('open');
+                    showToast(`${added} liked song${added === 1 ? '' : 's'} added to download queue`);
+                } else {
+                    showToast('All liked songs are already downloaded or queued');
+                }
+            } finally {
+                likedDownloadAllBusy = false;
+                refreshLikedDisplay();
+            }
+        };
+
         function updateFavSortUI() {
             updateSortUI('liked', currentFavSortType);
         }
@@ -3853,7 +3912,7 @@
                             <div class="fav-mobile-sub">${likedCount} song${likedCount !== 1 ? 's' : ''} • Personal Mix</div>
                         </div>
                     </div>
-                    ${likedCount ? sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs') : ''}
+                    ${likedCount ? `<div class="fav-mobile-actions">${likedDownloadAllButtonHTML(likedBase)}</div>${sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs')}` : ''}
                     <div class="fav-song-list">
                         ${likedCount ? '<div class="fav-song-header"><span>#</span><span>Title</span><span></span></div><div id="favSongsList" class="sort-song-list" data-compact="1"></div>' : `<div class="empty-state" style="padding:40px 0"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`}
                     </div>
@@ -3870,6 +3929,7 @@
             <div class="songs-section" style="padding-top:20px">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap">
                     <div class="fav-section-label" style="display:inline-flex;align-items:center;gap:6px">${uiIcon('heart')}<span>Liked Songs</span></div>
+                    ${likedDownloadAllButtonHTML(likedBase)}
                 </div>
                 ${likedCount===0?`<div class="empty-state"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`:`${sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs')}<div class="songs-table-header"><span class="th">#</span><span class="th">Title</span><span class="th"></span></div><div id="favSongsList" class="sort-song-list" data-compact="0"></div>`}
             </div>`;
