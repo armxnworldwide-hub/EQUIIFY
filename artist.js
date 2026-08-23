@@ -620,7 +620,7 @@
                     poster: "images/Bipolar.jpeg"
                 }, {
                     title: "She ain't easy",
-                    file: "Navaan Sandhu/She Aint easy.mp3",
+                    file: "Navaan Sandhu/She Aint Easy.mp3",
                     poster: "images/Bipolar.jpeg"
                 }, {
                     title: "Star Girl",
