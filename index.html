@@ -75,12 +75,11 @@
         body::before {
             content: "";
             position: fixed;
-            inset: -20%;
+            inset: -8%;
             pointer-events: none;
             z-index: 0;
             background: radial-gradient(42% 36% at 16% 18%, rgba(var(--ambient-rgb), .15), transparent 70%), radial-gradient(44% 44% at 84% 22%, rgba(var(--ambient-rgb-2), .16), transparent 72%), radial-gradient(58% 52% at 52% 100%, rgba(var(--ambient-rgb-3), .11), transparent 74%);
-            filter: blur(42px) saturate(1.08);
-            opacity: .9;
+            opacity: .72;
             transition: background .8s ease, opacity .6s ease;
         }
 
@@ -13527,6 +13526,52 @@
                     }
                 }
 
+                /* Performance pass: reduce paint work without changing the layout. */
+                .sidebar,
+                .player {
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+
+                .home-section {
+                    content-visibility: auto;
+                    contain-intrinsic-size: auto 420px;
+                }
+
+                .song-row,
+                .fav-song-row,
+                .playlist-song-row,
+                .qp-item {
+                    content-visibility: auto;
+                    contain-intrinsic-size: auto 72px;
+                }
+
+                .artist-card,
+                .playlist-card {
+                    content-visibility: auto;
+                    contain-intrinsic-size: auto 220px;
+                }
+
+                @media (max-width: 768px) {
+                    #ambientParticles {
+                        display: none !important;
+                    }
+
+                    body::before {
+                        inset: 0;
+                        opacity: .48;
+                    }
+
+                    body * {
+                        backdrop-filter: none !important;
+                        -webkit-backdrop-filter: none !important;
+                    }
+
+                    .hx-feature-orbit {
+                        animation: none !important;
+                    }
+                }
+
     </style>
 </head>
 
@@ -15893,10 +15938,9 @@
         function buildSidebar() {
             const sb = document.getElementById('sidebarArtists');
             if (!sb) return;
-            sb.innerHTML = '';
-            getArtistCatalogEntries().forEach((entry) => {
-                sb.innerHTML += `<div class="artist-item" id="sb_${deps.escA(entry.key)}" onclick="openArtist('${deps.escA(entry.key)}')"><img src="${deps.escH(entry.image)}" onerror="this.style.background='#282828'"><span class="artist-item-name">${deps.escH(entry.name)}</span></div>`;
-            });
+            sb.innerHTML = getArtistCatalogEntries().map((entry) =>
+                `<div class="artist-item" id="sb_${deps.escA(entry.key)}" onclick="openArtist('${deps.escA(entry.key)}')"><img src="${deps.escH(entry.image)}" onerror="this.style.background='#282828'" loading="lazy" decoding="async"><span class="artist-item-name">${deps.escH(entry.name)}</span></div>`
+            ).join('');
         }
 
         function buildLibrarySongPool() {
@@ -15922,7 +15966,7 @@
 
         function artistCardHTML(key, artistEntryByKey) {
             const artist = artistEntryByKey[key];
-            return `<div class="artist-card hx-artist-card" onclick="openArtist('${deps.escA(key)}')"><div class="artist-card-img-wrap"><img src="${deps.escH(artist.image)}" onerror="this.style.background='#282828'" loading="lazy"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${deps.escA(key)}')">${deps.uiIcon('play')}</button></div><div class="artist-card-name">${deps.escH(artist.name)}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`;
+            return `<div class="artist-card hx-artist-card" onclick="openArtist('${deps.escA(key)}')"><div class="artist-card-img-wrap"><img src="${deps.escH(artist.image)}" onerror="this.style.background='#282828'" loading="lazy" decoding="async"><button class="card-play-btn" onclick="event.stopPropagation();playArtist('${deps.escA(key)}')">${deps.uiIcon('play')}</button></div><div class="artist-card-name">${deps.escH(artist.name)}</div><div class="artist-card-count">${artist.songs.length} tracks</div></div>`;
         }
 
         function loadArtists() {
@@ -15986,7 +16030,7 @@
                         </div>
                     </div>
                     <div class="hx-feature-art">
-                        <img src="${deps.escH(featuredSong.poster || '')}" alt="${deps.escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'" loading="lazy">
+                        <img src="${deps.escH(featuredSong.poster || '')}" alt="${deps.escH(featuredSong.title || 'Featured song')}" onerror="this.style.background='var(--surface3)'" decoding="async" fetchpriority="high">
                     </div>
                 </div>
                 <aside class="hx-now-card">
@@ -16439,7 +16483,7 @@
                 document.body.classList.remove("loading");
                 document.body.classList.add("app-revealed");
                 if (splashEl) splashEl.style.display = "none";
-            }, 920);
+            }, 240);
         }
 
         function startSplashSequence() {
@@ -16448,12 +16492,17 @@
                 return;
             }
             const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            let splashSeen = false;
+            try {
+                splashSeen = sessionStorage.getItem('falcon_splash_seen_v1') === '1';
+                sessionStorage.setItem('falcon_splash_seen_v1', '1');
+            } catch (e) {}
 
             const startTime = performance.now();
-            const minViewMs = reduceMotion ? 420 : 3300;
-            const progressDurationMs = reduceMotion ? 300 : 3400;
+            const minViewMs = reduceMotion ? 140 : (splashSeen ? 120 : 650);
+            const progressDurationMs = reduceMotion ? 120 : (splashSeen ? 110 : 560);
             let progressComplete = false;
-            let pageReady = document.readyState === "complete";
+            let pageReady = document.readyState !== "loading";
 
             const maybeFinish = () => {
                 if (!progressComplete || !pageReady) return;
@@ -16477,7 +16526,7 @@
             requestAnimationFrame(progressStep);
 
             if (!pageReady) {
-                window.addEventListener("load", () => {
+                document.addEventListener("DOMContentLoaded", () => {
                     pageReady = true;
                     maybeFinish();
                 }, {
@@ -16486,7 +16535,7 @@
                 setTimeout(() => {
                     pageReady = true;
                     maybeFinish();
-                }, 6000);
+                }, 1200);
             } else {
                 maybeFinish();
             }
@@ -16551,14 +16600,16 @@
             document.getElementById('fsPlay')?.setAttribute('aria-label', paused ? 'Play' : 'Pause');
         }
 
+        let __lucideRenderQueued = false;
         const __lucideObserver = new MutationObserver((mutations) => {
-            mutations.forEach((m) => {
-                m.addedNodes.forEach((node) => {
-                    if (!(node instanceof Element)) return;
-                    if (node.matches('[data-lucide]') || node.querySelector('[data-lucide]')) {
-                        renderLucideIcons(node);
-                    }
-                });
+            const needsIcons = mutations.some((mutation) => [...mutation.addedNodes].some((node) =>
+                node instanceof Element && (node.matches('[data-lucide]') || node.querySelector('[data-lucide]'))
+            ));
+            if (!needsIcons || __lucideRenderQueued) return;
+            __lucideRenderQueued = true;
+            requestAnimationFrame(() => {
+                __lucideRenderQueued = false;
+                renderLucideIcons(document.body);
             });
         });
 
@@ -20461,8 +20512,13 @@
             const ctx = canvas.getContext('2d', { alpha: true });
             if (!ctx) return;
             const lowPower = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || lowPower;
-            const count = reduce ? 18 : (window.innerWidth < 760 ? 28 : 48);
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || lowPower || isMobile;
+            if (reduce) {
+                canvas.style.display = 'none';
+                return;
+            }
+            const count = window.innerWidth < 1100 ? 18 : 24;
             const particles = Array.from({ length: count }, () => ({
                 x: Math.random(),
                 y: Math.random(),
@@ -20474,7 +20530,7 @@
             let frame = 0;
             let last = 0;
             const resize = () => {
-                const dpr = Math.min(window.devicePixelRatio || 1, 1.6);
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
                 canvas.width = Math.max(1, Math.floor(window.innerWidth * dpr));
                 canvas.height = Math.max(1, Math.floor(window.innerHeight * dpr));
                 canvas.style.width = window.innerWidth + 'px';
@@ -20483,11 +20539,11 @@
             };
             const draw = (now) => {
                 frame = 0;
-                if (document.hidden || reduce) {
+                if (document.hidden) {
                     document.body.classList.toggle('effects-paused', document.hidden);
                     return;
                 }
-                if (now - last < 50) {
+                if (now - last < 80) {
                     frame = requestAnimationFrame(draw);
                     return;
                 }
@@ -20509,15 +20565,21 @@
                     ctx.arc(p.x * w, p.y * h, rr * 8, 0, Math.PI * 2);
                     ctx.fill();
                 });
-                frame = requestAnimationFrame(draw);
+                if (!audio.paused) frame = requestAnimationFrame(draw);
             };
             window.addEventListener('resize', debounce(resize, 180), { passive: true });
             document.addEventListener('visibilitychange', () => {
                 document.body.classList.toggle('effects-paused', document.hidden);
-                if (!document.hidden && !frame && !reduce) frame = requestAnimationFrame(draw);
+                if (!document.hidden && !frame) frame = requestAnimationFrame(draw);
             });
+            const resumeParticles = () => {
+                if (!document.hidden && !frame) frame = requestAnimationFrame(draw);
+            };
+            audio.addEventListener('play', resumeParticles, { passive: true });
+            audio.addEventListener('pause', resumeParticles, { passive: true });
+            audio.addEventListener('ended', resumeParticles, { passive: true });
             resize();
-            if (!reduce) frame = requestAnimationFrame(draw);
+            frame = requestAnimationFrame(draw);
         }
 
         const shortcutItems = [
