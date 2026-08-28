@@ -1,4 +1,4 @@
-
+﻿
 
 <!DOCTYPE html>
 <html lang="en">
@@ -4312,25 +4312,93 @@
         }
 
         .fav-download-all {
+            appearance: none;
+            border: 1px solid rgba(215, 183, 101, .34);
+            background: linear-gradient(135deg, rgba(215, 183, 101, .16), rgba(215, 183, 101, .06));
+            color: var(--text);
+            padding: 4px 12px 4px 4px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 7px;
+            gap: 10px;
+            min-height: 48px;
+            font: inherit;
+            text-align: left;
             white-space: nowrap;
+            cursor: pointer;
+            border-radius: 999px;
+            transition: background .2s ease, transform .2s ease;
         }
-        .fav-download-all .lucide {
-            width: 16px;
-            height: 16px;
+        .fav-download-all:not(:disabled):hover {
+            border-color: rgba(215, 183, 101, .65);
+            background: linear-gradient(135deg, rgba(215, 183, 101, .24), rgba(215, 183, 101, .1));
+            transform: translateY(-1px);
         }
-        .fav-download-all.is-busy .lucide {
+        .fav-download-icon {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--accent);
+            background: var(--accent);
+            color: #000;
+            border-radius: 50%;
+            transition: border-color .2s ease, background .2s ease, color .2s ease, transform .2s ease;
+        }
+        .fav-download-all:not(:disabled):active .fav-download-icon {
+            transform: scale(.92);
+        }
+        .fav-download-icon .lucide {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2.35;
+        }
+        .fav-download-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            line-height: 1.1;
+        }
+        .fav-download-copy strong {
+            font-size: .82rem;
+            font-weight: 800;
+        }
+        .fav-download-copy small {
+            max-width: 220px;
+            overflow: hidden;
+            color: var(--text2);
+            font-size: .67rem;
+            font-weight: 600;
+            text-overflow: ellipsis;
+        }
+        .fav-download-all.is-busy .fav-download-icon,
+        .fav-download-all.is-queued .fav-download-icon {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .fav-download-all.is-busy .fav-download-icon .lucide {
             animation: fav-download-spin 1s linear infinite;
+        }
+        .fav-download-all.is-complete .fav-download-icon {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: #000;
+        }
+        .fav-download-all.is-complete .fav-download-copy strong {
+            color: var(--accent);
+        }
+        .fav-download-all.has-error .fav-download-icon {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
         }
         @keyframes fav-download-spin {
             to { transform: rotate(360deg); }
         }
         .fav-download-all:disabled {
             cursor: default;
-            opacity: .72;
+            opacity: .88;
         }
         .fav-mobile-actions {
             display: flex;
@@ -4338,9 +4406,24 @@
             margin: 12px 0 8px;
         }
 
+        .sort-control-row.has-liked-download {
+            padding-top: 18px;
+            position: relative;
+            z-index: 96;
+        }
+
+        .sort-control-row.has-liked-download .fav-download-all {
+            margin-right: auto;
+        }
+
         @media (max-width: 480px) {
-            .fav-mobile-actions .fav-download-all {
-                width: 100%;
+            .fav-download-copy small {
+                max-width: 180px;
+            }
+
+            .sort-control-row.has-liked-download {
+                gap: 8px;
+                padding-top: 12px;
             }
         }
         
@@ -17273,7 +17356,7 @@
             return sortSongs(prepared, normalizedType);
         }
 
-        function sortControlHTML(scope, activeType, options = SORT_SECTION_OPTIONS[scope] || SORT_SECTION_OPTIONS.artist, title = 'Sort') {
+        function sortControlHTML(scope, activeType, options = SORT_SECTION_OPTIONS[scope] || SORT_SECTION_OPTIONS.artist, title = 'Sort', leadingAction = '') {
             const normalizedType = normalizeSortType(activeType, SORT_DEFAULTS[scope] || 'az');
             const sheetId = `${scope}SortSheet`;
             const optionHTML = options.map((type) => {
@@ -17281,7 +17364,7 @@
                 const cfg = getSortConfig(normalizedOption);
                 return `<button class="sort-option${cfg.advanced ? ' advanced' : ''}${normalizedOption === normalizedType ? ' active' : ''}" type="button" data-sort-option data-sort-scope="${escA(scope)}" data-sort-type="${escA(normalizedOption)}"><span class="sort-option-icon">${uiIcon(cfg.icon)}</span><span>${escH(cfg.label)}</span><span class="sort-option-check">${uiIcon('check')}</span></button>`;
             }).join('');
-            return `<div class="sort-control-row"><button class="sort-trigger" type="button" data-sort-trigger="${escA(scope)}" aria-haspopup="dialog" aria-expanded="false"><span class="sort-pill-icon" data-sort-current-icon="${escA(scope)}">${uiIcon(getSortIcon(normalizedType))}</span><span class="sort-trigger-text">Sort: <span data-sort-label="${escA(scope)}">${escH(getSortLabel(normalizedType))}</span></span><span class="sort-chevron">${uiIcon('chevron-down')}</span></button></div><div class="sort-sheet" id="${escA(sheetId)}" data-sort-sheet="${escA(scope)}"><div class="sort-sheet-card"><div class="sort-sheet-title">${uiIcon('arrow-up-down')}<span>${escH(title)}</span></div>${optionHTML}<button class="sort-close" type="button" data-sort-close="${escA(scope)}">Close</button></div></div>`;
+            return `<div class="sort-control-row${leadingAction ? ' has-liked-download' : ''}">${leadingAction}<button class="sort-trigger" type="button" data-sort-trigger="${escA(scope)}" aria-haspopup="dialog" aria-expanded="false"><span class="sort-pill-icon" data-sort-current-icon="${escA(scope)}">${uiIcon(getSortIcon(normalizedType))}</span><span class="sort-trigger-text">Sort: <span data-sort-label="${escA(scope)}">${escH(getSortLabel(normalizedType))}</span></span><span class="sort-chevron">${uiIcon('chevron-down')}</span></button></div><div class="sort-sheet" id="${escA(sheetId)}" data-sort-sheet="${escA(scope)}"><div class="sort-sheet-card"><div class="sort-sheet-title">${uiIcon('arrow-up-down')}<span>${escH(title)}</span></div>${optionHTML}<button class="sort-close" type="button" data-sort-close="${escA(scope)}">Close</button></div></div>`;
         }
 
         function updateSortUI(scope, activeType) {
@@ -17539,6 +17622,7 @@
             }
             updateDpStats();
             updateDownloadStorageStats();
+            if (document.getElementById('favSongsList')) refreshLikedDisplay();
         };
 
         window.retryDlQueueItem = (id) => {
@@ -17554,6 +17638,7 @@
             saveDlQueue();
             updateDpStats();
             if (!dlBusy && !dlPaused) processQueue();
+            if (document.getElementById('favSongsList')) refreshLikedDisplay();
         };
 
         window.clearAllFromQueue = () => {
@@ -17570,6 +17655,7 @@
             renderLucideIcons(items);
             updateDpStats();
             dpanel().classList.remove('open');
+            if (document.getElementById('favSongsList')) refreshLikedDisplay();
         };
 
         window.toggleQueuePause = () => {
@@ -17582,6 +17668,7 @@
                 } catch (e) {}
             }
             if (!dlPaused && !dlBusy) processQueue();
+            if (document.getElementById('favSongsList')) refreshLikedDisplay();
             showToast(dlPaused ? 'Downloads paused' : 'Downloads resumed');
         };
 
@@ -17761,6 +17848,7 @@
                 renderDpItem(next);
                 saveDlQueue();
                 updateDpStats();
+                if (document.getElementById('favSongsList')) refreshLikedDisplay();
             }
             dlAbortController = null;
             dlBusy = false;
@@ -19958,13 +20046,27 @@
         function likedDownloadAllButtonHTML(liked) {
             if (!liked.length) return '';
             const valid = liked.filter((song) => typeof song.file === 'string' && song.file.trim());
-            const allDownloaded = valid.length > 0 && valid.every((song) => isDownloaded(song.file));
-            const pending = valid.filter((song) => !isDownloaded(song.file) && dlQueue.some((item) => item.song?.file === song.file)).length;
-            const remaining = valid.filter((song) => !isDownloaded(song.file) && !dlQueue.some((item) => item.song?.file === song.file)).length;
-            const busy = likedDownloadAllBusy || (pending > 0 && remaining === 0);
-            const label = allDownloaded ? 'All Downloaded' : busy ? 'Downloading…' : 'Download All';
-            const icon = allDownloaded ? 'check' : busy ? 'loader-circle' : 'download';
-            return `<button class="btn btn-outline fav-download-all${busy ? ' is-busy' : ''}" onclick="downloadAllLikedSongs(this)"${allDownloaded || busy ? ' disabled' : ''} aria-label="${label}">${uiIcon(icon)}<span>${label}</span></button>`;
+            const downloaded = valid.filter((song) => isDownloaded(song.file)).length;
+            const pendingFiles = new Set(dlQueue.filter((item) => item.status === 'queued' || item.status === 'active').map((item) => item.song?.file).filter(Boolean));
+            const failedFiles = new Set(dlQueue.filter((item) => item.status === 'error').map((item) => item.song?.file).filter(Boolean));
+            const pending = valid.filter((song) => !isDownloaded(song.file) && pendingFiles.has(song.file)).length;
+            const failed = valid.filter((song) => !isDownloaded(song.file) && failedFiles.has(song.file)).length;
+            const remaining = Math.max(0, valid.length - downloaded - pending);
+            const allDownloaded = valid.length > 0 && downloaded === valid.length;
+            const queueOnly = pending > 0 && remaining === 0 && failed === 0;
+            const waiting = queueOnly && (dlPaused || !canUseNetwork());
+            const busy = likedDownloadAllBusy || queueOnly;
+            const label = allDownloaded ? 'Downloaded' : failed ? 'Retry downloads' : waiting ? 'Download queued' : busy ? 'Downloading liked songs' : downloaded ? 'Download remaining' : 'Download liked songs';
+            const detail = allDownloaded
+                ? `All ${valid.length} liked song${valid.length === 1 ? '' : 's'} available offline`
+                : failed
+                    ? `${failed} failed • tap to retry`
+                    : pending
+                        ? `${downloaded} saved • ${pending} in queue`
+                        : `${valid.length - downloaded} song${valid.length - downloaded === 1 ? '' : 's'} to save offline`;
+            const icon = allDownloaded ? 'check' : waiting ? 'clock-3' : busy ? 'loader-circle' : failed ? 'refresh-cw' : 'download';
+            const stateClass = allDownloaded ? ' is-complete' : failed ? ' has-error' : queueOnly ? (waiting ? ' is-queued' : ' is-busy') : likedDownloadAllBusy ? ' is-busy' : '';
+            return `<button type="button" class="fav-download-all${stateClass}" onclick="downloadAllLikedSongs(this)"${allDownloaded || busy ? ' disabled' : ''} aria-label="${label}. ${detail}" title="${label}"><span class="fav-download-icon">${uiIcon(icon)}</span><span class="fav-download-copy"><strong>${label}</strong><small>${detail}</small></span></button>`;
         }
 
         window.downloadAllLikedSongs = async (button) => {
@@ -19975,8 +20077,11 @@
                 return;
             }
             const unique = [...new Map(liked.filter((song) => typeof song.file === 'string' && song.file.trim()).map((song) => [song.file, song])).values()];
-            const remaining = unique.filter((song) => !isDownloaded(song.file) && !dlQueue.some((item) => item.song?.file === song.file));
-            if (!remaining.length) {
+            const likedFiles = new Set(unique.map((song) => song.file));
+            const failedItems = dlQueue.filter((item) => item.status === 'error' && likedFiles.has(item.song?.file) && !isDownloaded(item.song.file));
+            const queuedFiles = new Set(dlQueue.filter((item) => item.status === 'queued' || item.status === 'active' || item.status === 'done').map((item) => item.song?.file).filter(Boolean));
+            const remaining = unique.filter((song) => !isDownloaded(song.file) && !queuedFiles.has(song.file) && !failedItems.some((item) => item.song.file === song.file));
+            if (!remaining.length && !failedItems.length) {
                 showToast(unique.length && unique.every((song) => isDownloaded(song.file)) ? 'All liked songs are already downloaded' : 'All liked songs are already downloaded or queued');
                 refreshLikedDisplay();
                 return;
@@ -19985,18 +20090,32 @@
             if (button) {
                 button.disabled = true;
                 button.classList.add('is-busy');
-                button.innerHTML = `${uiIcon('loader-circle')}<span>Downloading…</span>`;
+                button.innerHTML = `<span class="fav-download-icon">${uiIcon('loader-circle')}</span><span class="fav-download-copy"><strong>Preparing downloads</strong><small>Adding liked songs to the queue…</small></span>`;
                 renderLucideIcons(button);
             }
             let added = 0;
             try {
+                failedItems.forEach((item) => {
+                    item.status = 'queued';
+                    item.progress = 0;
+                    item.errorMessage = '';
+                    item.retryAt = 0;
+                    item.rateBps = 0;
+                    item.etaSec = 0;
+                    renderDpItem(item);
+                });
+                if (failedItems.length) {
+                    saveDlQueue();
+                    updateDpStats();
+                }
                 for (const song of remaining) {
                     const id = await addToDlQueue(song, { toast: false, openPanel: false });
                     if (id) added++;
                 }
-                if (added) {
-                    dpanel().classList.add('open');
-                    showToast(`${added} liked song${added === 1 ? '' : 's'} added to download queue`);
+                const scheduled = added + failedItems.length;
+                if (scheduled) {
+                    if (!dlBusy && !dlPaused) processQueue();
+                    showToast(`${scheduled} liked song${scheduled === 1 ? '' : 's'} ${dlPaused || !canUseNetwork() ? 'queued' : 'downloading'}`);
                 } else {
                     showToast('All liked songs are already downloaded or queued');
                 }
@@ -20093,7 +20212,7 @@
                             <div class="fav-mobile-sub">${likedCount} song${likedCount !== 1 ? 's' : ''} • Personal Mix</div>
                         </div>
                     </div>
-                    ${likedCount ? `<div class="fav-mobile-actions">${likedDownloadAllButtonHTML(likedBase)}</div>${sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs')}` : ''}
+                    ${likedCount ? sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs', likedDownloadAllButtonHTML(likedBase)) : ''}
                     <div class="fav-song-list">
                         ${likedCount ? '<div class="fav-song-header"><span>#</span><span>Title</span><span></span></div><div id="favSongsList" class="sort-song-list" data-compact="1"></div>' : `<div class="empty-state" style="padding:40px 0"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`}
                     </div>
@@ -20108,11 +20227,7 @@
             const html = `
             <div class="main-topbar"><div class="nav-arrows"><button class="nav-arrow-btn" onclick="loadArtists()">${uiIcon('chevron-left')}</button></div><div style="flex:1"><div style="font-size:1.2rem;font-weight:800">Favorites</div><div style="font-size:.72rem;color:var(--text2)">${likedCount} liked songs</div></div><div class="topbar-actions"><button class="topbar-menu-btn" onclick="openMobileDrawer()" title="Menu">${uiIcon('menu')}</button></div></div>
             <div class="songs-section" style="padding-top:20px">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px;flex-wrap:wrap">
-                    <div class="fav-section-label" style="display:inline-flex;align-items:center;gap:6px">${uiIcon('heart')}<span>Liked Songs</span></div>
-                    ${likedDownloadAllButtonHTML(likedBase)}
-                </div>
-                ${likedCount===0?`<div class="empty-state"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`:`${sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs')}<div class="songs-table-header"><span class="th">#</span><span class="th">Title</span><span class="th"></span></div><div id="favSongsList" class="sort-song-list" data-compact="0"></div>`}
+                ${likedCount===0?`<div class="empty-state"><div class="emoji">${uiIcon('list-music')}</div><p>No favorites yet.</p></div>`:`${sortControlHTML('liked', currentFavSortType, SORT_SECTION_OPTIONS.liked, 'Sort Liked Songs', likedDownloadAllButtonHTML(likedBase))}<div class="songs-table-header"><span class="th">#</span><span class="th">Title</span><span class="th"></span></div><div id="favSongsList" class="sort-song-list" data-compact="0"></div>`}
             </div>`;
             mainArea.innerHTML = html;
             renderLucideIcons(mainArea);
