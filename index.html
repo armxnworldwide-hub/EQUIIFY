@@ -13460,6 +13460,71 @@
                         justify-content: flex-start;
                         text-align: left;
                     }
+
+                    .player-progress-toggle {
+                        width: 36px;
+                        height: 36px;
+                        min-width: 36px;
+                        min-height: 36px;
+                        padding: 0;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: rgba(255, 255, 255, .76);
+                        background: rgba(255, 255, 255, .045);
+                        border: 1px solid rgba(255, 255, 255, .1);
+                        border-radius: 50%;
+                        cursor: pointer;
+                        transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+                    }
+
+                    .player-progress-toggle:active {
+                        transform: scale(.92);
+                    }
+
+                    body.player-progress-hidden {
+                        --mobile-player-h: 126px;
+                    }
+
+                    body.player-progress-hidden .player-progress-toggle {
+                        color: var(--accent);
+                        background: rgba(245, 181, 63, .12);
+                        border-color: rgba(245, 181, 63, .38);
+                    }
+
+                    body.player-progress-hidden .player .player-progress {
+                        display: none;
+                    }
+
+                    body.player-progress-hidden .player .player-center {
+                        justify-content: center;
+                        gap: 0;
+                    }
+                }
+
+                @media (max-width: 390px) {
+                    .player-progress-toggle,
+                    .player-like,
+                    .player-dl-btn {
+                        width: 32px;
+                        height: 32px;
+                        min-width: 32px;
+                        min-height: 32px;
+                    }
+
+                    body.player-progress-hidden {
+                        --mobile-player-h: 122px;
+                    }
+                }
+
+                .player-progress-toggle {
+                    display: none;
+                }
+
+                @media (max-width: 768px) {
+                    .player-progress-toggle {
+                        display: inline-flex;
+                    }
                 }
 
     </style>
@@ -13711,6 +13776,7 @@
             <div class="player-mobile-actions">
                 <button class="player-like" id="playerLikeBtn" onclick="togglePlayerLike()" aria-label="Like current song"><i data-lucide="heart" aria-hidden="true"></i></button>
                 <button class="player-dl-btn" id="playerDlBtn" onclick="downloadCurrentSong()" title="Download" aria-label="Download current song"><i data-lucide="download" aria-hidden="true"></i></button>
+                <button class="player-progress-toggle" id="playerProgressToggle" type="button" onclick="togglePlayerProgress()" title="Hide progress bar" aria-label="Hide progress bar" aria-pressed="false"><i data-lucide="eye-off" aria-hidden="true"></i></button>
             </div>
         </div>
         <div class="player-center">
@@ -16447,6 +16513,36 @@
             el.innerHTML = uiIcon(iconName);
             renderLucideIcons(el);
         }
+
+        const PLAYER_PROGRESS_HIDDEN_KEY = 'falcon_player_progress_hidden_v1';
+
+        function syncPlayerProgressVisibility(forceHidden) {
+            let hidden = forceHidden;
+            if (typeof hidden !== 'boolean') {
+                try {
+                    hidden = localStorage.getItem(PLAYER_PROGRESS_HIDDEN_KEY) === '1';
+                } catch (e) {
+                    hidden = false;
+                }
+            }
+
+            document.body.classList.toggle('player-progress-hidden', hidden);
+            const button = document.getElementById('playerProgressToggle');
+            if (!button) return;
+            const label = hidden ? 'Show progress bar' : 'Hide progress bar';
+            button.title = label;
+            button.setAttribute('aria-label', label);
+            button.setAttribute('aria-pressed', String(hidden));
+            setElementIcon(button, hidden ? 'eye' : 'eye-off');
+        }
+
+        window.togglePlayerProgress = () => {
+            const hidden = !document.body.classList.contains('player-progress-hidden');
+            try {
+                localStorage.setItem(PLAYER_PROGRESS_HIDDEN_KEY, hidden ? '1' : '0');
+            } catch (e) {}
+            syncPlayerProgressVisibility(hidden);
+        };
 
         function setPlayButtonIcons(paused = true) {
             setElementIcon(playBtn, paused ? 'play' : 'pause');
@@ -22228,6 +22324,7 @@
 
         // -- INIT --
         initLucideSystem();
+        syncPlayerProgressVisibility();
         buildSidebar();
         loadArtists();
         initSearchClear();
