@@ -13439,6 +13439,29 @@
                     }
                 }
 
+                /* Mobile now-playing text stays beside the poster, Spotify-style. */
+                @media (max-width: 768px) {
+                    .player .player-song-main {
+                        width: 100%;
+                        max-width: none;
+                        min-width: 0;
+                        grid-template-columns: minmax(0, 1fr);
+                        justify-content: stretch;
+                        justify-items: start;
+                        align-items: start;
+                        text-align: left;
+                    }
+
+                    .player .player-title-line,
+                    .player .player-song-title,
+                    .player .player-song-artist {
+                        width: 100%;
+                        max-width: 100%;
+                        justify-content: flex-start;
+                        text-align: left;
+                    }
+                }
+
     </style>
 </head>
 
