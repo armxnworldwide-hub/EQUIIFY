@@ -2910,102 +2910,6 @@
         }
 
         /* Premium overlays */
-        .mini-player {
-            position: fixed;
-            right: 22px;
-            bottom: calc(var(--player-h) + 22px);
-            width: min(360px, calc(100vw - 28px));
-            min-height: 82px;
-            display: grid;
-            grid-template-columns: 58px minmax(0, 1fr) auto;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            background: linear-gradient(145deg, rgba(36, 36, 36, .74), rgba(9, 9, 9, .66));
-            box-shadow: 0 24px 70px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .09);
-            backdrop-filter: blur(24px) saturate(1.2);
-            -webkit-backdrop-filter: blur(24px) saturate(1.2);
-            z-index: 620;
-            transform: translate3d(0, 0, 0);
-            transition: opacity .24s ease, transform .24s ease, width .24s ease, border-color .24s ease;
-            touch-action: none;
-        }
-
-        .mini-player.hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: translate3d(0, 18px, 0) scale(.96);
-        }
-
-        .mini-player.collapsed {
-            width: 82px;
-            grid-template-columns: 58px;
-            padding: 12px;
-            cursor: grab;
-        }
-
-        .mini-player.collapsed .mini-info,
-        .mini-player.collapsed .mini-actions,
-        .mini-player.collapsed .mini-progress {
-            display: none;
-        }
-
-        .mini-cover {
-            width: 58px;
-            height: 58px;
-            border-radius: 10px;
-            object-fit: cover;
-            box-shadow: 0 12px 24px rgba(0, 0, 0, .45);
-        }
-
-        .mini-info {
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .mini-title,
-        .mini-artist {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .mini-title {
-            font-size: .86rem;
-            font-weight: 900;
-        }
-
-        .mini-artist {
-            font-size: .72rem;
-            color: var(--text2);
-        }
-
-        .mini-progress {
-            height: 4px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, .15);
-            overflow: hidden;
-        }
-
-        .mini-progress-fill {
-            width: 0%;
-            height: 100%;
-            border-radius: inherit;
-            background: linear-gradient(90deg, var(--accent), var(--theme-secondary));
-            transition: width .18s linear;
-        }
-
-        .mini-actions {
-            display: grid;
-            grid-template-columns: repeat(5, 30px);
-            gap: 5px;
-        }
-
-        .mini-btn,
         .shortcut-close {
             width: 30px;
             height: 30px;
@@ -3020,15 +2924,9 @@
             transition: transform .16s ease, background .16s ease, color .16s ease;
         }
 
-        .mini-btn:hover,
         .shortcut-close:hover {
             background: rgba(255, 255, 255, .12);
             transform: translateY(-1px);
-        }
-
-        .mini-btn.primary {
-            background: var(--text);
-            color: var(--bg);
         }
 
         .shortcut-overlay {
@@ -7941,31 +7839,6 @@
                 pointer-events: auto;
             }
 
-            .mini-player {
-                right: 10px;
-                bottom: calc(var(--mobile-nav-h) + var(--mobile-player-h) + var(--safe-bottom) + 12px);
-                width: min(340px, calc(100vw - 20px));
-                grid-template-columns: 50px minmax(0, 1fr) auto;
-                padding: 10px;
-                border-radius: 14px;
-            }
-
-            .mini-cover {
-                width: 50px;
-                height: 50px;
-            }
-
-            .mini-actions {
-                grid-template-columns: repeat(5, 28px);
-                gap: 4px;
-            }
-
-            .mini-btn {
-                width: 28px;
-                height: 28px;
-                border-radius: 9px;
-            }
-
             .shortcut-grid {
                 grid-template-columns: 1fr;
             }
@@ -11201,7 +11074,6 @@
 
             .progress-fill,
             #fullscreenPlayer .mfp-progress-fill,
-            .mini-progress-fill,
             .dp-progress-bar {
                 background: linear-gradient(90deg, #f4dda0, #b78c35);
                 box-shadow: 0 0 18px rgba(215, 183, 101, .28);
@@ -13891,21 +13763,6 @@
 
     <audio id="audio"></audio>
     <audio id="audioFade"></audio>
-    <div class="mini-player hidden" id="miniPlayer" role="region" aria-label="Floating mini player">
-        <img class="mini-cover" id="miniCover" src="" alt="">
-        <div class="mini-info">
-            <div class="mini-title" id="miniTitle">Nothing playing</div>
-            <div class="mini-artist" id="miniArtist">-</div>
-            <div class="mini-progress" aria-hidden="true"><div class="mini-progress-fill" id="miniProgressFill"></div></div>
-        </div>
-        <div class="mini-actions">
-            <button class="mini-btn" onclick="previous()" title="Previous" aria-label="Previous"><i data-lucide="skip-back" aria-hidden="true"></i></button>
-            <button class="mini-btn primary" id="miniPlayBtn" onclick="togglePlay()" title="Play or pause" aria-label="Play or pause"><i data-lucide="play" aria-hidden="true"></i></button>
-            <button class="mini-btn" onclick="next()" title="Next" aria-label="Next"><i data-lucide="skip-forward" aria-hidden="true"></i></button>
-            <button class="mini-btn" onclick="toggleMiniPlayerCollapse()" title="Collapse" aria-label="Collapse mini player"><i data-lucide="minimize-2" aria-hidden="true"></i></button>
-            <button class="mini-btn" onclick="closeMiniPlayer()" title="Close" aria-label="Close mini player"><i data-lucide="x" aria-hidden="true"></i></button>
-        </div>
-    </div>
     <div id="toast"></div>
 
 
@@ -16571,10 +16428,8 @@
         function setPlayButtonIcons(paused = true) {
             setElementIcon(playBtn, paused ? 'play' : 'pause');
             setElementIcon(document.getElementById('fsPlay'), paused ? 'play' : 'pause');
-            setElementIcon(document.getElementById('miniPlayBtn'), paused ? 'play' : 'pause');
             playBtn?.setAttribute('aria-label', paused ? 'Play' : 'Pause');
             document.getElementById('fsPlay')?.setAttribute('aria-label', paused ? 'Play' : 'Pause');
-            document.getElementById('miniPlayBtn')?.setAttribute('aria-label', paused ? 'Play' : 'Pause');
         }
 
         const __lucideObserver = new MutationObserver((mutations) => {
@@ -19210,8 +19065,6 @@
             if (lyricsPanelOpen) loadLyricsPanel(currentSong);
             else syncLyricsPanelShell();
             updateNowPlayingIndicator();
-            localStorage.removeItem('falcon_mini_closed');
-            updateMiniPlayer();
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: song.title,
@@ -19296,93 +19149,6 @@
                 bar.classList.remove('active');
                 indicator.classList.remove('active', 'playing');
             }
-        }
-
-        function updateMiniPlayerProgress(current = audio.currentTime || 0, duration = audio.duration || 0) {
-            const fill = document.getElementById('miniProgressFill');
-            if (!fill) return;
-            const pct = duration > 0 ? Math.max(0, Math.min(100, (current / duration) * 100)) : 0;
-            fill.style.width = pct + '%';
-        }
-
-        function updateMiniPlayer() {
-            const mini = document.getElementById('miniPlayer');
-            if (!mini) return;
-            const hasSong = !!currentSong;
-            mini.classList.toggle('hidden', !hasSong || localStorage.getItem('falcon_mini_closed') === '1');
-            if (!hasSong) return;
-            const cover = document.getElementById('miniCover');
-            const title = document.getElementById('miniTitle');
-            const artist = document.getElementById('miniArtist');
-            if (cover && cover.src !== currentSong.poster) cover.src = currentSong.poster || '';
-            if (title) title.textContent = currentSong.title || 'Unknown track';
-            if (artist) artist.textContent = playerArtist.textContent || currentSong.artistName || 'Unknown artist';
-            updateMiniPlayerProgress();
-            setPlayButtonIcons(audio.paused);
-        }
-
-        window.closeMiniPlayer = () => {
-            localStorage.setItem('falcon_mini_closed', '1');
-            document.getElementById('miniPlayer')?.classList.add('hidden');
-        };
-
-        window.toggleMiniPlayerCollapse = () => {
-            const mini = document.getElementById('miniPlayer');
-            if (!mini) return;
-            mini.classList.toggle('collapsed');
-            localStorage.setItem('falcon_mini_collapsed', mini.classList.contains('collapsed') ? '1' : '0');
-        };
-
-        function initMiniPlayerDrag() {
-            const mini = document.getElementById('miniPlayer');
-            if (!mini || mini.dataset.dragBound === '1') return;
-            mini.dataset.dragBound = '1';
-            if (localStorage.getItem('falcon_mini_collapsed') === '1') mini.classList.add('collapsed');
-            const saved = (() => {
-                try { return JSON.parse(localStorage.getItem('falcon_mini_pos') || 'null'); } catch (e) { return null; }
-            })();
-            if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
-                mini.style.left = saved.x + 'px';
-                mini.style.top = saved.y + 'px';
-                mini.style.right = 'auto';
-                mini.style.bottom = 'auto';
-            }
-            let dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0;
-            const down = (e) => {
-                if (e.target instanceof Element && e.target.closest('button')) return;
-                const point = e.touches ? e.touches[0] : e;
-                const rect = mini.getBoundingClientRect();
-                dragging = true;
-                startX = point.clientX;
-                startY = point.clientY;
-                baseX = rect.left;
-                baseY = rect.top;
-                mini.style.right = 'auto';
-                mini.style.bottom = 'auto';
-                mini.style.left = baseX + 'px';
-                mini.style.top = baseY + 'px';
-            };
-            const move = (e) => {
-                if (!dragging) return;
-                const point = e.touches ? e.touches[0] : e;
-                const nextX = clampNumber(baseX + point.clientX - startX, 8, window.innerWidth - mini.offsetWidth - 8);
-                const nextY = clampNumber(baseY + point.clientY - startY, 8, window.innerHeight - mini.offsetHeight - 8);
-                mini.style.left = nextX + 'px';
-                mini.style.top = nextY + 'px';
-                if (e.cancelable) e.preventDefault();
-            };
-            const up = () => {
-                if (!dragging) return;
-                dragging = false;
-                const rect = mini.getBoundingClientRect();
-                localStorage.setItem('falcon_mini_pos', JSON.stringify({ x: Math.round(rect.left), y: Math.round(rect.top) }));
-            };
-            mini.addEventListener('mousedown', down);
-            mini.addEventListener('touchstart', down, { passive: true });
-            window.addEventListener('mousemove', move);
-            window.addEventListener('touchmove', move, { passive: false });
-            window.addEventListener('mouseup', up);
-            window.addEventListener('touchend', up, { passive: true });
         }
 
         function getClientX(e) {
@@ -21965,7 +21731,6 @@
             document.getElementById('currentTime').textContent = fmt(current); 
             const fsCurrentTime = document.getElementById('fsCurrentTime');
             if(fsCurrentTime) fsCurrentTime.textContent = fmt(current);
-            updateMiniPlayerProgress(current, duration);
             updateFullPlayerLyrics(current);
             updateLyricsPanelPlayback(current);
             setFullPlayerEnergy();
@@ -21987,7 +21752,6 @@
             setFullPlayerPlaybackState(true);
             updateFullPlayerLyrics(audio.currentTime, true);
             updateNowPlayingIndicator();
-            updateMiniPlayer();
             scheduleCrossfadeAuto('play');
         });
         audio.addEventListener('pause',()=>{ 
@@ -22011,7 +21775,6 @@
             setFullPlayerPlaybackState(false);
             savePlaybackMemory();
             updateNowPlayingIndicator();
-            updateMiniPlayer();
         });
         audio.addEventListener('playing', () => resumeAudioContext('playing-event'));
         audio.addEventListener('canplay', () => resumeAudioContext('canplay-event'));
@@ -22022,7 +21785,7 @@
                 crossfadeTimer = null;
             }
         });
-        volumeSlider.addEventListener('input',()=>{ const nextVolume=+volumeSlider.value; audio.volume=nextVolume; if(audioFade.src)audioFade.volume=nextVolume; isMuted=nextVolume===0; localStorage.setItem('eq_volume',nextVolume); updateMiniPlayer(); });
+        volumeSlider.addEventListener('input',()=>{ const nextVolume=+volumeSlider.value; audio.volume=nextVolume; if(audioFade.src)audioFade.volume=nextVolume; isMuted=nextVolume===0; localStorage.setItem('eq_volume',nextVolume); });
         window.addEventListener('beforeunload',()=>savePlaybackMemory());
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) pageFrozen = false;
@@ -22453,10 +22216,8 @@
         renderQueuePanel();
         setupQueuePanelInteractions();
         setupSongRowSwipeGestures();
-        initMiniPlayerDrag();
         initAmbientParticles();
         initKeyboardShortcuts();
-        updateMiniPlayer();
         updateQueueIndicators();
         updateDpStats();
         if (dlQueue.some((item) => item.status === 'queued') && !dlPaused) processQueue();
