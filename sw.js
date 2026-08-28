@@ -1,6 +1,6 @@
-const CACHE_NAME = 'falcon-pwa-v12';
+const CACHE_NAME = 'falcon-pwa-v13';
 const LEGACY_CACHE_NAMES = ['falcon-offline-v3', 'falcon-offline-v2'];
-const APP_SHELL = ['./', './index.html', './style.css', './artist.js', './app.js', './manifest.webmanifest', './sw.js', './images/falcon.jpeg'];
+const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './sw.js', './images/falcon.jpeg'];
 const MEDIA_RE = /\/(songs|images)\//;
 
 async function precacheAppShell() {
