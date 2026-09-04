@@ -51,12 +51,14 @@
             --safe-right: env(safe-area-inset-right, 0px);
             --safe-left: env(safe-area-inset-left, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
-            --ambient-rgb: 200, 245, 66;
-            --ambient-rgb-2: 78, 156, 255;
-            --ambient-rgb-3: 164, 95, 255;
+            --ambient-rgb: 215, 183, 101;
+            --ambient-rgb-2: 240, 217, 141;
+            --ambient-rgb-3: 183, 140, 62;
+            --progress-primary-rgb: 215, 183, 101;
+            --progress-secondary-rgb: 240, 217, 141;
             --theme-primary: #d7b765;
-            --theme-secondary: #4e9cff;
-            --theme-accent: #a45fff;
+            --theme-secondary: #f0d98d;
+            --theme-accent: #b78c35;
             --theme-bg: #0a0a0a;
             --theme-surface: rgba(24, 24, 24, .72);
             --glass-bg: rgba(18, 18, 18, .62);
@@ -5994,8 +5996,8 @@
         #fullscreenPlayer {
             --fs-energy: .36;
             --fs-lyrics-pad: 124px;
-            --fs-accent-rgb: 200, 245, 66;
-            --fs-secondary-rgb: 92, 150, 255;
+            --fs-accent-rgb: 215, 183, 101;
+            --fs-secondary-rgb: 240, 217, 141;
             position: fixed;
             inset: 0;
             z-index: 9999;
@@ -6020,7 +6022,7 @@
             position: absolute;
             inset: 0;
             overflow: hidden;
-            background: radial-gradient(circle at 18% 14%, rgba(var(--fs-accent-rgb), .2), transparent 40%), radial-gradient(circle at 84% 16%, rgba(var(--fs-secondary-rgb), .28), transparent 36%), radial-gradient(circle at 50% 110%, rgba(var(--ambient-rgb-3), .14), transparent 42%), #060b14;
+            background: radial-gradient(circle at 18% 14%, rgba(var(--fs-accent-rgb), .2), transparent 40%), radial-gradient(circle at 84% 16%, rgba(var(--fs-secondary-rgb), .22), transparent 36%), radial-gradient(circle at 50% 110%, rgba(183, 140, 62, .14), transparent 42%), #090806;
         }
         
         #fullscreenPlayer .mfp-bg-image {
@@ -9981,7 +9983,6 @@
             /* Toggle helpers */
             .no-blur .app-header,.no-blur .sidebar,.no-blur .featured-hero{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
             .no-animations *{transition:none!important;animation:none!important}
-            .dynamic-album .artist-card img{box-shadow:0 10px 28px rgba(var(--ambient-rgb),.18)}
         }
 
             .home-shell {
@@ -14675,6 +14676,24 @@
                     }
                 }
 
+                /* Album artwork colors belong only to the playback timeline. */
+                .player .progress-fill,
+                .player .progress-track:hover .progress-fill,
+                .player .progress-track .progress-fill {
+                    background: linear-gradient(90deg, rgb(var(--progress-primary-rgb)), rgb(var(--progress-secondary-rgb)));
+                    box-shadow: 0 0 16px rgba(var(--progress-primary-rgb), .34);
+                }
+
+                .player .progress-fill::after {
+                    background: rgb(var(--progress-primary-rgb));
+                    box-shadow: 0 0 0 2px rgba(0, 0, 0, .42), 0 0 12px rgba(var(--progress-primary-rgb), .42);
+                }
+
+                #fullscreenPlayer .mfp-progress-fill {
+                    background: linear-gradient(90deg, rgb(var(--progress-primary-rgb)), rgb(var(--progress-secondary-rgb)));
+                    box-shadow: 0 0 18px rgba(var(--progress-primary-rgb), .42);
+                }
+
     </style>
 </head>
 
@@ -15005,7 +15024,6 @@
 
     <div id="fullscreenPlayer" class="mobile-fullscreen-player" aria-hidden="true">
         <div class="mfp-bg-layer" aria-hidden="true">
-            <img id="fsBackdrop" class="mfp-bg-image" src="" alt="">
             <div class="mfp-bg-gradient"></div>
             <div class="mfp-bg-grain"></div>
             <div class="mfp-aura mfp-aura-1"></div>
@@ -15025,9 +15043,6 @@
             <div class="mfp-stage" id="fsStage">
                 <div class="mfp-center-stack">
                     <div class="mfp-artwork-wrap">
-                        <div class="mfp-artwork-glow" aria-hidden="true">
-                            <img id="fsPosterGlow" class="mfp-artwork-glow-img" src="" alt="">
-                        </div>
                         <canvas class="mfp-visualizer" id="fsVisualizer" width="380" height="110" aria-hidden="true"></canvas>
                         <img id="fsPoster" class="mfp-artwork" alt="Now playing cover">
                     </div>
@@ -15143,7 +15158,7 @@
                     <button class="ap-swatch" data-accent="#a45fff" title="Purple" style="background:#a45fff"></button>
                     <button class="ap-swatch" data-accent="#ff6b6b" title="Red" style="background:#ff6b6b"></button>
                     <button class="ap-swatch" data-accent="#ff9248" title="Orange" style="background:#ff9248"></button>
-                    <button class="ap-swatch" data-accent="#ffd166" title="Gold" style="background:#ffd166"></button>
+                    <button class="ap-swatch" data-accent="#d7b765" title="Gold" style="background:#d7b765"></button>
                     <button class="ap-swatch" data-accent="#ffffff" title="White" style="background:#ffffff;border:1px solid #ccc"></button>
                 </div>
             </div>
@@ -15151,7 +15166,6 @@
             <div>
                 <div class="ap-label">DISPLAY OPTIONS</div>
                 <div class="ap-row" id="apDisplayOptions">
-                    <div class="ap-toggle"><div>Dynamic Album Colors</div><div class="ap-switch" data-key="dynamicAlbum"><div class="dot"></div></div></div>
                     <div class="ap-toggle"><div>Blur Effects</div><div class="ap-switch" data-key="blurEffects"><div class="dot"></div></div></div>
                     <div class="ap-toggle"><div>UI Animations</div><div class="ap-switch" data-key="animations"><div class="dot"></div></div></div>
                     <div class="ap-toggle"><div>Glass Effect</div><div class="ap-switch" data-key="glass"><div class="dot"></div></div></div>
@@ -17506,8 +17520,8 @@
 })();
 // Appearance system: themes, accents, toggles, persistence
         (function(){
-            const STORAGE_KEY = 'appearance_settings_v1';
-            const defaults = { mode: 'dark', theme: 'green', accent: '#c8f542', dynamicAlbum: true, blurEffects: true, animations: true, glass: true };
+            const STORAGE_KEY = 'appearance_settings_v2';
+            const defaults = { mode: 'dark', theme: 'gold', accent: '#d7b765', blurEffects: true, animations: true, glass: true };
 
             function $(sel,root=document) { return root.querySelector(sel); }
             function $all(sel,root=document){ return Array.from(root.querySelectorAll(sel)); }
@@ -17544,19 +17558,26 @@
 
                 // Theme palettes
                 const themeMap = {
-                    green: {accent:'#c8f542',accent2:'#9fd02a',ambient:'200,245,66'},
-                    blue: {accent:'#4e9cff',accent2:'#3b7be0',ambient:'78,156,255'},
-                    purple: {accent:'#a45fff',accent2:'#7b3fd6',ambient:'164,95,255'},
-                    red: {accent:'#ff6b6b',accent2:'#d94a4a',ambient:'255,107,107'},
-                    gold: {accent:'#ffd166',accent2:'#e6b800',ambient:'255,209,102'},
-                    orange: {accent:'#ff9248',accent2:'#ff6a24',ambient:'255,146,72'},
-                    pink: {accent:'#ff9ac2',accent2:'#ff6fa8',ambient:'255,154,194'}
+                    green: {accent:'#c8f542',accent2:'#9fd02a',ambient:'200,245,66',ambient2:'159,208,42',ambient3:'114,154,34'},
+                    blue: {accent:'#4e9cff',accent2:'#3b7be0',ambient:'78,156,255',ambient2:'59,123,224',ambient3:'66,94,158'},
+                    purple: {accent:'#a45fff',accent2:'#7b3fd6',ambient:'164,95,255',ambient2:'123,63,214',ambient3:'98,62,151'},
+                    red: {accent:'#ff6b6b',accent2:'#d94a4a',ambient:'255,107,107',ambient2:'217,74,74',ambient3:'151,59,59'},
+                    gold: {accent:'#d7b765',accent2:'#f0d98d',ambient:'215,183,101',ambient2:'240,217,141',ambient3:'183,140,62'},
+                    orange: {accent:'#ff9248',accent2:'#ff6a24',ambient:'255,146,72',ambient2:'255,106,36',ambient3:'166,80,30'},
+                    pink: {accent:'#ff9ac2',accent2:'#ff6fa8',ambient:'255,154,194',ambient2:'255,111,168',ambient3:'161,77,111'}
                 };
                 const t = themeMap[set.theme] || themeMap.green;
                 document.documentElement.style.setProperty('--accent', set.accent || t.accent);
                 document.documentElement.style.setProperty('--accent2', t.accent2);
                 document.documentElement.style.setProperty('--accent-glow', (set.accent || t.accent) + '22');
                 document.documentElement.style.setProperty('--ambient-rgb', t.ambient);
+                document.documentElement.style.setProperty('--ambient-rgb-2', t.ambient2);
+                document.documentElement.style.setProperty('--ambient-rgb-3', t.ambient3);
+                const fullPlayer = document.getElementById('fullscreenPlayer');
+                if(fullPlayer){
+                    fullPlayer.style.setProperty('--fs-accent-rgb', t.ambient);
+                    fullPlayer.style.setProperty('--fs-secondary-rgb', t.ambient2);
+                }
 
                 // Accent override if user chooses a specific color
                 if(set.accent){ document.documentElement.style.setProperty('--accent', set.accent); }
@@ -17564,7 +17585,6 @@
                 // Toggles
                 if(set.blurEffects) document.body.classList.remove('no-blur'); else document.body.classList.add('no-blur');
                 if(set.animations) document.body.classList.remove('no-animations'); else document.body.classList.add('no-animations');
-                if(set.dynamicAlbum) document.body.classList.add('dynamic-album'); else document.body.classList.remove('dynamic-album');
                 if(set.glass) document.body.classList.remove('no-glass'); else document.body.classList.add('no-glass');
 
                 // Update UI controls
@@ -17573,6 +17593,7 @@
                 $all('.ap-swatch[data-accent]').forEach(b=>b.classList.toggle('active', (b.dataset.accent||'').toLowerCase() === (set.accent||'').toLowerCase()));
                 $all('.ap-switch').forEach(el=>{ const key=el.dataset.key; const on = !!set[key]; el.classList.toggle('on', on); });
 
+                delete set.dynamicAlbum;
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(set));
             }
 
@@ -19491,7 +19512,7 @@
                 updatePlayerLikeBtn(last.file);
                 updatePlayerDlBtn();
                 syncExplicitBadges(currentSong);
-                updateAmbientFromSong({
+                updateProgressPaletteFromSong({
                     file: last.file,
                     title: last.title,
                     poster: last.poster,
@@ -20415,7 +20436,7 @@
             document.getElementById('fsTitle').textContent = song.title;
             document.getElementById('fsArtist').textContent = artistName;
             syncExplicitBadges(song);
-            updateAmbientFromSong({
+            updateProgressPaletteFromSong({
                 ...song,
                 artistName
             });
@@ -20989,7 +21010,7 @@
                 syncExplicitBadges(song);
                 updatePlayerLikeBtn(song.file);
                 updatePlayerDlBtn();
-                updateAmbientFromSong(song);
+                updateProgressPaletteFromSong(song);
                 try {
                     const src = await getAudioSrc('songs/' + song.file);
                     setPrimaryAudioSource(src);
@@ -21665,8 +21686,6 @@
         const fullscreenPlayer = document.getElementById('fullscreenPlayer');
         const fsSheet = document.getElementById('fsSheet');
         const fsPoster = document.getElementById('fsPoster');
-        const fsPosterGlow = document.getElementById('fsPosterGlow');
-        const fsBackdrop = document.getElementById('fsBackdrop');
         const fsTitle = document.getElementById('fsTitle');
         const fsArtist = document.getElementById('fsArtist');
         const fsHeaderSong = document.getElementById('fsHeaderSong');
@@ -21690,7 +21709,7 @@
         const lyricsFollowBtn = document.getElementById('lyricsFollowBtn');
         const syncedLyricsCatalog = Object.create(null);
         const lrclibLyricsRequests = new Map();
-        const ambientPaletteCache = new Map();
+        const progressPaletteCache = new Map();
         const LYRICS_CACHE_KEY = 'falcon_lrclib_cache_v2';
         const MAX_LYRICS_CACHE_ENTRIES = 80;
         let lyricsCacheStore = {};
@@ -21716,9 +21735,9 @@
         let lyricManualPauseUntil = 0;
         let lyricLastAutoWriteAt = 0;
         let lyricMeasureFrame = 0;
-        let currentAmbientToken = '';
-        let ambientCssPrimary = '200, 245, 66';
-        let ambientCssSecondary = '78, 156, 255';
+        let currentProgressPaletteToken = '';
+        let ambientCssPrimary = '215, 183, 101';
+        let ambientCssSecondary = '240, 217, 141';
         let visualizerCtx = null;
         let visualizerAnalyser = null;
         let visualizerSource = null;
@@ -21817,7 +21836,7 @@
                     p.y = (p.y + p.vy * (1 + energy * 1.6) + 1) % 1;
                     const rr = p.r * (1 + energy * .9);
                     const grad = ctx.createRadialGradient(p.x * w, p.y * h, 0, p.x * w, p.y * h, rr * 8);
-                    const color = i % 3 === 0 ? ambientCssPrimary : (i % 3 === 1 ? ambientCssSecondary : '164, 95, 255');
+                    const color = i % 3 === 0 ? ambientCssPrimary : (i % 3 === 1 ? ambientCssSecondary : '183, 140, 62');
                     grad.addColorStop(0, `rgba(${color}, ${p.a + energy * .2})`);
                     grad.addColorStop(1, `rgba(${color}, 0)`);
                     ctx.fillStyle = grad;
@@ -22401,15 +22420,15 @@
             ];
         }
 
-        async function extractAmbientPalette(imageSrc) {
+        async function extractProgressPalette(imageSrc) {
             if (!imageSrc) {
                 return {
-                    primary: [200, 245, 66],
-                    secondary: [78, 156, 255],
-                    tertiary: [164, 95, 255]
+                    primary: [215, 183, 101],
+                    secondary: [240, 217, 141],
+                    tertiary: [183, 140, 62]
                 };
             }
-            if (ambientPaletteCache.has(imageSrc)) return ambientPaletteCache.get(imageSrc);
+            if (progressPaletteCache.has(imageSrc)) return progressPaletteCache.get(imageSrc);
 
             const palette = await new Promise((resolve) => {
                 const img = new Image();
@@ -22454,12 +22473,12 @@
                         }
                         const avg = count ? [sumR / count, sumG / count, sumB / count] : [100, 132, 80];
                         vibrant.sort((a, b) => b.score - a.score);
-                        const primary = vibrant[0]?.rgb || mixRgb(avg, [200, 245, 66], 0.4);
+                        const primary = vibrant[0]?.rgb || mixRgb(avg, [215, 183, 101], 0.4);
                         const secondary = vibrant.find((row) => {
                             const [r, g, b] = row.rgb;
                             const dist = Math.abs(r - primary[0]) + Math.abs(g - primary[1]) + Math.abs(b - primary[2]);
                             return dist > 90;
-                        })?.rgb || mixRgb(avg, [78, 156, 255], 0.55);
+                        })?.rgb || mixRgb(avg, [240, 217, 141], 0.55);
                         let tertiary = mixRgb(primary, secondary, 0.44);
                         if (getLuma(tertiary) > 185) tertiary = mixRgb(tertiary, [36, 26, 54], 0.38);
                         resolve({
@@ -22469,61 +22488,42 @@
                         });
                     } catch (e) {
                         resolve({
-                            primary: [200, 245, 66],
-                            secondary: [78, 156, 255],
-                            tertiary: [164, 95, 255]
+                            primary: [215, 183, 101],
+                            secondary: [240, 217, 141],
+                            tertiary: [183, 140, 62]
                         });
                     }
                 };
                 img.onerror = () => resolve({
-                    primary: [200, 245, 66],
-                    secondary: [78, 156, 255],
-                    tertiary: [164, 95, 255]
+                    primary: [215, 183, 101],
+                    secondary: [240, 217, 141],
+                    tertiary: [183, 140, 62]
                 });
                 img.src = imageSrc;
             });
 
-            ambientPaletteCache.set(imageSrc, palette);
+            progressPaletteCache.set(imageSrc, palette);
             return palette;
         }
 
-        function applyAmbientPalette(palette) {
+        function applyProgressPalette(palette) {
             const safe = palette || {};
-            const p1 = safe.primary || [200, 245, 66];
-            const p2 = safe.secondary || [78, 156, 255];
-            const p3 = safe.tertiary || [164, 95, 255];
-            ambientCssPrimary = rgbArrayToCss(p1);
-            ambientCssSecondary = rgbArrayToCss(p2);
-            document.documentElement.style.setProperty('--ambient-rgb', ambientCssPrimary);
-            document.documentElement.style.setProperty('--ambient-rgb-2', ambientCssSecondary);
-            document.documentElement.style.setProperty('--ambient-rgb-3', rgbArrayToCss(p3));
-            document.documentElement.style.setProperty('--theme-primary', `rgb(${ambientCssPrimary})`);
-            document.documentElement.style.setProperty('--theme-secondary', `rgb(${ambientCssSecondary})`);
-            document.documentElement.style.setProperty('--theme-accent', `rgb(${rgbArrayToCss(p3)})`);
-            document.documentElement.style.setProperty('--accent', `rgb(${ambientCssPrimary})`);
-            document.documentElement.style.setProperty('--accent2', `rgb(${rgbArrayToCss(mixRgb(p1, p2, .36))})`);
-            document.documentElement.style.setProperty('--accent3', `rgba(${ambientCssPrimary}, .1)`);
-            document.documentElement.style.setProperty('--accent-glow', `rgba(${ambientCssPrimary}, .24)`);
-            document.documentElement.style.setProperty('--theme-surface', `rgba(${rgbArrayToCss(mixRgb(p1, [20, 20, 22], .84))}, .72)`);
-            if (fullscreenPlayer) {
-                fullscreenPlayer.style.setProperty('--fs-accent-rgb', ambientCssPrimary);
-                fullscreenPlayer.style.setProperty('--fs-secondary-rgb', ambientCssSecondary);
-            }
-            const theme = document.querySelector('meta[name="theme-color"]');
-            if (theme) {
-                const darkMix = mixRgb(p1, [12, 12, 14], 0.72);
-                theme.setAttribute('content', `rgb(${rgbArrayToCss(darkMix)})`);
-            }
+            const p1 = safe.primary || [215, 183, 101];
+            const p2 = safe.secondary || [240, 217, 141];
+            const visiblePrimary = getLuma(p1) < 92 ? mixRgb(p1, [255, 255, 255], .3) : p1;
+            const visibleSecondary = getLuma(p2) < 82 ? mixRgb(p2, [255, 255, 255], .34) : p2;
+            document.documentElement.style.setProperty('--progress-primary-rgb', rgbArrayToCss(visiblePrimary));
+            document.documentElement.style.setProperty('--progress-secondary-rgb', rgbArrayToCss(visibleSecondary));
         }
 
-        async function updateAmbientFromSong(song) {
+        async function updateProgressPaletteFromSong(song) {
             if (!song) return;
             const token = `${normalizeSongFile(song.file)}|${song.poster || ''}`;
-            if (token && token === currentAmbientToken) return;
-            currentAmbientToken = token;
-            const palette = await extractAmbientPalette(song.poster || '');
-            if (token !== currentAmbientToken) return;
-            applyAmbientPalette(palette);
+            if (token && token === currentProgressPaletteToken) return;
+            currentProgressPaletteToken = token;
+            const palette = await extractProgressPalette(song.poster || '');
+            if (token !== currentProgressPaletteToken) return;
+            applyProgressPalette(palette);
         }
 
         function getLyricIndexAtTime(currentTime) {
@@ -23034,8 +23034,6 @@
             const songArtist = currentArtistKey ? getArtistDisplayNameByKey(currentArtistKey) : (currentSong.artistName || playerArtist.textContent || 'Unknown Artist');
             const songTitle = currentSong.title || 'Unknown';
             if (fsPoster) fsPoster.src = songPoster;
-            if (fsPosterGlow) fsPosterGlow.src = songPoster;
-            if (fsBackdrop) fsBackdrop.src = songPoster;
             if (fsTitle) fsTitle.textContent = songTitle;
             if (fsArtist) fsArtist.textContent = songArtist;
             if (fsHeaderSong) fsHeaderSong.textContent = songTitle;
@@ -23067,7 +23065,7 @@
                 updateFullPlayerLyrics(audio.currentTime, true);
             }
             if (fsLyricsPanel) fsLyricsPanel.classList.toggle('has-lyrics', fullPlayerLyrics.length > 0);
-            updateAmbientFromSong({
+            updateProgressPaletteFromSong({
                 ...currentSong,
                 artistName: songArtist
             });
@@ -23670,7 +23668,7 @@
         updateQueueIndicators();
         updateDpStats();
         if (dlQueue.some((item) => item.status === 'queued') && !dlPaused) processQueue();
-        if (currentSong) updateAmbientFromSong(currentSong);
+        if (currentSong) updateProgressPaletteFromSong(currentSong);
         registerFalconServiceWorker();
 
         if(!('caches' in window)){ console.warn('Cache API not available.'); document.querySelectorAll('.dl-btn,.player-dl-btn,.dl-queue-btn').forEach(el=>el.style.display='none'); }
