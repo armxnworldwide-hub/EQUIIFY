@@ -14676,6 +14676,357 @@
                     }
                 }
 
+                /* Creator credit shared by the home page and mobile menu. */
+                .creator-instagram-icon {
+                    width: 19px;
+                    height: 19px;
+                    flex: 0 0 19px;
+                    display: inline-grid;
+                    place-items: center;
+                    color: #d7b765;
+                }
+
+                .creator-instagram-icon svg {
+                    width: 100%;
+                    height: 100%;
+                    fill: none;
+                    stroke: currentColor;
+                    stroke-width: 1.8;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+                .home-creator-credit {
+                    width: fit-content;
+                    margin-top: 14px;
+                    padding: 7px 10px;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 7px;
+                    color: rgba(255, 255, 255, .42);
+                    text-decoration: none;
+                    font-size: .66rem;
+                    font-weight: 750;
+                    line-height: 1;
+                    border: 1px solid rgba(215, 183, 101, .16);
+                    border-radius: 999px;
+                    background: rgba(215, 183, 101, .055);
+                    transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
+                }
+
+                .home-creator-credit strong {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 5px;
+                    color: rgba(255, 255, 255, .84);
+                    font-weight: 850;
+                }
+
+                .home-creator-credit .creator-instagram-icon {
+                    width: 14px;
+                    height: 14px;
+                    flex-basis: 14px;
+                }
+
+                .home-creator-credit:hover {
+                    color: rgba(255, 255, 255, .66);
+                    border-color: rgba(215, 183, 101, .36);
+                    background: rgba(215, 183, 101, .1);
+                    transform: translateY(-1px);
+                }
+
+                @media (max-width: 1024px) {
+                    .mobile-drawer-backdrop {
+                        background: rgba(0, 0, 0, .7);
+                        backdrop-filter: blur(8px);
+                        -webkit-backdrop-filter: blur(8px);
+                    }
+
+                    .mobile-drawer {
+                        left: auto;
+                        right: 0;
+                        width: min(86vw, 340px);
+                        padding-bottom: calc(12px + var(--safe-bottom));
+                        border-right: 0;
+                        border-left: 1px solid rgba(215, 183, 101, .18);
+                        background:
+                            radial-gradient(circle at 90% 3%, rgba(215, 183, 101, .13), transparent 28%),
+                            linear-gradient(180deg, rgba(15, 14, 12, .99), rgba(5, 5, 5, .99));
+                        box-shadow: -24px 0 70px rgba(0, 0, 0, .62);
+                        transform: translateX(104%);
+                    }
+
+                    .mobile-drawer.open {
+                        transform: translateX(0);
+                    }
+
+                    .mobile-drawer-head {
+                        min-height: 72px;
+                        padding: calc(12px + var(--safe-top)) 13px 12px;
+                        border-bottom-color: rgba(215, 183, 101, .12);
+                    }
+
+                    .mobile-drawer-brand {
+                        min-width: 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    }
+
+                    .mobile-drawer-brand img {
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 11px;
+                        object-fit: cover;
+                        border: 1px solid rgba(215, 183, 101, .34);
+                        box-shadow: 0 8px 22px rgba(0, 0, 0, .38), 0 0 18px rgba(215, 183, 101, .1);
+                    }
+
+                    .mobile-drawer-brand div {
+                        min-width: 0;
+                        display: grid;
+                        gap: 2px;
+                    }
+
+                    .mobile-drawer-brand strong {
+                        color: #fff;
+                        font-size: .96rem;
+                        font-weight: 900;
+                        line-height: 1;
+                        letter-spacing: -.02em;
+                    }
+
+                    .mobile-drawer-brand span {
+                        color: rgba(255, 255, 255, .38);
+                        font-size: .56rem;
+                        font-weight: 750;
+                        letter-spacing: .11em;
+                        text-transform: uppercase;
+                    }
+
+                    .mobile-drawer-close {
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 11px;
+                        border: 1px solid rgba(255, 255, 255, .08);
+                        background: rgba(255, 255, 255, .045);
+                        color: rgba(255, 255, 255, .72);
+                    }
+
+                    .mobile-drawer-actions {
+                        flex: 1;
+                        padding: 12px;
+                        gap: 6px;
+                        overflow-y: auto;
+                    }
+
+                    .mobile-drawer-link {
+                        min-height: 46px;
+                        padding: 11px 12px;
+                        border-color: transparent;
+                        border-radius: 12px;
+                        background: transparent;
+                        color: rgba(255, 255, 255, .7);
+                        text-decoration: none;
+                        font-size: .8rem;
+                        font-weight: 800;
+                        transition: color .18s ease, border-color .18s ease, background .18s ease, transform .18s ease;
+                    }
+
+                    .mobile-drawer-link:hover,
+                    .mobile-drawer-link:active {
+                        color: #fff;
+                        border-color: rgba(215, 183, 101, .16);
+                        background: rgba(215, 183, 101, .075);
+                    }
+
+                    .mobile-drawer-link > svg {
+                        width: 18px;
+                        height: 18px;
+                        color: rgba(215, 183, 101, .86);
+                    }
+
+                    .mobile-drawer-creator {
+                        min-height: 64px;
+                        margin-top: auto;
+                        padding: 11px;
+                        gap: 10px;
+                        border-color: rgba(215, 183, 101, .22);
+                        background: linear-gradient(135deg, rgba(215, 183, 101, .12), rgba(255, 255, 255, .025));
+                        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+                    }
+
+                    .mobile-drawer-creator-copy {
+                        min-width: 0;
+                        display: grid;
+                        gap: 3px;
+                        flex: 1;
+                    }
+
+                    .mobile-drawer-creator-copy small {
+                        color: rgba(255, 255, 255, .38);
+                        font-size: .56rem;
+                        font-weight: 750;
+                        letter-spacing: .08em;
+                        text-transform: uppercase;
+                    }
+
+                    .mobile-drawer-creator-copy strong {
+                        overflow: hidden;
+                        color: rgba(255, 255, 255, .9);
+                        font-size: .76rem;
+                        font-weight: 850;
+                        line-height: 1.1;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                }
+
+                @media (max-width: 768px) {
+                    body {
+                        grid-template-rows: 64px minmax(0, 1fr);
+                    }
+
+                    .sidebar {
+                        height: 64px;
+                        padding: 0 10px 0 11px;
+                        gap: 7px;
+                        z-index: 120;
+                        border-bottom: 1px solid rgba(215, 183, 101, .14);
+                        background:
+                            linear-gradient(180deg, rgba(13, 12, 10, .98), rgba(5, 5, 5, .98));
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, .28);
+                    }
+
+                    .sidebar-logo-block {
+                        order: 1;
+                        flex: 1 1 auto;
+                        gap: 0;
+                    }
+
+                    .sidebar .logo {
+                        gap: 9px;
+                    }
+
+                    .sidebar .logo-icon {
+                        width: 36px;
+                        height: 36px;
+                        padding: 2px;
+                        border-radius: 11px;
+                        border-color: rgba(215, 183, 101, .34);
+                        background: rgba(215, 183, 101, .07);
+                        box-shadow: 0 8px 20px rgba(0, 0, 0, .4), 0 0 17px rgba(215, 183, 101, .1);
+                    }
+
+                    .sidebar .logo-icon img {
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 8px;
+                    }
+
+                    .sidebar .logo-word {
+                        color: rgba(255, 255, 255, .93);
+                        font-size: 1rem;
+                        font-weight: 900;
+                        letter-spacing: .04em;
+                    }
+
+                    .mobile-back-btn {
+                        order: 0;
+                        width: 36px;
+                        height: 36px;
+                        padding: 0;
+                        border: 1px solid rgba(255, 255, 255, .08);
+                        border-radius: 11px;
+                        background: rgba(255, 255, 255, .04);
+                    }
+
+                    #mobileAuthArea {
+                        position: static;
+                        order: 2;
+                        margin-left: auto;
+                        transform: none;
+                        pointer-events: auto;
+                    }
+
+                    .mobile-google-signin {
+                        min-height: 36px;
+                        padding: 4px 11px 4px 5px;
+                        gap: 6px;
+                        border: 1px solid rgba(215, 183, 101, .2);
+                        border-radius: 999px;
+                        background: rgba(255, 255, 255, .95);
+                        color: #19150d;
+                        font-size: .68rem;
+                        font-weight: 850;
+                        box-shadow: 0 8px 22px rgba(0, 0, 0, .3);
+                    }
+
+                    .mobile-google-signin .g-icon {
+                        width: 24px;
+                        height: 24px;
+                        background: #fff;
+                    }
+
+                    .mobile-user-avatar-btn {
+                        width: 36px;
+                        height: 36px;
+                        border-width: 1px;
+                        border-color: rgba(215, 183, 101, .55);
+                        box-shadow: 0 7px 20px rgba(0, 0, 0, .32), 0 0 14px rgba(215, 183, 101, .12);
+                    }
+
+                    .mobile-user-avatar-btn img {
+                        width: 34px;
+                        height: 34px;
+                    }
+
+                    .fav-mobile-btn {
+                        order: 3;
+                        width: 38px;
+                        height: 38px;
+                        padding: 0;
+                        margin-left: 1px;
+                        border: 1px solid rgba(215, 183, 101, .22);
+                        border-radius: 12px;
+                        background: linear-gradient(145deg, rgba(215, 183, 101, .12), rgba(255, 255, 255, .035));
+                        color: #d7b765;
+                        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 8px 22px rgba(0, 0, 0, .28);
+                    }
+
+                    .fav-mobile-btn:active {
+                        background: rgba(215, 183, 101, .18);
+                        transform: scale(.95);
+                    }
+
+                    .fav-mobile-btn svg {
+                        width: 19px;
+                        height: 19px;
+                        stroke-width: 2.1;
+                    }
+
+                    .home-creator-credit {
+                        margin-top: 9px;
+                        padding: 6px 8px;
+                        gap: 5px;
+                        font-size: .58rem;
+                    }
+
+                    .home-creator-credit .creator-instagram-icon {
+                        width: 13px;
+                        height: 13px;
+                        flex-basis: 13px;
+                    }
+                }
+
+                @media (max-width: 370px) {
+                    .sidebar .logo-word { font-size: .88rem; }
+                    .sidebar .logo-icon { width: 34px; height: 34px; }
+                    .sidebar .logo-icon img { width: 28px; height: 28px; }
+                    .mobile-google-signin { padding-right: 9px; }
+                    .fav-mobile-btn { width: 36px; height: 36px; }
+                }
+
                 /* Minimal premium startup mark. */
                 #splash.fx-minimal-intro {
                     padding: 24px;
@@ -14900,7 +15251,7 @@
         <button class="mobile-back-btn hidden" id="mobileBackBtn" onclick="loadArtists()"><i data-lucide="chevron-left" aria-hidden="true"></i></button>
 
 
-        <button class="fav-mobile-btn" onclick="openMobileDrawer()" title="Menu"><i data-lucide="menu" aria-hidden="true"></i></button>
+        <button class="fav-mobile-btn" onclick="openMobileDrawer()" title="Open menu" aria-label="Open menu"><i data-lucide="ellipsis-vertical" aria-hidden="true"></i></button>
 
 
         <div id="mobileAuthArea" style="flex-shrink:0">
@@ -15219,8 +15570,11 @@
     <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="closeMobileDrawer()"></div>
     <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
         <div class="mobile-drawer-head">
-            <div class="mobile-drawer-title">FalconX</div>
-            <button class="mobile-drawer-close" onclick="closeMobileDrawer()"><i data-lucide="x" aria-hidden="true"></i></button>
+            <div class="mobile-drawer-brand">
+                <img src="images/falcon.jpeg" alt="">
+                <div><strong>FalconX</strong><span>Premium audio</span></div>
+            </div>
+            <button class="mobile-drawer-close" onclick="closeMobileDrawer()" aria-label="Close menu"><i data-lucide="x" aria-hidden="true"></i></button>
         </div>
         <div class="mobile-drawer-actions">
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();loadArtists()"><i data-lucide="house" aria-hidden="true"></i><span>Home</span></button>
@@ -15229,6 +15583,13 @@
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showStatsDashboard()"><i data-lucide="chart-no-axes-column-increasing" aria-hidden="true"></i><span>Stats</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showAudioSettings()"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Audio</span></button>
             <button class="mobile-drawer-link" onclick="closeMobileDrawer();showDownloads()"><i data-lucide="download" aria-hidden="true"></i><span>Downloads</span></button>
+            <a class="mobile-drawer-link mobile-drawer-creator" href="https://www.instagram.com/armxnworldwide/" target="_blank" rel="noopener noreferrer" aria-label="Created by @armxnworldwide on Instagram">
+                <span class="creator-instagram-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1.1"></circle></svg>
+                </span>
+                <span class="mobile-drawer-creator-copy"><small>Created by</small><strong>@armxnworldwide</strong></span>
+                <i data-lucide="external-link" aria-hidden="true"></i>
+            </a>
         </div>
     </aside>
 
@@ -17326,6 +17687,10 @@
                         <span>FalconX / Home</span>
                         <h1>Your sound. Your space.</h1>
                         <p>Jump back in, discover a new favorite, or explore your complete library.</p>
+                        <a class="home-creator-credit" href="https://www.instagram.com/armxnworldwide/" target="_blank" rel="noopener noreferrer" aria-label="Created by @armxnworldwide on Instagram">
+                            <span>Created by</span>
+                            <strong><span class="creator-instagram-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1.1"></circle></svg></span>@armxnworldwide</strong>
+                        </a>
                     </div>
                     <div class="fx-home-metrics" aria-label="Library totals">
                         <div><strong>${libraryTrackCount}</strong><span>Tracks</span></div>
