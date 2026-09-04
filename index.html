@@ -17593,7 +17593,6 @@
                 $all('.ap-swatch[data-accent]').forEach(b=>b.classList.toggle('active', (b.dataset.accent||'').toLowerCase() === (set.accent||'').toLowerCase()));
                 $all('.ap-switch').forEach(el=>{ const key=el.dataset.key; const on = !!set[key]; el.classList.toggle('on', on); });
 
-                delete set.dynamicAlbum;
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(set));
             }
 
