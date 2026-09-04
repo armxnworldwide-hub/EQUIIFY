@@ -14735,6 +14735,29 @@
                     transform: translateY(-1px);
                 }
 
+                /* Keep the off-canvas mobile menu from leaking into desktop layout. */
+                .mobile-drawer {
+                    overflow: hidden;
+                }
+
+                .mobile-drawer-brand {
+                    display: flex;
+                    align-items: center;
+                }
+
+                .mobile-drawer-brand img {
+                    width: 38px;
+                    height: 38px;
+                    object-fit: cover;
+                }
+
+                @media (min-width: 769px) {
+                    .mobile-drawer,
+                    .mobile-drawer-backdrop {
+                        display: none !important;
+                    }
+                }
+
                 @media (max-width: 1024px) {
                     .mobile-drawer-backdrop {
                         background: rgba(0, 0, 0, .7);
