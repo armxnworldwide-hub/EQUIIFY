@@ -15207,6 +15207,95 @@
                     .splash-wordmark { font-size: clamp(2.55rem, 16vw, 4rem); }
                 }
 
+                /* Compact premium timeline for the mobile player. */
+                @media (max-width: 768px) {
+                    .player .player-progress {
+                        box-sizing: border-box;
+                        min-height: 30px;
+                        grid-template-columns: 32px minmax(0, 1fr) 32px;
+                        column-gap: 9px;
+                        padding: 6px 9px;
+                        border: 1px solid rgba(255, 255, 255, .07);
+                        border-radius: 12px;
+                        background:
+                            linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .018)),
+                            rgba(4, 4, 4, .58);
+                        box-shadow:
+                            inset 0 1px 0 rgba(255, 255, 255, .045),
+                            0 7px 18px rgba(0, 0, 0, .18);
+                    }
+
+                    .player .time-label {
+                        width: 32px;
+                        min-width: 32px;
+                        color: rgba(255, 255, 255, .46);
+                        font-size: .55rem;
+                        font-weight: 850;
+                        letter-spacing: .01em;
+                    }
+
+                    .player #currentTime {
+                        color: rgba(var(--progress-primary-rgb), .92);
+                        text-shadow: 0 0 10px rgba(var(--progress-primary-rgb), .3);
+                    }
+
+                    .player .progress-track,
+                    .player .progress-track:hover,
+                    .player .progress-track:active,
+                    .player .progress-track.dragging {
+                        height: 5px;
+                        min-height: 5px;
+                        border: 1px solid rgba(255, 255, 255, .045);
+                        border-radius: 999px;
+                        background: linear-gradient(180deg, rgba(255, 255, 255, .19), rgba(255, 255, 255, .08));
+                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .52), 0 1px 0 rgba(255, 255, 255, .025);
+                    }
+
+                    .player .progress-fill {
+                        height: 100%;
+                        border-radius: inherit;
+                        box-shadow:
+                            0 0 5px rgba(var(--progress-primary-rgb), .72),
+                            0 0 13px rgba(var(--progress-primary-rgb), .24);
+                    }
+
+                    .player .progress-fill::before {
+                        content: "";
+                        position: absolute;
+                        inset: 0;
+                        border-radius: inherit;
+                        background: linear-gradient(180deg, rgba(255, 255, 255, .3), transparent 64%);
+                        pointer-events: none;
+                    }
+
+                    .player .progress-fill::after {
+                        right: -5px;
+                        width: 11px;
+                        height: 11px;
+                        border: 2px solid #090909;
+                        box-sizing: border-box;
+                        opacity: 1;
+                        box-shadow:
+                            0 0 0 2px rgba(var(--progress-primary-rgb), .2),
+                            0 0 13px rgba(var(--progress-primary-rgb), .58),
+                            0 3px 8px rgba(0, 0, 0, .5);
+                    }
+                }
+
+                @media (max-width: 390px) {
+                    .player .player-progress {
+                        grid-template-columns: 29px minmax(0, 1fr) 29px;
+                        column-gap: 7px;
+                        padding-inline: 8px;
+                    }
+
+                    .player .time-label {
+                        width: 29px;
+                        min-width: 29px;
+                        font-size: .53rem;
+                    }
+                }
+
                 /* Album artwork colors belong only to the playback timeline. */
                 .player .progress-fill,
                 .player .progress-track:hover .progress-fill,
