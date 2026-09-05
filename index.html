@@ -18042,7 +18042,11 @@
             const artistEntryByKey = Object.fromEntries(artistEntries.map((entry) => [entry.key, entry]));
             const songPool = buildLibrarySongPool();
             const availableFiles = new Set(songPool.map((song) => song.file));
-            const recentSongs = deps.getContinueListening().filter((song) => availableFiles.has(song.file)).slice(0, 6);
+            const songByFile = new Map(songPool.map((song) => [song.file, song]));
+            const recentSongs = deps.getContinueListening().map((song) => {
+                const catalogSong = songByFile.get(song.file);
+                return catalogSong ? { ...song, ...catalogSong } : null;
+            }).filter(Boolean).slice(0, 6);
             const currentSongCandidate = getCurrentSong();
             const currentSong = currentSongCandidate && availableFiles.has(currentSongCandidate.file) ? currentSongCandidate : null;
             const currentArtistKey = getCurrentArtistKey();
@@ -24666,9 +24670,9 @@
         initLucideSystem();
         syncPlayerProgressVisibility();
         buildSidebar();
+        loadPlaybackMemory();
         loadArtists();
         initSearchClear();
-        loadPlaybackMemory();
         syncLyricsPanelShell();
         if (lyricsPanelOpen) loadLyricsPanel(currentSong);
         loadDlQueue();
