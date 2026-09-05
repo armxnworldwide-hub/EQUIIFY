@@ -15510,6 +15510,41 @@
                     }
                 }
 
+                .song-row.unavailable {
+                    opacity: .62;
+                    cursor: not-allowed;
+                }
+
+                .song-row.unavailable:hover {
+                    transform: none;
+                }
+
+                .song-row.unavailable .dl-btn:disabled {
+                    opacity: .34;
+                    cursor: not-allowed;
+                    pointer-events: none;
+                }
+
+                .song-unavailable-badge {
+                    margin-left: 7px;
+                    padding: 2px 5px;
+                    display: inline-flex;
+                    vertical-align: middle;
+                    color: rgba(232, 200, 109, .82);
+                    font-size: .48rem;
+                    font-weight: 850;
+                    line-height: 1;
+                    letter-spacing: .04em;
+                    text-transform: uppercase;
+                    border: 1px solid rgba(232, 200, 109, .22);
+                    border-radius: 999px;
+                    background: rgba(232, 200, 109, .07);
+                }
+
+                .hx-artist-card.unavailable .artist-card-count {
+                    color: rgba(232, 200, 109, .68);
+                }
+
                 /* Mobile scroll pipeline: keep touch movement on the compositor. */
                 @media (max-width: 768px) {
                     .main {
@@ -24590,6 +24625,7 @@
         function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
         function escA(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
         let toastTimer; function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.style.opacity='1'; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.style.opacity='0',2200); }
+        window.showToast = showToast;
 
         function setupMobileNav() {
             const nav = document.getElementById('mobileNav'); if (!nav || nav.dataset.bound === '1') return; nav.dataset.bound = '1';
