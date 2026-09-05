@@ -14549,13 +14549,42 @@
 
                     .fx-home-v2 .home-artists .artists-grid {
                         display: grid;
-                        grid-template-columns: repeat(2, minmax(0, 1fr));
-                        gap: 8px;
+                        grid-template-columns: repeat(4, minmax(0, 1fr));
+                        gap: 5px;
                     }
 
                     .fx-home-v2 .hx-artist-card {
-                        padding: 9px;
-                        border-radius: 15px;
+                        min-width: 0;
+                        padding: 4px 3px 6px;
+                        border-radius: 11px;
+                        content-visibility: visible;
+                        contain-intrinsic-size: none;
+                    }
+
+                    .fx-home-v2 .home-artists .home-section-headline {
+                        margin-bottom: 7px;
+                    }
+
+                    .fx-home-v2 .home-artists .artist-card-img-wrap {
+                        margin-bottom: 0;
+                        border-radius: 50%;
+                    }
+
+                    .fx-home-v2 .home-artists .artist-card-name {
+                        margin-top: 6px;
+                        margin-bottom: 0;
+                        font-size: .59rem;
+                        line-height: 1.1;
+                    }
+
+                    .fx-home-v2 .home-artists .artist-card-count {
+                        margin-top: 2px;
+                        font-size: .46rem;
+                        line-height: 1;
+                    }
+
+                    .fx-home-v2 .home-artists .card-play-btn {
+                        display: none;
                     }
                 }
 
