@@ -15510,6 +15510,75 @@
                     }
                 }
 
+                /* Mobile scroll pipeline: keep touch movement on the compositor. */
+                @media (max-width: 768px) {
+                    .main {
+                        scroll-behavior: auto !important;
+                        scroll-snap-type: none;
+                        touch-action: pan-y pinch-zoom;
+                        overscroll-behavior: contain;
+                        -webkit-overflow-scrolling: touch;
+                        scrollbar-width: none;
+                    }
+
+                    .main::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                    .song-row,
+                    .playlist-song-row,
+                    .fav-song-row,
+                    .qp-item,
+                    .home-mini-row,
+                    .hx-rec-card,
+                    .home-album-card,
+                    .hx-artist-card {
+                        will-change: auto !important;
+                    }
+
+                    .song-row:not(.swiping),
+                    .playlist-song-row:not(.swiping),
+                    .fav-song-row:not(.swiping),
+                    .qp-item:not(.swiping) {
+                        transition-property: background-color, border-color, color;
+                    }
+
+                    .fx-home-v2 .home-artists .artists-grid {
+                        grid-auto-rows: calc((100vw - 71px) / 4 + 30px);
+                        align-items: stretch;
+                    }
+
+                    .fx-home-v2 .hx-artist-card {
+                        height: 100%;
+                        content-visibility: auto;
+                        contain-intrinsic-size: auto 108px;
+                    }
+
+                    body.mobile-scroll-active .player .progress-fill,
+                    body.mobile-scroll-active .player .progress-fill::before,
+                    body.mobile-scroll-active .playing-bars span,
+                    body.mobile-scroll-active .now-playing-indicator::before {
+                        animation-play-state: paused !important;
+                    }
+
+                    body.mobile-scroll-active .player .progress-fill {
+                        box-shadow: none;
+                    }
+
+                    body.mobile-scroll-active .player .progress-fill::before {
+                        opacity: 0;
+                    }
+
+                    body.mobile-scroll-active .song-row:active,
+                    body.mobile-scroll-active .playlist-song-row:active,
+                    body.mobile-scroll-active .fav-song-row:active,
+                    body.mobile-scroll-active .home-track-card:active,
+                    body.mobile-scroll-active .home-mini-row:active,
+                    body.mobile-scroll-active .home-album-card:active {
+                        transform: none !important;
+                    }
+                }
+
     </style>
 </head>
 
@@ -15741,7 +15810,7 @@
             </div>
             <div class="player-progress">
                 <span class="time-label" id="currentTime">0:00</span>
-                <div class="progress-track" id="progressTrack" onmousedown="startDrag(event)" ontouchstart="startDrag(event)">
+                <div class="progress-track" id="progressTrack" onpointerdown="startDrag(event)">
                     <div class="progress-fill" id="progressBar"></div>
                 </div>
                 <span class="time-label" id="duration">0:00</span>
@@ -15848,7 +15917,7 @@
                         </div>
                     </section>
                     <div class="mfp-progress-section">
-                        <div class="mfp-progress-track" id="fsProgressTrack" onmousedown="startDragFullPlayer(event)" ontouchstart="startDragFullPlayer(event)">
+                        <div class="mfp-progress-track" id="fsProgressTrack" onpointerdown="startDragFullPlayer(event)">
                             <div class="mfp-progress-fill" id="fsProgressBar"></div>
                         </div>
                         <div class="mfp-time-display">
@@ -21366,6 +21435,7 @@
             isDragging = true;
             activeDragTrack = track;
             track.classList.add('dragging');
+            track.setPointerCapture?.(e.pointerId);
             seekFromClientX(track, getClientX(e));
             if (e.cancelable) e.preventDefault();
         }
@@ -21373,7 +21443,6 @@
         function updateProgressFromEvent(e) {
             if (!isDragging || !activeDragTrack) return;
             seekFromClientX(activeDragTrack, getClientX(e));
-            if (e.cancelable) e.preventDefault();
         }
 
         function endDrag() {
@@ -21383,10 +21452,9 @@
             activeDragTrack = null;
         }
 
-        window.addEventListener('mousemove', (e) => { if (isDragging) updateProgressFromEvent(e); });
-        window.addEventListener('touchmove', (e) => { if (isDragging) updateProgressFromEvent(e); }, { passive: false });
-        window.addEventListener('mouseup', endDrag);
-        window.addEventListener('touchend', endDrag);
+        window.addEventListener('pointermove', (e) => { if (isDragging) updateProgressFromEvent(e); }, { passive: true });
+        window.addEventListener('pointerup', endDrag, { passive: true });
+        window.addEventListener('pointercancel', endDrag, { passive: true });
 
         function updateQueueIndicators() {
             const count = Array.isArray(queue) ? queue.length : 0;
@@ -21741,9 +21809,8 @@
                 queueSwipeState.target.classList.toggle('queue-peek-left', translate < -34);
                 queueSwipeState.target.classList.toggle('queue-peek-right', translate > 34);
                 queueSwipeState.lastX = e.touches[0].clientX;
-                if (e.cancelable) e.preventDefault();
             }, {
-                passive: false
+                passive: true
             });
 
             const finishTouch = () => {
@@ -21901,7 +21968,6 @@
                 state.row.classList.toggle('queue-peek-right', shift > 32);
                 state.row.classList.toggle('queue-peek-left', shift < -32);
                 state.lastX = e.touches[0].clientX;
-                if (e.cancelable) e.preventDefault();
             };
 
             const finish = () => {
@@ -21927,7 +21993,7 @@
                 passive: true
             });
             area.addEventListener('touchmove', onMove, {
-                passive: false
+                passive: true
             });
             area.addEventListener('touchend', finish, {
                 passive: true
@@ -21943,6 +22009,32 @@
                 if (target.closest('.song-more-btn, .ps-icon-btn, .fav-icon-btn')) return;
                 e.preventDefault();
             });
+        }
+
+        function setupMobileScrollPerformance() {
+            const area = document.getElementById('mainArea');
+            if (!area || area.dataset.scrollPerfBound === '1') return;
+            area.dataset.scrollPerfBound = '1';
+
+            const mobileQuery = window.matchMedia('(max-width: 768px)');
+            let settleTimer = 0;
+            const finishScroll = () => {
+                clearTimeout(settleTimer);
+                settleTimer = 0;
+                document.body.classList.remove('mobile-scroll-active');
+            };
+            const markScrolling = () => {
+                if (!mobileQuery.matches) return;
+                document.body.classList.add('mobile-scroll-active');
+                clearTimeout(settleTimer);
+                settleTimer = window.setTimeout(finishScroll, 140);
+            };
+
+            area.addEventListener('scroll', markScrolling, { passive: true });
+            area.addEventListener('scrollend', finishScroll, { passive: true });
+            window.addEventListener('resize', () => {
+                if (!mobileQuery.matches) finishScroll();
+            }, { passive: true });
         }
 
         
@@ -23875,6 +23967,7 @@
             isDragging = true;
             activeDragTrack = track;
             track.classList.add('dragging');
+            track.setPointerCapture?.(e.pointerId);
             seekFromClientX(track, getClientX(e));
             if (e.cancelable) e.preventDefault();
         }
@@ -24456,6 +24549,7 @@
         renderQueuePanel();
         setupQueuePanelInteractions();
         setupSongRowSwipeGestures();
+        setupMobileScrollPerformance();
         initAmbientParticles();
         initKeyboardShortcuts();
         updateQueueIndicators();
