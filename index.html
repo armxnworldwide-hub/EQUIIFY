@@ -15207,52 +15207,135 @@
                     .splash-wordmark { font-size: clamp(2.55rem, 16vw, 4rem); }
                 }
 
-                /* Compact premium timeline for the mobile player. */
+                /* Space-saving liquid-glass timeline for the mobile player. */
                 @media (max-width: 768px) {
+                    :root {
+                        --mobile-player-h: 156px;
+                        --player-h: var(--mobile-player-h);
+                    }
+
+                    .player .player-center {
+                        gap: 8px;
+                    }
+
                     .player .player-progress {
                         box-sizing: border-box;
-                        min-height: 30px;
-                        grid-template-columns: 32px minmax(0, 1fr) 32px;
-                        column-gap: 9px;
-                        padding: 6px 9px;
-                        border: 1px solid rgba(255, 255, 255, .07);
-                        border-radius: 12px;
+                        min-height: 24px;
+                        height: 24px;
+                        grid-template-columns: 31px minmax(0, 1fr) 31px;
+                        column-gap: 6px;
+                        padding: 3px 7px;
+                        position: relative;
+                        inset: auto;
+                        overflow: hidden;
+                        isolation: isolate;
+                        border: 1px solid rgba(174, 201, 255, .2);
+                        border-radius: 999px;
                         background:
-                            linear-gradient(180deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .018)),
-                            rgba(4, 4, 4, .58);
+                            radial-gradient(circle at 20% -80%, rgba(218, 231, 255, .28), transparent 44%),
+                            linear-gradient(115deg, rgba(102, 142, 218, .14), rgba(135, 105, 186, .085) 48%, rgba(215, 183, 101, .045)),
+                            rgba(7, 8, 12, .48);
                         box-shadow:
-                            inset 0 1px 0 rgba(255, 255, 255, .045),
-                            0 7px 18px rgba(0, 0, 0, .18);
+                            inset 0 1px 0 rgba(232, 240, 255, .25),
+                            inset 0 -1px 0 rgba(135, 158, 220, .05),
+                            0 5px 15px rgba(0, 0, 0, .2);
+                        backdrop-filter: blur(14px) saturate(175%);
+                        -webkit-backdrop-filter: blur(14px) saturate(175%);
+                    }
+
+                    .player .player-progress::before {
+                        content: "";
+                        position: absolute;
+                        z-index: 0;
+                        inset: -12px auto -12px -18px;
+                        width: 46%;
+                        border-radius: 999px;
+                        background: radial-gradient(ellipse, rgba(var(--progress-primary-rgb), .16), transparent 68%);
+                        filter: blur(7px);
+                        pointer-events: none;
+                    }
+
+                    .player .player-progress::after {
+                        content: "";
+                        position: absolute;
+                        z-index: 0;
+                        top: 1px;
+                        left: 16px;
+                        right: 16px;
+                        height: 1px;
+                        border-radius: 999px;
+                        background: linear-gradient(90deg, transparent, rgba(224, 235, 255, .34), transparent);
+                        pointer-events: none;
+                    }
+
+                    .player .player-progress > * {
+                        position: relative;
+                        z-index: 1;
                     }
 
                     .player .time-label {
-                        width: 32px;
-                        min-width: 32px;
-                        color: rgba(255, 255, 255, .46);
-                        font-size: .55rem;
+                        box-sizing: border-box;
+                        width: 31px;
+                        min-width: 31px;
+                        height: 14px;
+                        padding: 0 3px;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: rgba(229, 236, 255, .58);
+                        font-size: .5rem;
                         font-weight: 850;
-                        letter-spacing: .01em;
+                        letter-spacing: 0;
+                        border: 1px solid rgba(191, 210, 255, .075);
+                        border-radius: 999px;
+                        background: rgba(174, 197, 255, .055);
                     }
 
                     .player #currentTime {
                         color: rgba(var(--progress-primary-rgb), .92);
+                        border-color: rgba(var(--progress-primary-rgb), .14);
+                        background: rgba(var(--progress-primary-rgb), .075);
                         text-shadow: 0 0 10px rgba(var(--progress-primary-rgb), .3);
+                    }
+
+                    .player #currentTime::before {
+                        content: "";
+                        width: 3px;
+                        height: 3px;
+                        margin-right: 2px;
+                        flex: 0 0 3px;
+                        border-radius: 50%;
+                        background: rgb(var(--progress-primary-rgb));
+                        box-shadow: 0 0 5px rgba(var(--progress-primary-rgb), .7);
                     }
 
                     .player .progress-track,
                     .player .progress-track:hover,
                     .player .progress-track:active,
                     .player .progress-track.dragging {
-                        height: 5px;
-                        min-height: 5px;
-                        border: 1px solid rgba(255, 255, 255, .045);
+                        box-sizing: border-box;
+                        height: 6px;
+                        min-height: 6px;
+                        border: 1px solid rgba(196, 214, 255, .075);
                         border-radius: 999px;
-                        background: linear-gradient(180deg, rgba(255, 255, 255, .19), rgba(255, 255, 255, .08));
-                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .52), 0 1px 0 rgba(255, 255, 255, .025);
+                        background: linear-gradient(90deg, rgba(177, 205, 255, .19), rgba(207, 183, 255, .105));
+                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .62), 0 1px 0 rgba(255, 255, 255, .045);
+                    }
+
+                    .player .progress-track::after {
+                        content: "";
+                        position: absolute;
+                        z-index: 1;
+                        inset: 1px 2px;
+                        border-radius: inherit;
+                        background: repeating-linear-gradient(90deg, transparent 0 10px, rgba(225, 235, 255, .14) 10px 11px);
+                        opacity: .55;
+                        pointer-events: none;
                     }
 
                     .player .progress-fill {
                         height: 100%;
+                        z-index: 2;
                         border-radius: inherit;
                         box-shadow:
                             0 0 5px rgba(var(--progress-primary-rgb), .72),
@@ -15262,37 +15345,56 @@
                     .player .progress-fill::before {
                         content: "";
                         position: absolute;
-                        inset: 0;
-                        border-radius: inherit;
-                        background: linear-gradient(180deg, rgba(255, 255, 255, .3), transparent 64%);
+                        z-index: 3;
+                        left: 0;
+                        top: -4px;
+                        width: 100%;
+                        height: 10px;
+                        border-radius: 0;
+                        background: linear-gradient(90deg, rgb(var(--progress-primary-rgb)), rgb(var(--progress-secondary-rgb)));
+                        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 10'%3E%3Cpath d='M0 5 C16 0 32 0 48 5 C64 10 80 10 96 5 L96 10 L0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+                        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 10'%3E%3Cpath d='M0 5 C16 0 32 0 48 5 C64 10 80 10 96 5 L96 10 L0 10 Z' fill='%23000'/%3E%3C/svg%3E");
+                        -webkit-mask-repeat: repeat-x;
+                        mask-repeat: repeat-x;
+                        -webkit-mask-size: 96px 10px;
+                        mask-size: 96px 10px;
+                        -webkit-mask-position: 0 0;
+                        mask-position: 0 0;
+                        filter: drop-shadow(0 -1px 4px rgba(var(--progress-primary-rgb), .52));
+                        animation: fxTimelineWaveFlow 2.1s linear infinite;
                         pointer-events: none;
                     }
 
                     .player .progress-fill::after {
-                        right: -5px;
-                        width: 11px;
-                        height: 11px;
-                        border: 2px solid #090909;
+                        z-index: 4;
+                        right: -4px;
+                        width: 9px;
+                        height: 9px;
+                        border: 1.5px solid rgba(5, 5, 5, .9);
                         box-sizing: border-box;
                         opacity: 1;
                         box-shadow:
-                            0 0 0 2px rgba(var(--progress-primary-rgb), .2),
-                            0 0 13px rgba(var(--progress-primary-rgb), .58),
-                            0 3px 8px rgba(0, 0, 0, .5);
+                            0 0 0 2px rgba(var(--progress-primary-rgb), .16),
+                            0 0 10px rgba(var(--progress-primary-rgb), .52);
                     }
                 }
 
                 @media (max-width: 390px) {
+                    :root {
+                        --mobile-player-h: 148px;
+                        --player-h: var(--mobile-player-h);
+                    }
+
                     .player .player-progress {
                         grid-template-columns: 29px minmax(0, 1fr) 29px;
-                        column-gap: 7px;
-                        padding-inline: 8px;
+                        column-gap: 5px;
+                        padding-inline: 6px;
                     }
 
                     .player .time-label {
                         width: 29px;
                         min-width: 29px;
-                        font-size: .53rem;
+                        font-size: .48rem;
                     }
                 }
 
@@ -15312,6 +15414,50 @@
                 #fullscreenPlayer .mfp-progress-fill {
                     background: linear-gradient(90deg, rgb(var(--progress-primary-rgb)), rgb(var(--progress-secondary-rgb)));
                     box-shadow: 0 0 18px rgba(var(--progress-primary-rgb), .42);
+                }
+
+                @keyframes fxTimelineWaveFlow {
+                    from {
+                        -webkit-mask-position: 0 0;
+                        mask-position: 0 0;
+                    }
+                    to {
+                        -webkit-mask-position: 96px 0;
+                        mask-position: 96px 0;
+                    }
+                }
+
+                @keyframes fxTimelineLiquidGlow {
+                    0%, 100% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                }
+
+                @media (max-width: 768px) {
+                    .player .progress-fill {
+                        background: linear-gradient(90deg,
+                            rgb(var(--progress-primary-rgb)) 0%,
+                            rgb(var(--progress-secondary-rgb)) 52%,
+                            rgb(var(--progress-primary-rgb)) 100%);
+                        background-size: 200% 100%;
+                        animation: fxTimelineLiquidGlow 3.4s ease-in-out infinite;
+                        box-shadow:
+                            0 0 6px rgba(var(--progress-primary-rgb), .76),
+                            0 0 14px rgba(var(--progress-primary-rgb), .3);
+                    }
+
+                    .player .progress-fill::after {
+                        box-shadow:
+                            0 0 0 2px rgba(5, 5, 7, .74),
+                            0 0 0 3px rgba(var(--progress-primary-rgb), .2),
+                            0 0 12px rgba(var(--progress-primary-rgb), .62);
+                    }
+                }
+
+                @media (prefers-reduced-motion: reduce) {
+                    .player .progress-fill,
+                    .player .progress-fill::before {
+                        animation: none !important;
+                    }
                 }
 
     </style>
@@ -16612,6 +16758,16 @@
                     title: "Ziddi Generation (Alt)",
                     file: "Navaan Sandhu/Ziddi_Generation.mp3",
                     poster: "images/Zidddi Generation.jpeg"
+                }]
+            },
+            nirvair:{
+                name:"Nirvair Pannu",
+                image:"images/Nirvair.jpeg",
+                songs:[{
+                    title:"Peedan",
+                    file:"Nirvair Pannu/Peedan.mp3",
+                    poster:"images/LBE.jpeg"
+
                 }]
             },
             cheema: {
