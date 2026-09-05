@@ -15361,7 +15361,9 @@
                         -webkit-mask-position: 0 0;
                         mask-position: 0 0;
                         filter: drop-shadow(0 -1px 4px rgba(var(--progress-primary-rgb), .52));
-                        animation: fxTimelineWaveFlow 2.1s linear infinite;
+                        opacity: 0;
+                        animation: none;
+                        transition: opacity .22s ease;
                         pointer-events: none;
                     }
 
@@ -15439,10 +15441,29 @@
                             rgb(var(--progress-secondary-rgb)) 52%,
                             rgb(var(--progress-primary-rgb)) 100%);
                         background-size: 200% 100%;
-                        animation: fxTimelineLiquidGlow 3.4s ease-in-out infinite;
+                        animation: none;
                         box-shadow:
                             0 0 6px rgba(var(--progress-primary-rgb), .76),
                             0 0 14px rgba(var(--progress-primary-rgb), .3);
+                    }
+
+                    .player.is-playing .progress-fill {
+                        animation: fxTimelineLiquidGlow 3.4s ease-in-out infinite;
+                    }
+
+                    .player.is-playing .progress-fill::before {
+                        opacity: 1;
+                        animation: fxTimelineWaveFlow 2.1s linear infinite;
+                    }
+
+                    .player:not(.is-playing) .progress-fill {
+                        animation: none !important;
+                        background-position: 0 50%;
+                    }
+
+                    .player:not(.is-playing) .progress-fill::before {
+                        opacity: 0 !important;
+                        animation: none !important;
                     }
 
                     .player .progress-fill::after {
@@ -18495,6 +18516,10 @@
             setElementIcon(document.getElementById('fsPlay'), paused ? 'play' : 'pause');
             playBtn?.setAttribute('aria-label', paused ? 'Play' : 'Pause');
             document.getElementById('fsPlay')?.setAttribute('aria-label', paused ? 'Play' : 'Pause');
+        }
+
+        function setTimelinePlaybackEffect(active = false) {
+            document.querySelector('.player')?.classList.toggle('is-playing', !!active);
         }
 
         let __lucideRenderQueued = false;
@@ -23920,7 +23945,7 @@
                 savePlaybackMemory();
             }
         });
-        audio.addEventListener('ended',()=>{ stopCrossfadeTimers(); if(!isRepeat) next(); });
+        audio.addEventListener('ended',()=>{ setTimelinePlaybackEffect(false); stopCrossfadeTimers(); if(!isRepeat) next(); });
         audio.addEventListener('play',()=>{ 
             setPlayButtonIcons(false);
             if(currentArtistKey) updateArtistPlayingState(false);
@@ -23935,6 +23960,7 @@
             scheduleCrossfadeAuto('play');
         });
         audio.addEventListener('pause',()=>{ 
+            setTimelinePlaybackEffect(false);
             setPlayButtonIcons(true);
             if (!crossfadeTransitionActive) {
                 if (crossfadeTimer) {
@@ -23956,7 +23982,11 @@
             savePlaybackMemory();
             updateNowPlayingIndicator();
         });
-        audio.addEventListener('playing', () => resumeAudioContext('playing-event'));
+        audio.addEventListener('playing', () => {
+            setTimelinePlaybackEffect(true);
+            resumeAudioContext('playing-event');
+        });
+        audio.addEventListener('waiting', () => setTimelinePlaybackEffect(false));
         audio.addEventListener('canplay', () => resumeAudioContext('canplay-event'));
         audio.addEventListener('seeked', () => scheduleCrossfadeAuto('seeked'));
         audio.addEventListener('seeking', () => {
